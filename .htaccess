@@ -1,0 +1,6 @@
+RewriteEngine on
+RewriteCond %{HTTP_HOST} ^anglobalindia.com$ [NC,OR]
+RewriteCond %{HTTP_HOST} ^www.anglobalindia.comm$
+RewriteCond %{REQUEST_URI} !public/
+RewriteRule (.*) /public/$1 [L]
+
