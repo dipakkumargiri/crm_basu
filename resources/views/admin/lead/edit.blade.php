@@ -123,7 +123,7 @@
                             <h3 class="box-title m-t-40">@lang('modules.lead.leadDetails')</h3>
                             <hr>
                             <div class="row">
-                                <div class="col-md-6 ">
+                                <div class="col-md-4 ">
                                     <div class="form-group">
                                         <label for="">@lang('modules.tickets.chooseAgents') <a href="javascript:;"
                                                                                               id="addLeadAgent"
@@ -139,7 +139,7 @@
                                     </div>
                                     
                                 </div>
-                                <div class="col-md-6 ">
+                                <div class="col-md-4 ">
                                              <div class="form-group" style="margin-top: 7px;">
                                               <label >@lang('modules.lead.leadCategory')
                                                 <a href="javascript:;" id="addLeadCategory" class="btn btn-xs btn-success btn-outline"><i class="fa fa-plus"></i></a>
@@ -157,6 +157,25 @@
                                         @endforelse
                                              </select>
                                          </div>
+                            </div>
+                            <div class="col-md-4 ">
+                                     <div class="form-group" style="margin-top: 7px;">
+                                      <label >@lang('modules.lead.leadType')
+                                        <a href="javascript:;" id="addLeadType" class="btn btn-xs btn-success btn-outline"><i class="fa fa-plus"></i></a>
+                                         </label>
+                                    <select class="select2 form-control" name="type_id" id="type_id"
+                                        data-style="form-control">
+                                        @forelse($types as $type)
+                                    <option value="{{ $type->id }}"
+                                            @if($lead->type_id == $type->id)
+                                            selected
+                                            @endif
+                                    >{{ ucwords($type->type_name) }}</option>
+                                @empty
+                                    <option value="">@lang('messages.noTypeAdded')</option>
+                                @endforelse
+                                     </select>
+                                 </div>
                             </div>
                                 <!--/span-->
                             </div>
@@ -398,6 +417,11 @@
     });
     $('#addLeadCategory').click(function () {
         var url = '{{ route('admin.leadCategory.create')}}';
+        $('#modelHeading').html('...');
+        $.ajaxModal('#projectCategoryModal', url);
+    })
+     $('#addLeadType').click(function () {
+        var url = '{{ route('admin.leadType.create')}}';
         $('#modelHeading').html('...');
         $.ajaxModal('#projectCategoryModal', url);
     })

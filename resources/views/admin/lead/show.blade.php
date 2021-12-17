@@ -125,6 +125,15 @@
                                                      @endforeach
                                                 </div>
                                                 @endif
+                                                @if($lead->type_id != null)
+                                                <div class="col-md-4"> <strong>@lang('modules.lead.leadType')</strong> <br>
+                                                    <p class="text-muted"> @foreach($types as $type)
+                                                    @if($lead->type_id == $type->id)
+                                                    {{ ucwords($type->type_name) }}
+                                                    @endif
+                                                     @endforeach
+                                                </div>
+                                                @endif
                                             </div>
                                             <hr>
                                             <div class="row">

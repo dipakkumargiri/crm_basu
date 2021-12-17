@@ -222,6 +222,22 @@
                                              </select>
                                          </div>
                                     </div>
+                                    <div class="col-md-4 ">
+                                             <div class="form-group" style="margin-top: 7px;">
+                                              <label >@lang('modules.lead.leadType')
+                                                <a href="javascript:;" id="addLeadType" class="btn btn-xs btn-success btn-outline"><i class="fa fa-plus"></i></a>
+                                                 </label>
+                                            <select class="select2 form-control" name="type_id" id="type_id"
+                                                data-style="form-control">
+                                                @forelse($types as $type)
+                                                <option value="{{ $type->id }}">{{ ucwords($type->type_name) }}</option>
+                                            @empty
+                                                <option value="">@lang('messages.noTypeAdded')</option>
+                                            @endforelse
+
+                                             </select>
+                                         </div>
+                                    </div>
                                 <div class="row">
                                     @if(isset($fields))
                                         @foreach($fields as $field)
@@ -396,6 +412,11 @@
     });
     $('#addLeadCategory').click(function () {
         var url = '{{ route('admin.leadCategory.create')}}';
+        $('#modelHeading').html('...');
+        $.ajaxModal('#projectCategoryModal', url);
+    })
+    $('#addLeadType').click(function () {
+        var url = '{{ route('admin.leadType.create')}}';
         $('#modelHeading').html('...');
         $.ajaxModal('#projectCategoryModal', url);
     })

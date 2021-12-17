@@ -142,6 +142,8 @@ Route::group(['middleware' => 'auth'], function () {
             // Packages routes
             Route::get('packages/data', ['uses' => 'SuperAdminPackageController@data'])->name('packages.data');
             Route::resource('/packages', 'SuperAdminPackageController');
+            Route::get('/clientDatabse',['uses' => 'SuperAdminPackageController@clientDatabse'])->name('packages.clientDatabse');
+            Route::get('/addDatabase',['uses' => 'SuperAdminPackageController@addDatabase'])->name('packages.addDatabase');
 
             // Companies routes
             Route::get('companies/data', ['uses' => 'SuperAdminCompanyController@data'])->name('companies.data');
@@ -380,6 +382,10 @@ Route::group(['middleware' => 'auth'], function () {
                 Route::resource('lead-form', 'LeadCustomFormController');
                 Route::get('leadCategory/create-cat', ['uses' => 'LeadCategoryController@createCat'])->name('leadCategory.create-cat');
                 Route::post('leadCategory/store-cat', ['uses' => 'LeadCategoryController@storeCat'])->name('leadCategory.store-cat');
+                
+                Route::get('leadType/create-cat', ['uses' => 'LeadTypeController@create'])->name('leadType.create-cat');
+                Route::post('leadType/store-cat', ['uses' => 'LeadTypeController@storeCat'])->name('leadType.store-cat');
+                Route::resource('leadType', 'LeadTypeController');
                 Route::resource('leadCategory', 'LeadCategoryController');
                 Route::resource('events-type', 'EventTypeController');
                 Route::resource('events-category', 'EventCategoryController');

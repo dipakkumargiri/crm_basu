@@ -679,6 +679,11 @@ return array(
             'addProjectCategory' => 'Add Project Category',
             'categoryName' => 'Category Name',
         ),
+    'projectType' =>
+        array(
+            'addProjectType' => 'Add Project Type',
+            'typeName' => 'Type Name',
+        ),
     'themeSettings' =>
         array(
             'adminPanelTheme' => 'Admin Panel Theme',
@@ -1052,6 +1057,7 @@ return array(
     'lead' =>
         array(
             'leadCategory' => 'Lead Category',
+            'leadType' => 'Lead Type',
             'createTitle' => 'Add Lead Info',
             'companyDetails' => 'Company Details',
             'companyName' => 'Company Name',

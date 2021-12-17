@@ -16,6 +16,7 @@ use App\LeadAgent;
 use App\LeadFollowUp;
 use App\LeadSource;
 use App\LeadStatus;
+use App\LeadType;
 use App\LeadCategory;
 use App\PurposeConsent;
 use App\PurposeConsentLead;
@@ -24,6 +25,7 @@ use App\TaskUser;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
 
 class LeadController extends AdminBaseController
@@ -45,6 +47,7 @@ class LeadController extends AdminBaseController
         $this->totalLeads = Lead::all();
         $this->sources = LeadSource::all();
         $this->categories = LeadCategory::all();
+        $this->types = LeadType::all();
         $this->totalClientConverted = $this->totalLeads->filter(function ($value, $key) {
             return $value->client_id != null;
         });
@@ -67,6 +70,7 @@ class LeadController extends AdminBaseController
         $this->lead = Lead::findOrFail($id)->withCustomFields();
         $this->fields = $this->lead->getCustomFieldGroupsWithFields()->fields;
         $this->categories = LeadCategory::all();
+        $this->types = LeadType::all();
         return view('admin.lead.show', $this->data);
     }
 
@@ -79,6 +83,7 @@ class LeadController extends AdminBaseController
         $this->sources = LeadSource::all();
         $this->status = LeadStatus::all();
         $this->categories = LeadCategory::all();
+        $this->types = LeadType::all();
         $this->countries = Country::all();
         $lead = new Lead();
         $this->fields = $lead->getCustomFieldGroupsWithFields()->fields;
@@ -94,6 +99,8 @@ class LeadController extends AdminBaseController
         $leadStatus = LeadStatus::where('default', '1')->first();
 
         $lead = new Lead();
+        $uniqid = Str::random(9);
+        $lead->lead_id = uniqid();
         $lead->company_name = $request->company_name;
         $lead->website = $request->website;
         $lead->address = $request->address;
@@ -107,6 +114,7 @@ class LeadController extends AdminBaseController
         $lead->postal_code = $request->postal_code;
         $lead->note = $request->note;
         $lead->category_id = $request->category_id;
+        $lead->type_id = $request->type_id;
         $lead->next_follow_up = $request->next_follow_up;
         $lead->agent_id = $request->agent_id;
         $lead->source_id = $request->source_id;
@@ -148,6 +156,7 @@ class LeadController extends AdminBaseController
         $this->sources = LeadSource::all();
         $this->status = LeadStatus::all();
         $this->categories = LeadCategory::all();
+        $this->types = LeadType::all();
         $this->countries = Country::all();
         return view('admin.lead.edit', $this->data);
     }
@@ -176,6 +185,7 @@ class LeadController extends AdminBaseController
         $lead->status_id = $request->status;
         $lead->source_id = $request->source;
         $lead->category_id = $request->category_id;
+        $lead->type_id = $request->type_id;
         $lead->next_follow_up = $request->next_follow_up;
         $lead->agent_id = $request->agent_id;
         $lead->value = ($request->value) ? $request->value : 0;
