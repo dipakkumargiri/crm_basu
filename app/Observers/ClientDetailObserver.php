@@ -17,6 +17,7 @@ class ClientDetailObserver
      */
     public function saving(ClientDetails $detail)
     {
+        // echo "<pre>"; print_r($detail);exit;
         // Cannot put in creating, because saving is fired before creating. And we need company id for check bellow
         if (company()) {
             $detail->company_id = company()->id;

@@ -19,8 +19,6 @@ use App\LeadSource;
 use App\LeadStatus;
 use App\LeadType;
 use App\LeadStage;
-use App\CogState;
-use App\CogCity;
 use App\LeadCategory;
 use App\PurposeConsent;
 use App\PurposeConsentLead;
@@ -116,21 +114,19 @@ class LeadController extends AdminBaseController
         $lead->client_email = $request->email;
         $lead->mobile = $request->input('phone_code').' '.$request->input('mobile');
         $lead->office_phone = $request->office_phone;
+        $lead->city = $request->city;
+        $lead->state = $request->state;
         $lead->cog_countries_id = $request->cog_countries_id;
-        $lead->cog_state_id = $request->state_id;
-        $lead->cog_city_id = $request->city_id;
         $lead->postal_code = $request->postal_code;
         $lead->note = $request->note;
         $lead->category_id = $request->category_id;
         $lead->client_type = $request->type_id;
-        $lead->stage_id = $request->stage_id;
         $lead->next_follow_up = $request->next_follow_up;
         $lead->agent_id = $request->agent_id;
         $lead->source_id = $request->source_id;
         $lead->value = ($request->value) ? $request->value : 0;
         $lead->currency_id = company()->currency_id;
         $lead->status_id = $leadStatus->id;
-        // echo "<pre>"; print_r($lead);exit;
         $lead->save();
 
         // To add custom fields data
@@ -170,8 +166,6 @@ class LeadController extends AdminBaseController
         $this->types = LeadType::all();
         $this->countries = Country::all();
         $this->Allcountries = CogCountry::all();
-        $this->AllStates = CogState::all();
-        $this->AllCities = CogCity::all();
         return view('admin.lead.edit', $this->data);
     }
 
@@ -190,8 +184,8 @@ class LeadController extends AdminBaseController
         $lead->client_email = $request->email;
         $lead->mobile = $request->input('phone_code').' '.$request->input('mobile');
         $lead->office_phone = $request->office_phone;
-        $lead->cog_city_id = $request->cog_city_id;
-        $lead->cog_state_id = $request->cog_state_id;
+        $lead->city = $request->city;
+        $lead->state = $request->state;
         $lead->cog_countries_id = $request->cog_countries_id;
         $lead->postal_code = $request->postal_code;
 
@@ -521,19 +515,6 @@ class LeadController extends AdminBaseController
 
 
         return Reply::dataOnly(['status' => 'success', 'columnData' => $valueData]);
-    }
-    
-    public function getState(Request $request)
-    {
-        $this->states = CogState::where('cog_countries_id', $request->country_id)->get();
-
-        return Reply::dataOnly(['AllStates' => $this->states]);
-    }
-    public function getCity(Request $request)
-    {
-        $this->cities = CogCity::where('cog_states_id', $request->state_id)->get();
-
-        return Reply::dataOnly(['AllCities' => $this->cities]);
     }
 
 }

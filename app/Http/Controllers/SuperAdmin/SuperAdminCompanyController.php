@@ -452,5 +452,62 @@ class SuperAdminCompanyController extends SuperAdminBaseController
 
         return Reply::success(__('messages.successfullyLoginAsCompany'));
     }
+    public function save_client_data_base(Request $request){
+         $fname=$request->input('f_name');
+         $l_name=$request->input('l_name');
+         $org=$request->input('org');
+         $address=$request->input('address');
+         $email=$request->input('email');
+         $phone=$request->input('phone');
+         $industry=$request->input('industry');
+         $note=$request->input('note');
+         $created_by=date('Y-m-d');
+        $emailExist=$this->client_data=DB::table('client_database')->where('email',$email)->get();
+        $phoneExist=$this->client_data=DB::table('client_database')->where('phonenumber',$phone)->get();
+        if(count($emailExist) >0){
+            return Reply::dataOnly(['status' => 'Faild','msg'=>'Email Address Alrady Exist']);
+        } else if(count($phoneExist) >0){
+            return Reply::dataOnly(['status' => 'Faild','msg'=>'Phone Number Alrady Exist']);
+        }else{
+            $values = array('frist_name' =>$fname,'last_name' =>$l_name,'organization'=>$org,'address'=>$address,'email'=>$email,'phonenumber'=>$phone,'industry'=>$industry,'note'=>$note,'created_at'=>Auth::user()->id,'created_by'=>$created_by);
+            $insert=DB::table('client_database')->insert($values);
+            if($insert){
+               return Reply::dataOnly(['status' => 'success','msg'=>'']);
+            }else{
+               return Reply::dataOnly(['status' => 'failed','msg'=>'']);
+            }
+            die;
+    }
+        
+         
+        
+    }
+    public function saveCountry(Request $request){
+        $name=$request->input('name');
+        $currency_name=$request->input('currency_name');
+        $currency_code=$request->input('currency_code');
+        $dialing_code=$request->input('dialing_code');
+        $values = array('name' =>$name,'currency_name' =>$currency_name,'currency_code'=>$currency_code,'dialing_code'=>$dialing_code);
+        $insert=DB::table('cog_countries')->insert($values);
+        if($insert){
+           return Reply::dataOnly(['status' => 'success','msg'=>'']);
+        }else{
+           return Reply::dataOnly(['status' => 'failed','msg'=>'']);
+        }
+        die;
+    }
+
+    public function saveState(Request $request){
+        $c_name=$request->input('c_name');
+        $s_name=$request->input('s_name');
+        $values = array('name' =>$s_name,'cog_countries_id' =>$c_name);
+        $insert=DB::table('cog_states')->insert($values);
+        if($insert){
+           return Reply::dataOnly(['status' => 'success','msg'=>'']);
+        }else{
+           return Reply::dataOnly(['status' => 'failed','msg'=>'']);
+        }
+        die;
+    }
 
 }

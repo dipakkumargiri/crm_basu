@@ -20,12 +20,14 @@ class SuperAdmin
      */
     public function handle($request, Closure $next)
     {
+        
         $user = auth()->user();
 
         $exists = Storage::disk('storage')->exists('down');
         $setting = GlobalSetting::first();
 
         if ($exists && is_null($setting->purchase_code) && (strpos(request()->getHost(), '.test') === false)) {
+           
             return Redirect::route('verify-purchase');
         }
 

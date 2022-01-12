@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
 
-class ClientsDataTable extends BaseDataTable
+class SellersDataTable extends BaseDataTable
 {
 
     /**
@@ -20,7 +20,6 @@ class ClientsDataTable extends BaseDataTable
      */
     public function dataTable($query)
     {
-       // var_dump($query);die;
         return datatables()
             ->eloquent($query)
             ->addColumn('action', function ($row) {
@@ -28,9 +27,9 @@ class ClientsDataTable extends BaseDataTable
                 $action = '<div class="btn-group dropdown m-r-10">
                  <button aria-expanded="false" data-toggle="dropdown" class="btn btn-default dropdown-toggle waves-effect waves-light" type="button"><i class="fa fa-gears "></i></button>
                 <ul role="menu" class="dropdown-menu pull-right">
-                  <li><a href="' . route('admin.clients.edit', [$row->id]) . '"><i class="fa fa-pencil" aria-hidden="true"></i> ' . trans('app.edit') . '</a></li>
+                 
                   <li><a href="' . route('admin.clients.show', [$row->user_id]) . '"><i class="fa fa-search" aria-hidden="true"></i> ' . __('app.view') . '</a></li>
-                  <li><a href="javascript:;"  data-user-id="' . $row->user_id . '"  class="sa-params"><i class="fa fa-times" aria-hidden="true"></i> ' . trans('app.delete') . '</a></li>';
+                ';
 
                 $action .= '</ul> </div>';
 
@@ -77,6 +76,7 @@ class ClientsDataTable extends BaseDataTable
             ->leftJoin('countries', 'client_details.country_id', '=', 'countries.id')
             ->select('client_details.id', 'client_details.user_id', 'client_details.name', 'client_details.company_name', 'client_details.email', 'client_details.created_at',
             'client_details.mobile', 'countries.phonecode')
+            ->where('client_details.type','1')
             ->groupBy('client_details.id');
 
         if ($request->startDate !== null && $request->startDate != 'null' && $request->startDate != '') {
@@ -198,51 +198,6 @@ class ClientsDataTable extends BaseDataTable
         $pdf->loadView('datatables::print', ['data' => $this->getDataForPrint()]);
 
         return $pdf->download($this->getFilename() . '.pdf');
-    }
-
-    public function dataTableSeller($query)
-    {
-        echo 'dd';die;
-        return dataTableSeller()
-            ->eloquent($query)
-            ->addColumn('action', function ($row) {
-
-                $action = '<div class="btn-group dropdown m-r-10">
-                 <button aria-expanded="false" data-toggle="dropdown" class="btn btn-default dropdown-toggle waves-effect waves-light" type="button"><i class="fa fa-gears "></i></button>
-                <ul role="menu" class="dropdown-menu pull-right">
-                  <li><a href="' . route('admin.clients.edit', [$row->id]) . '"><i class="fa fa-pencil" aria-hidden="true"></i> ' . trans('app.edit') . '</a></li>
-                  <li><a href="' . route('admin.clients.show', [$row->user_id]) . '"><i class="fa fa-search" aria-hidden="true"></i> ' . __('app.view') . '</a></li>
-                  <li><a href="javascript:;"  data-user-id="' . $row->user_id . '"  class="sa-params"><i class="fa fa-times" aria-hidden="true"></i> ' . trans('app.delete') . '</a></li>';
-
-                $action .= '</ul> </div>';
-
-                return $action;
-            })
-            ->editColumn(
-                'name',
-                function ($row) {
-                    return '<a href="' . route('admin.clients.show', $row->user_id) . '">' . ucfirst($row->name) . '</a>';
-                }
-            )
-            ->editColumn(
-                'mobile',
-                function ($row) {
-                    if(!is_null($row->mobile) && $row->mobile != ' ' )
-                    {
-                        return '<a href="tel:+'. ($row->mobile) . '">'.'+'.($row->mobile) .'</a>';
-                    }
-                    return '--';
-                }
-            )
-            ->editColumn(
-                'created_at',
-                function ($row) {
-                    return Carbon::parse($row->created_at)->format($this->global->date_format);
-                }
-            )
-
-            ->addIndexColumn()
-            ->rawColumns(['name', 'mobile','action', 'status']);
     }
 
 }

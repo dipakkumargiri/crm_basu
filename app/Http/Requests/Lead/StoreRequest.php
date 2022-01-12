@@ -44,6 +44,8 @@ class StoreRequest extends CoreRequest
         $rules = [
             'name' => 'required',
             'email' => ['required','email',new CheckUniqueEmail($this->company_id, null)],
+            'company_name'=>'required',
+            'type_id'=>'required',
         ];
 
         if(!is_null($setting) && Route::currentRouteName() == 'front.leadStore')

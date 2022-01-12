@@ -30,6 +30,8 @@ class UpdateRequest extends CoreRequest
         $rules = [
             'client_name' => 'required',
             'email' => ['required','email',new CheckUniqueEmail($this->company_id, $this->route('lead'))],
+            'company_name'=>'required',
+            'type_id'=>'required',
         ];
 
         return $rules;

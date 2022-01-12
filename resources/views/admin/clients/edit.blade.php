@@ -426,26 +426,26 @@
         $('#'+id).val(checkedData);
     }
 
-     var subCategories = @json($subcategories);
-        $('#category_id').change(function (e) {
-            // get projects of selected users
-            var opts = '';
+    var subCategories = @json($subcategories);
+    $('#category_id').change(function (e) {
+        // get projects of selected users
+        var opts = '';
 
-            var subCategory = subCategories.filter(function (item) {
-                return item.category_id == e.target.value
-            });
-            subCategory.forEach(project => {
-                console.log(project);
+        var subCategory = subCategories.filter(function (item) {
+            return item.category_id == e.target.value
+        });
+        subCategory.forEach(project => {
+            console.log(project);
             opts += `<option value='${project.id}'>${project.category_name}</option>`
         })
 
-            $('#sub_category_id').html('<option value="">Select Sub Category...</option>'+opts)
-            $("#sub_category_id").select2({
-                formatNoMatches: function () {
-                    return "{{ __('messages.noRecordFound') }}";
-                }
-            });
+        $('#sub_category_id').html('<option value="">Select Sub Category...</option>'+opts)
+        $("#sub_category_id").select2({
+            formatNoMatches: function () {
+                return "{{ __('messages.noRecordFound') }}";
+            }
         });
+    });
     $(".date-picker").datepicker({
         todayHighlight: true,
         autoclose: true,

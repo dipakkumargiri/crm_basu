@@ -37,6 +37,7 @@ class RedirectIfAuthenticated
         }
         // when session expire then it reload user to login page
         if ($request->ajax()) {
+           
             return response('Session Expire', 401);
         }
 

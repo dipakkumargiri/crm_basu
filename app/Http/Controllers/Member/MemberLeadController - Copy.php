@@ -12,14 +12,9 @@ use App\LeadAgent;
 use App\LeadFollowUp;
 use App\LeadSource;
 use App\LeadStatus;
-use App\CogCountry;
-use App\CogState;
-use App\CogCity;
-use App\LeadStage;
 use Carbon\Carbon;
 use App\LeadCategory;
 use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Http\Request;
 use App\Country;
 
 class MemberLeadController extends MemberBaseController
@@ -51,7 +46,7 @@ class MemberLeadController extends MemberBaseController
         } else {
             $this->totalLeads = Lead::all();
         }
-        
+
         $this->totalClientConverted = $this->totalLeads->filter(function ($value, $key) {
             return $value->client_id != null;
         });
@@ -240,8 +235,6 @@ class MemberLeadController extends MemberBaseController
         $this->status = LeadStatus::all();
         $this->categories = LeadCategory::all();
         $this->countries = Country::all();
-        $this->stages = LeadStage::all();
-        $this->Allcountries = CogCountry::all();
         $lead = new Lead();
         $this->fields = $lead->getCustomFieldGroupsWithFields()->fields;
 
@@ -261,9 +254,9 @@ class MemberLeadController extends MemberBaseController
         $lead->website = $request->website;
         $lead->address = $request->address;
         $lead->office_phone = $request->office_phone;
-        $lead->cog_countries_id = $request->cog_countries_id;
-        $lead->cog_state_id = $request->state_id;
-        $lead->cog_city_id = $request->city_id;
+        $lead->city = $request->city;
+        $lead->state = $request->state;
+        $lead->country = $request->country;
         $lead->postal_code = $request->postal_code;
         $lead->client_name = $request->name;
         $lead->client_email = $request->email;
@@ -274,8 +267,6 @@ class MemberLeadController extends MemberBaseController
         $lead->source_id = $request->source_id;
         $lead->value = ($request->value) ? $request->value : 0;
         $lead->category_id = $request->category_id;
-        $lead->client_type = $request->type_id;
-        $lead->stage_id = $request->stage_id;
 
         $lead->save();
 
@@ -302,10 +293,6 @@ class MemberLeadController extends MemberBaseController
         $this->sources = LeadSource::all();
         $this->status = LeadStatus::all();
         $this->categories = LeadCategory::all();
-        $this->stages = LeadStage::all();
-        $this->Allcountries = CogCountry::all();
-        $this->AllStates = CogState::all();
-        $this->AllCities = CogCity::all();
         return view('member.lead.edit', $this->data);
     }
 
@@ -326,9 +313,9 @@ class MemberLeadController extends MemberBaseController
         $lead->client_name = $request->client_name;
         $lead->client_email = $request->email;
         $lead->office_phone = $request->office_phone;
-        $lead->cog_city_id = $request->cog_city_id;
-        $lead->cog_state_id = $request->cog_state_id;
-        $lead->cog_countries_id = $request->cog_countries_id;
+        $lead->city = $request->city;
+        $lead->state = $request->state;
+        $lead->country = $request->country;
         $lead->postal_code = $request->postal_code;
         $lead->mobile = $request->mobile;
         $lead->note = $request->note;
@@ -338,8 +325,6 @@ class MemberLeadController extends MemberBaseController
         $lead->agent_id = $request->agent_id;
         $lead->value = ($request->value) ? $request->value : 0;
         $lead->category_id = $request->category_id;
-        $lead->client_type = $request->type_id;
-        $lead->stage_id = $request->stage_id;
         $lead->save();
 
         // To add custom fields data
@@ -507,19 +492,6 @@ class MemberLeadController extends MemberBaseController
         $view = view('member.lead.followup.task-list-ajax', $this->data)->render();
 
         return Reply::successWithData(__('messages.followUpFilter'), ['html' => $view]);
-    }
-    
-    public function getState(Request $request)
-    {
-        $this->states = CogState::where('cog_countries_id', $request->country_id)->get();
-
-        return Reply::dataOnly(['AllStates' => $this->states]);
-    }
-    public function getCity(Request $request)
-    {
-        $this->cities = CogCity::where('cog_states_id', $request->state_id)->get();
-
-        return Reply::dataOnly(['AllCities' => $this->cities]);
     }
 
 }

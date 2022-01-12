@@ -39,7 +39,8 @@ use App\UserActivity;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use Auth;
+use Redirect;
 class AdminDashboardController extends AdminBaseController
 {
     use CurrencyExchange;
@@ -1157,6 +1158,81 @@ class AdminDashboardController extends AdminBaseController
 
         return Reply::dataOnly([]);
     }
+
+    function clientDatabase(){
+      
+        $data=array();
+        $this->client_data=DB::table('client_database')->where('created_at',Auth::user()->id)->where('status','1')->get();
+     // $this->client_data=array();
+       // var_dump(Auth::user()->id);die;
+     
+        return view('admin.dashboard.clientDatabse', $this->data);
+    }
+    public function addDatabase(){
+       
+        $data=array();
+       
+        return view('admin.dashboard.addDatabase', $this->data);
+    }
+    public function saveClientDataBase(Request $request){
+        $fname=$request->input('f_name');
+        $l_name=$request->input('l_name');
+        $org=$request->input('org');
+        $address=$request->input('address');
+        $email=$request->input('email');
+        $phone=$request->input('phone');
+        $industry=$request->input('industry');
+        $note=$request->input('note');
+        $created_by=date('Y-m-d');
+       $emailExist=$this->client_data=DB::table('client_database')->where('email',$email)->get();
+       $phoneExist=$this->client_data=DB::table('client_database')->where('phonenumber',$phone)->get();
+       if(count($emailExist) >0){
+           return Reply::dataOnly(['status' => 'Faild','msg'=>'Email Address Alrady Exist']);
+       } else if(count($phoneExist) >0){
+           return Reply::dataOnly(['status' => 'Faild','msg'=>'Phone Number Alrady Exist']);
+       }else{
+           $values = array('frist_name' =>$fname,'last_name' =>$l_name,'organization'=>$org,'address'=>$address,'email'=>$email,'phonenumber'=>$phone,'industry'=>$industry,'note'=>$note,'created_at'=>Auth::user()->id,'created_by'=>$created_by);
+           $insert=DB::table('client_database')->insert($values);
+           if($insert){
+              return Reply::dataOnly(['status' => 'success','msg'=>'']);
+           }else{
+              return Reply::dataOnly(['status' => 'failed','msg'=>'']);
+           }
+           die;
+   }
+   
+        
+       
+   }
+   public function viewDetails($id){
+
+  // echo 'dd';die;
+    $data=array();
+    $this->client_data=$this->client_data=DB::table('client_database')->where('id',$id)->get();
+    
+    //var_dump($this->client_data[0]);die;
+    return view('admin.dashboard.viewDetails', $this->data);
+}
+public function deleteClent($id){
+    
+    $status=DB::table('client_database')->where('id', $id)->update(array('status' => '0')); 
+    if($status){
+        return Redirect::to('admin/clientDatabase');
+       
+    }
+}
+
+public function sellerQuerSet(){
+    $data=array();
+    return view('admin.dashboard.sellerQuerSet', $this->data);
+}
+
+public function saveSellerQuery(Request $request){
+    if ($request->hasFile('file_u')) {
+        echo 'dd';die;
+    }
+    die('wwwwww');
+}
 
     // Ticket Dashboard end
 }

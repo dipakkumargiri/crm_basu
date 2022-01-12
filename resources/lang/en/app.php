@@ -224,7 +224,7 @@ return array (
     'menu' => 'Menu',
     'customers' => 'Customers',
     'security' => 'Security',
-    'hr' => 'HR',
+    'hr' => 'User',
     'work' => 'Work',
     'customModule' => 'Custom Modules',
     'frontWidgets' => 'Front Widgets',

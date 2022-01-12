@@ -10,7 +10,10 @@ use App\Http\Requests\SuperAdmin\Packages\UpdateRequest;
 use App\Module;
 use App\ModuleSetting;
 use App\Package;
+use Auth;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
+use Redirect;
 
 class SuperAdminPackageController extends SuperAdminBaseController
 {
@@ -32,6 +35,7 @@ class SuperAdminPackageController extends SuperAdminBaseController
      */
     public function index()
     {
+        
         $this->totalPackages = Package::where('default', '!=', 'trial')->count();
         return view('super-admin.packages.index', $this->data);
     }
@@ -287,6 +291,126 @@ class SuperAdminPackageController extends SuperAdminBaseController
             $data['annual_price'] = 0;
         }
         return $data;
+    }
+
+    public function clientDatabse(){
+
+       
+        $data=array();
+        $this->client_data=DB::table('client_database')->where('created_at', Auth::user()->id)->where('status','1')->get();
+       // var_dump($data['client_data']);die;
+      
+        return view('super-admin.packages.clientDatabse', $this->data);
+    }
+
+    public function addDatabase(){
+       
+        $data=array();
+       
+        return view('super-admin.packages.addDatabase', $this->data);
+    }
+
+    public function databaseExport(){ 
+        $filename = "Client_database.csv";
+        header("Content-Type: application/xls");    
+        header("Content-Disposition: attachment; filename=$filename");  
+        header("Pragma: no-cache"); 
+        header("Expires: 0");
+        $tclient_data=DB::table('client_database')->get();
+        echo '"Frist Name",' . '"Last Name",' . '"Organization",' . '"Address",' .'"Email",' .'"Phonenumber",' ."\r\n";
+      
+        foreach($tclient_data as $x => $data){
+            echo '"'.$data->frist_name.'",' . '"'.$data->last_name.'",' . '"'.$data->organization.'",' . '"'.$data->address.'",' .'"'.$data->email.'",' .'"'.$data->phonenumber.'",' ."\r\n";
+        }
+    }
+
+    public function viewDetails($id){
+        $data=array();
+        $this->client_data=$this->client_data=DB::table('client_database')->where('id',$id)->get();
+        //var_dump($this->client_data[0]);die;
+        return view('super-admin.packages.viewDetails', $this->data);
+    }
+
+    public function deleteClent($id){
+        $status=DB::table('client_database')->where('id', $id)->update(array('status' => '0')); 
+        if($status){
+            return Redirect::to('super-admin/clientDatabse');
+           
+        }
+    }
+    
+    public function countryList(){
+
+       
+        $data=array();
+        $this->country_data=DB::table('cog_countries')->where('status','1')->get();
+       // var_dump($data['client_data']);die;
+      
+        return view('super-admin.packages.countryList', $this->data);
+    }
+    public function deleteCountry($id){
+        $status=DB::table('cog_countries')->where('id', $id)->update(array('status' => '0')); 
+        if($status){
+            return Redirect::to('super-admin/countryList');
+           
+        }
+    }
+
+    public function addCountry(){
+       
+        $data=array();
+       
+        return view('super-admin.packages.addCountry', $this->data);
+    }
+
+    public function stateList(){
+
+       
+        $data=array();
+        $this->state_data=DB::table('cog_states')
+        ->join('cog_countries', 'cog_countries.id', '=','cog_states.cog_countries_id')
+        ->select('cog_states.name','cog_states.id','cog_countries.name as country_name')
+        ->where('cog_states.status','1')
+        ->get();
+       // var_dump($data['client_data']);die;
+      
+        return view('super-admin.packages.stateList', $this->data);
+    }
+    public function deleteState($id){
+        $status=DB::table('cog_states')->where('id', $id)->update(array('status' => '0')); 
+        if($status){
+            return Redirect::to('super-admin/stateList');
+           
+        }
+    }
+
+    public function addState(){
+       
+        $data=array();
+        $this->country_data=DB::table('cog_countries')->where('status','1')->get();
+        return view('super-admin.packages.addState', $this->data);
+    }
+
+    public function cityList(){
+
+       
+        $data=array();
+        $this->city_data=DB::table('cog_cities')
+        ->join('cog_countries', 'cog_countries.id', '=','cog_cities.cog_countries_id')
+        ->join('cog_states', 'cog_states.id', '=','cog_cities.cog_states_id')
+        ->select('cog_cities.name','cog_cities.id','cog_countries.name as country_name','cog_states.name as state_name')
+        ->where('cog_cities.status','1')
+        ->get();
+       // var_dump($data['client_data']);die;
+      
+        return view('super-admin.packages.cityList', $this->data);
+    }
+    public function deleteCity($id){
+        $status=DB::table('cog_cities')->where('id', $id)->update(array('status' => '0')); 
+        if($status){
+            return Redirect::to('super-admin/cityList');
+           
+        }
     }
 
 }

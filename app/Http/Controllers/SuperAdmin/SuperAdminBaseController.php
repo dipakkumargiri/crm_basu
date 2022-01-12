@@ -52,7 +52,7 @@ class SuperAdminBaseController extends Controller
      */
     public function __construct()
     {
-        $this->global = global_settings();
+       $this->global = global_settings();
         $this->superadmin = $this->global;
         $this->rtl = $this->global->rtl;
         App::setLocale($this->global->locale);
@@ -72,8 +72,9 @@ class SuperAdminBaseController extends Controller
 
         $this->worksuitePlugins = worksuite_plugins();
         $this->setFileSystemConfigs();
-
+        
         $this->middleware(function ($request, $next) {
+          //  var_dump($request);die;
             $this->user = user();
             $this->unreadNotificationCount = count($this->user->unreadNotifications);
             return $next($request);

@@ -4,22 +4,22 @@
     <div class="row bg-title">
         <!-- .page title -->
         <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12 bg-title-left">
-            <h4 class="page-title"><i class="{{ $pageIcon }}"></i> {{ __($pageTitle) }}</h4>
+            <h4 class="page-title"><i class="{{ $pageIcon }}"></i>Seller</h4>
         </div>
         <!-- /.page title -->
         <!-- .breadcrumb -->
         <div class="col-lg-6 col-sm-8 col-md-8 col-xs-12 bg-title-right">
             <ol class="breadcrumb">
                 <li><a href="{{ route('admin.dashboard') }}">@lang('app.menu.home')</a></li>
-                <li><a href="{{ route('admin.clients.index') }}">{{ __($pageTitle) }}</a></li>
+                <li><a href="{{ route('admin.clients.index') }}">Seller</a></li>
                 <li class="active">@lang('app.menu.projects')</li>
             </ol>
         </div>
         <div class="col-lg-6 col-sm-8 col-md-8 col-xs-12 text-right">
 
-            <a href="{{ route('admin.clients.edit',$clientDetail->id) }}"
+            <!--<a href="{{ route('admin.clients.edit',$clientDetail->id) }}"
                class="btn btn-outline btn-success btn-sm">@lang('modules.lead.edit')
-                <i class="fa fa-edit" aria-hidden="true"></i></a>
+                <i class="fa fa-edit" aria-hidden="true"></i></a>-->
         </div>
         <!-- /.breadcrumb -->
     </div>

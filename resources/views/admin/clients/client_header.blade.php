@@ -37,38 +37,9 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-7 b-l">
-                                    <div class="row project-top-stats">
-
-                                        <div class="col-md-6 m-b-20 m-t-10 text-center">
-                                            <span class="text-primary">
-                                                {{ $clientStats->totalProjects}}
-                                            </span> <span class="font-12 text-muted m-l-5"> @lang('modules.dashboard.totalProjects')</span>
-                                        </div>
-        
-                                        <div class="col-md-4 m-b-20 m-t-10 text-center">
-                                            <span class="text-danger">
-                                                {{ $clientStats->totalUnpaidInvoices}}
-                                            </span> <span class="font-12 text-muted m-l-5"> @lang('modules.dashboard.totalUnpaidInvoices')</span>
-                                        </div>
-        
-                                    </div>
+                                
                                     
-                                    <div class="row project-top-stats">
-
-                                        <div class="col-md-6 m-b-20 m-t-10 text-center">
-                                            <span class="text-success">
-                                                {{ $clientStats->projectPayments  }}
-                                            </span> <span class="font-12 text-muted m-l-5"> @lang('app.earnings')</span>
-                                        </div>
-        
-                                        <div class="col-md-4 m-b-20 m-t-10 text-center">
-                                            <span class="text-primary">
-                                                {{ $clientStats->totalContracts}}
-                                            </span> <span class="font-12 text-muted m-l-5"> @lang('modules.contracts.totalContracts')</span>
-                                        </div>
-                        
-                                    </div>
+                                   
 
                                 </div>
                                 

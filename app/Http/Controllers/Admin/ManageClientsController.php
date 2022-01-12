@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\ClientDetails;
 use App\Country;
 use App\DataTables\Admin\ClientsDataTable;
+use App\DataTables\Admin\SellersDataTable;
 use App\Helper\Reply;
 use App\Http\Requests\Admin\Client\StoreClientRequest;
 use App\Http\Requests\Admin\Client\UpdateClientRequest;
@@ -52,6 +53,7 @@ class ManageClientsController extends AdminBaseController
      */
     public function index(ClientsDataTable $dataTable)
     {
+       
         $this->clients = User::allClients();
         $this->totalClients = count($this->clients);
         $this->categories = ClientCategory::all();
@@ -108,15 +110,19 @@ class ManageClientsController extends AdminBaseController
      */
     public function store(StoreClientRequest $request)
     {
+        
         $isSuperadmin = User::withoutGlobalScopes(['active', CompanyScope::class])->where('super_admin', '1')->where('email', $request->input('email'))->get()->count();
         if ($isSuperadmin > 0) {
             return Reply::error(__('messages.superAdminExistWithMail'));
         }
-
+        
         $existing_user = User::withoutGlobalScopes(['active', CompanyScope::class])->select('id', 'email')->where('email', $request->input('email'))->first();
+        // echo "<pre>"; echo $existing_user;exit;
         $new_code = Country::select('phonecode')->where('id', $request->phone_code)->first();
+        
         // if no user found create new user with random password
         if (!$existing_user) {
+            
             // $password = str_random(8);
             // create new user
             $user = new User();
@@ -147,15 +153,18 @@ class ManageClientsController extends AdminBaseController
                 $lead->save();
             }
         }
-
+        
+        
         $existing_client_count = ClientDetails::select('id', 'email', 'company_id')
             ->where(
                 [
                     'email' => $request->input('email')
                 ]
             )->count();
-
+        // echo $existing_user->id."==".$user->id; 
+        // exit;
         if ($existing_client_count === 0) {
+            
             $client = new ClientDetails();
             $client->user_id = $existing_user ? $existing_user->id : $user->id;
             $client->name = $request->salutation.' '.$request->input('name');
@@ -181,8 +190,9 @@ class ManageClientsController extends AdminBaseController
             if ($request->has('email_notifications')) {
                 $client->email_notifications = $request->email_notifications;
             }
+            // echo "<pre>"; print_r($client);exit;
             $client->save();
-
+            
             // attach role
             if ($existing_user) {
                 $role = Role::where('name', 'client')->where('company_id', $client->company_id)->first();
@@ -598,6 +608,22 @@ class ManageClientsController extends AdminBaseController
         $this->subcategories = ClientSubCategory::where('category_id', $request->cat_id)->get();
 
         return Reply::dataOnly(['subcategory' => $this->subcategories]);
+    }
+
+    public function seller(SellersDataTable $dataTable)
+    {
+
+        
+        $this->clients = User::allSeller();
+     
+        $this->totalClients = count($this->clients);
+        //var_dump($this->totalClients);die;
+       $this->categories = ClientCategory::all();
+        $this->projects = Project::all();
+        $this->contracts = ContractType::all();
+       $this->countries = Country::all();
+        $this->subcategories = ClientSubCategory::all();
+        return $dataTable->render('admin.clients.seller', $this->data);
     }
 
 }
