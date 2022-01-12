@@ -73,7 +73,7 @@
                                 </div>
                                 <!--/row-->
                                 <div class="row">
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <label>@lang('modules.lead.mobile')</label>
                                         <div class="form-group" style="
                                         display: flex;">
@@ -89,22 +89,27 @@
                                             border-bottom-left-radius: 0px;">
                                         </div>
                                     </div>
-                                    <div class="col-md-4 ">
+                                    <div class="col-md-3 ">
                                         <div class="form-group">
                                             <label>@lang('modules.clients.officePhoneNumber')</label>
                                             <input type="text" name="office_phone" id="office_phone"   class="form-control">
                                         </div>
                                     </div>
-                                <div class="col-md-4 ">
+                                <div class="col-md-3 ">
                                         <div class="form-group">
-                                            <label>@lang('modules.stripeCustomerAddress.postalCode')</label>
-                                            <input type="text" name="postal_code" id="postalCode"class="form-control">
+                                            <label>@lang('modules.stripeCustomerAddress.city')</label>
+                                            <input type="text" name="city" id="city"  class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 ">
+                                        <div class="form-group">
+                                            <label>@lang('modules.stripeCustomerAddress.state')</label>
+                                            <input type="text" name="state" id="state"   class="form-control">
                                         </div>
                                     </div>
                                 </div>
-                                </div>
                                 <div class="row">
-                                <div class="col-md-4 ">
+                                <div class="col-md-3 ">
                                         <div class="form-group">
                                             <div class="form-group">
                                               <label>@lang('modules.stripeCustomerAddress.country')</label>
@@ -117,27 +122,13 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="">@lang('modules.stripeCustomerAddress.state')
-                                                        
-                                                </label>
-                                                <select class="selectpicker form-control select-category" data-placeholder="@lang('modules.stripeCustomerAddress.state')"  id="state_id" name="state_id">                                                 
-                                              
-                                                </select>
-                                            </div>
+                                <div class="col-md-3 ">
+                                        <div class="form-group">
+                                            <label>@lang('modules.stripeCustomerAddress.postalCode')</label>
+                                            <input type="text" name="postal_code" id="postalCode"class="form-control">
                                         </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="">@lang('modules.stripeCustomerAddress.city')
-                                                        
-                                                </label>
-                                                <select class="selectpicker form-control select-category" data-placeholder="@lang('modules.stripeCustomerAddress.city')"  id="city_id" name="city_id">                                                 
-                                              
-                                                </select>
-                                            </div>
-                                        </div>
-                                
+                                    </div>
+                                </div>
 
 
                                 <h3 class="box-title m-t-40">@lang('modules.lead.leadDetails')</h3>
@@ -256,15 +247,18 @@
                                     </div>
                                     <div class="col-md-4 ">
                                              <div class="form-group" style="margin-top: 7px;">
-                                              <label >@lang('modules.lead.leadType')<!--
-                                                <a href="javascript:;" id="addLeadType" class="btn btn-xs btn-success btn-outline"><i class="fa fa-plus"></i></a>-->
+                                              <label >@lang('modules.lead.leadType')
+                                                <a href="javascript:;" id="addLeadType" class="btn btn-xs btn-success btn-outline"><i class="fa fa-plus"></i></a>
                                                  </label>
-                                            
-                                             <select name="type_id" id="type_id" class="select2 form-control">
-                                                <option value="">@lang('app.select')</option>
-                                                <option value="1">Buyer</option>
-                                                <option value="2">Seller</option>
-                                            </select>
+                                            <select class="select2 form-control" name="type_id" id="type_id"
+                                                data-style="form-control">
+                                                @forelse($types as $type)
+                                                <option value="{{ $type->id }}">{{ ucwords($type->type_name) }}</option>
+                                            @empty
+                                                <option value="">@lang('messages.noTypeAdded')</option>
+                                            @endforelse
+
+                                             </select>
                                          </div>
                                     </div>
                                 <div class="row">
@@ -454,64 +448,6 @@
         $('#modelHeading').html('...');
         $.ajaxModal('#projectCategoryModal', url);
     })
-    $('#cog_countries_id').on('change',function(){
-        // alert($(this).val());
-        var country_id = $(this).val();
-        getState(country_id);
-    })
-    function getState(country_id){
-            var url = "{{route('admin.leads.getState')}}";
-            var token = "{{ csrf_token() }}";
-            $.easyAjax({
-            url: url,
-            type: "POST",
-            data: {'_token': token, country_id: country_id},
-            success: function (data) {
-                console.log(data);
-                var options = [];
-                var rData = [];
-                rData = data.AllStates;
-                $.each(rData, function( index, value ) {
-                    var selectData = '';
-                    selectData = '<option value="'+value.id+'">'+value.name+'</option>';
-                    options.push(selectData);
-                });
-                $('#state_id').html(options);
-                $('#state_id').selectpicker('refresh');
-
-            }
-        })
-        }
-        
-        $('#state_id').on('change',function(){
-            // alert($(this).val());
-            var state_id = $(this).val();
-            getCity(state_id);
-        })
-        function getCity(state_id){
-                var url = "{{route('admin.leads.getCity')}}";
-                var token = "{{ csrf_token() }}";
-                $.easyAjax({
-                url: url,
-                type: "POST",
-                data: {'_token': token, state_id: state_id},
-                success: function (data) {
-                    console.log(data);
-                    var options = [];
-                    var rData = [];
-                    rData = data.AllCities;
-                    $.each(rData, function( index, value ) {
-                        var selectData = '';
-                        selectData = '<option value="'+value.id+'">'+value.name+'</option>';
-                        options.push(selectData);
-                    });
-                    $('#city_id').html(options);
-                    $('#city_id').selectpicker('refresh');
-    
-                }
-            })
-            }
-    
 
 </script>
 @endpush

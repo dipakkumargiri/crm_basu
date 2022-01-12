@@ -1,6 +1,6 @@
 <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h4 class="modal-title">@lang('modules.lead.leadType')</h4>
+    <h4 class="modal-title">@lang('modules.lead.leadStage')</h4>
 </div>
 <div class="modal-body">
     <div class="portlet-body">
@@ -9,33 +9,33 @@
                 <thead>
                 <tr>
                     <th>#</th>
-                    <th>@lang('modules.projectType.typeName')</th>
-                    <!--<th>@lang('app.action')</th>-->
+                    <th>@lang('modules.projectStage.stageName')</th>
+                    <th>@lang('app.action')</th>
                 </tr>
                 </thead>
                 <tbody>
-                @forelse($types as $key=>$type)
+                @forelse($stages as $key=>$type)
                     <tr id="cat-{{ $type->id }}">
                         <td>{{ $key+1 }}</td>
-                        <td>{{ ucwords($type->type_name) }}</td>
-                        <!--<td><a href="javascript:;" data-cat-id="{{ $type->id }}" class="btn btn-sm btn-danger btn-rounded delete-type">@lang("app.remove")</a></td>-->
+                        <td>{{ ucwords($type->stage_name) }}</td>
+                        <td><a href="javascript:;" data-cat-id="{{ $type->id }}" class="btn btn-sm btn-danger btn-rounded delete-type">@lang("app.remove")</a></td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="2">@lang('messages.noProjectTypeAdded')</td>
+                        <td colspan="3">@lang('messages.noProjectStageAdded')</td>
                     </tr>
                 @endforelse
                 </tbody>
             </table>
         </div>
 
-        {!! Form::open(['id'=>'createProjectType','class'=>'ajax-form','method'=>'POST']) !!}
+        {!! Form::open(['id'=>'createProjectStage','class'=>'ajax-form','method'=>'POST']) !!}
         <div class="form-body">
             <div class="row">
                 <div class="col-xs-12 ">
                     <div class="form-group">
-                        <label class="required">@lang('app.add') @lang('modules.projectType.typeName')</label>
-                        <input type="text" name="type_name" id="type_name" class="form-control">
+                        <label class="required">@lang('app.add') @lang('modules.projectStage.stageName')</label>
+                        <input type="text" name="stage_name" id="stage_name" class="form-control">
                     </div>
                 </div>
             </div>
@@ -51,7 +51,7 @@
 
     $('body').on('click', '.delete-type', function() {
         var id = $(this).data('cat-id');
-        var url = "{{ route('admin.leadType.destroy',':id') }}";
+        var url = "{{ route('admin.leadStage.destroy',':id') }}";
         url = url.replace(':id', id);
 
         var token = "{{ csrf_token() }}";
@@ -70,13 +70,13 @@
                     rData = response.data;
                     $.each(rData, function( index, value ) {
                         var selectData = '';
-                        selectData = '<option value="'+value.id+'">'+value.type_name+'</option>';
+                        selectData = '<option value="'+value.id+'">'+value.stage_name+'</option>';
                         options.push(selectData);
                     });
 
-                    $('#type_id').html(options);
+                    $('#stage_id').html(options);
                     // $('#type_id').select2();
-                    $("#type_id").select2({
+                    $("#stage_id").select2({
                         formatNoMatches: function () {
                             return "{{ __('messages.noRecordFound') }}";
                         }
@@ -86,13 +86,13 @@
         });
     });
 
-    $('#createProjectType').on('submit', (e) => {
+    $('#createProjectStage').on('submit', (e) => {
         e.preventDefault();
         $.easyAjax({
-            url: '{{route('admin.leadType.store')}}',
-            container: '#createProjectType',
+            url: '{{route('admin.leadStage.store')}}',
+            container: '#createProjectStage',
             type: "POST",
-            data: $('#createProjectType').serialize(),
+            data: $('#createProjectStage').serialize(),
             success: function (response) {
                 if(response.status == 'success'){
                     var options = [];
@@ -101,19 +101,19 @@
                     rData = response.data;
                     $.each(rData, function( index, value ) {
                         var selectData = '';
-                        selectData = '<option value="'+value.id+'">'+value.type_name+'</option>';
+                        selectData = '<option value="'+value.id+'">'+value.stage_name+'</option>';
                         options.push(selectData);
                         listData += '<tr id="cat-' + value.id + '">'+
                             '<td>'+(index+1)+'</td>'+
-                            '<td>' + value.type_name + '</td>'+
+                            '<td>' + value.stage_name + '</td>'+
                             '<td><a href="javascript:;" data-cat-id="' + value.id + '" class="btn btn-sm btn-danger btn-rounded delete-type">@lang("app.remove")</a></td>'+
                             '</tr>';
                     });
                     $('.category-table tbody' ).html(listData);
 
-                    $('#type_id').html(options);
+                    $('#stage_id').html(options);
                     // $('#type_id').selectpicker('refresh');
-                    $('#type_name').val('');
+                    $('#stage_name').val('');
                 }
             }
         })

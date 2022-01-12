@@ -70,13 +70,13 @@
                             <!--/row-->
                             <div class="row">
                                 
-                                <div class="col-md-3 ">
+                                <div class="col-md-6 ">
                                     <div class="form-group">
                                         <label>@lang('modules.clients.officePhoneNumber')</label>
                                         <input type="text" name="office_phone" id="office_phone" value="{{ $lead->office_phone }}"  class="form-control">
                                     </div>
                                 </div>
-                                <div class="col-md-3 ">
+                                    <!--<div class="col-md-3 ">
                                         <div class="form-group">
                                             <label>@lang('modules.stripeCustomerAddress.city')</label>
                                             <input type="text" name="city" id="city"  value="{{ $lead->city }}" class="form-control">
@@ -93,16 +93,59 @@
                                             <label>@lang('modules.stripeCustomerAddress.country')</label>
                                             <input type="text" name="country" id="country" value="{{ $lead->country }}" class="form-control">
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                
-                                <div class="col-md-3 ">
+                                    </div>-->
+                                    <div class="col-md-6 ">
                                         <div class="form-group">
                                             <label>@lang('modules.stripeCustomerAddress.postalCode')</label>
                                             <input type="text" name="postal_code" id="postalCode" value="{{ $lead->postal_code }}"class="form-control">
                                         </div>
                                     </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4 ">
+                                    <div class="form-group">
+                                        <div class="form-group">
+                                          <label>@lang('modules.stripeCustomerAddress.country')</label>
+                                            <select class="select2 form-control" name="cog_countries_id" id="cog_countries_id"
+                                            data-style="form-control">
+                                                @forelse($Allcountries as $coun)
+                                                <option value="{{ $coun->id }}"
+                                                    @if($lead->cog_countries_id == $coun->id)
+                                                    selected
+                                                    @endif>{{ ucwords($coun->name) }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                     <label>@lang('modules.stripeCustomerAddress.state')</label>
+                                   
+                                      <select class="select2 form-control" data-placeholder="@lang('modules.stripeCustomerAddress.state')"  id="cog_state_id" name="cog_state_id">
+                                      @forelse($AllStates as $stat)
+                                     
+                                       <option @if( $stat->id == $lead->cog_state_id) selected @endif value="{{ $stat->id }}">{{ ucwords($stat->name) }}</option>
+                                         @empty
+                                         <option value="">@lang('messages.noStateAdded')</option>
+                                        @endforelse                            
+                                     </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>@lang('modules.stripeCustomerAddress.city')</label>
+                                         <select class="select2 form-control" data-placeholder="@lang('modules.stripeCustomerAddress.city')"  id="cog_city_id" name="cog_city_id">
+                                          @forelse($AllCities as $value)
+                                         
+                                           <option @if( $value->id == $lead->cog_city_id) selected @endif value="{{ $value->id }}">{{ ucwords($value->name) }}</option>
+                                             @empty
+                                             <option value="">@lang('messages.noCityAdded')</option>
+                                            @endforelse                            
+                                        </select>
+                                    </div>
+                                </div>
+                                    
                                 </div>
 
                             <h3 class="box-title m-t-40">@lang('modules.lead.leadDetails')</h3>
@@ -166,6 +209,35 @@
                                     </div>
                                 </div>
                                 <!--/span-->
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 ">
+                                         <div class="form-group">
+                                          <label >@lang('modules.lead.leadStage')</label>
+                                        <select class="select2 form-control" name="stage_id" id="stage_id"
+                                            data-style="form-control">
+                                            @forelse($stages as $stage)
+                                            <option value="{{ $stage->id }}"
+                                                @if($lead->stage_id == $stage->id)
+                                                selected
+                                                @endif>{{ ucwords($stage->stage_name) }}</option>
+                                        @empty
+                                            <option value="">@lang('messages.noStageAdded')</option>
+                                        @endforelse
+    
+                                         </select>
+                                     </div>
+                                </div>
+                                <div class="col-md-6 ">
+                                    <div class="form-group">
+                                    <label >@lang('modules.lead.leadType')</label>
+                                    <select name="type_id" id="type_id" class="select2 form-control">
+                                        <option value="">@lang('app.select')</option>
+                                        <option value="1" @if($lead->client_type == 1) selected @endif>Buyer</option>
+                                        <option value="2" @if($lead->client_type == 2) selected @endif>Seller</option>
+                                    </select>
+                                    </div>
+                                </div>
                             </div>
                             <div class="row">
 
@@ -352,6 +424,53 @@
             redirect: true,
             data: $('#updateLead').serialize()
         })
+    });
+    
+    var AllStates = @json($AllStates);
+    
+    
+    $('#cog_countries_id').change(function (e) {
+        // get projects of selected users
+        var opts = '';
+
+        var state = AllStates.filter(function (item) {
+            return item.cog_countries_id == e.target.value
+        });
+         
+        state.forEach(project => {
+            console.log(project);
+            opts += `<option value='${project.id}'>${project.name}</option>`
+        })
+
+        $('#cog_state_id').html('<option value="">Select State...</option>'+opts)
+        $("#cog_state_id").select2({
+            formatNoMatches: function () {
+                return "{{ __('messages.noRecordFound') }}";
+            }
+        });
+    }); 
+    
+    var AllCities = @json($AllCities);
+    $('#cog_state_id').change(function (es) {
+       
+        // get projects of selected users
+        var options = '';
+
+        var city = AllCities.filter(function (itm) {
+            return itm.cog_states_id == es.target.value
+        });
+        console.log(city); 
+        city.forEach(pject => {
+            console.log(pject);
+            options += `<option value='${pject.id}'>${pject.name}</option>`
+        })
+
+        $('#cog_city_id').html('<option value="">Select City...</option>'+options)
+        $("#cog_city_id").select2({
+            formatNoMatches: function () {
+                return "{{ __('messages.noRecordFound') }}";
+            }
+        });
     });
 </script>
 @endpush

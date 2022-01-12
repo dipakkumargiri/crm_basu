@@ -165,6 +165,10 @@
                     @endif
                 </ul>
             </li>
+            @if(in_array('listing',$modules))
+                <li><a href="{{ route('admin.leads.index') }}" class="waves-effect"><i class="icon-doc fa-fw"></i><span class="hide-menu">@lang('app.menu.listing')</span></a>
+                </li>
+            @endif
             @if(in_array('leads',$modules))
                 <li><a href="{{ route('admin.leads.index') }}" class="waves-effect"><i class="icon-doc fa-fw"></i><span class="hide-menu">@lang('app.menu.lead')</span></a>
                 </li>

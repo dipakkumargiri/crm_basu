@@ -1366,6 +1366,7 @@ return array(
             'sms' => 'SMS',
             'Zoom' => 'Zoom',
             'ticket support' => 'Ticket Support',
+            'listing' => 'Listing Management',
         ),
     'paymentSetting' =>
         array(

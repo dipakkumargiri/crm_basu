@@ -28,6 +28,7 @@
 
 @section('content')
 
+
     <div class="row">
 
 
@@ -56,30 +57,30 @@
                                             <div class="col-md-4 col-xs-6 b-r"> <strong>@lang('app.email')</strong> <br>
                                                 <p class="text-muted">{{ $clientDetail->email }}</p>
                                             </div>
-                                            <div class="col-md-4 col-xs-6"> <strong>@lang('app.mobile')</strong> <br>
+                                            <div class="col-md-4 col-xs-6"> <strong>Phone Number</strong> <br>
                                                 <p class="text-muted">{{ $clientDetail->mobile ?? '-'}}</p>
                                             </div>
                                         </div>
                                         <hr>
                                         <div class="row">
-                                            <div class="col-md-4 col-xs-6 b-r"> <strong>@lang('modules.client.companyName')</strong> <br>
+                                            <div class="col-md-4 col-xs-6 b-r"> <strong>Organization</strong> <br>
                                                 <p class="text-muted">{{ (!empty($clientDetail) ) ? ucwords($clientDetail->company_name) : '-'}}</p>
                                             </div>
                                             <div class="col-md-4 col-xs-6 b-r"> <strong>@lang('modules.client.website')</strong> <br>
                                                 <p class="text-muted">{{ $clientDetail->website ?? '-' }}</p>
                                             </div>
-                                            <div class="col-md-4 col-xs-6"> <strong>@lang('app.gstNumber')</strong> <br>
+                                            <!--<div class="col-md-4 col-xs-6"> <strong>@lang('app.gstNumber')</strong> <br>
                                                 <p class="text-muted">{{ $clientDetail->gst_number ?? '-' }}</p>
-                                            </div>
+                                            </div>-->
                                         </div>
                                         <hr>
                                         <div class="row">
-                                            <div class="col-xs-6 b-r"> <strong>@lang('app.address')</strong> <br>
+                                            <div class="col-xs-6 b-r"> <strong>Location</strong> <br>
                                                 <p class="text-muted">{!!  (!empty($clientDetail)) ? ucwords($clientDetail->address) : '-' !!}</p>
                                             </div>
-                                            <div class="col-xs-6"> <strong>@lang('app.shippingAddress')</strong> <br>
+                                            <!--<div class="col-xs-6"> <strong>@lang('app.shippingAddress')</strong> <br>
                                                 <p class="text-muted">{{ $clientDetail->shipping_address ?? '-' }}</p>
-                                            </div>
+                                            </div>-->
                                         </div>
                                         <hr>
                                         <div class="row">
