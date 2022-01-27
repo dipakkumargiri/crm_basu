@@ -1,7 +1,7 @@
 <div class="white-box">
     <nav>
         <ul class="showClientTabs">
-            <li class="clientProfile"><a href="{{ route('admin.clients.show', $client->id) }}"><i class="icon-user"></i> <span>@lang('modules.employees.profile')</span></a>
+            <li class="clientProfile"><a href="{{ route('admin.show_buyer', $client->id) }}"><i class="icon-user"></i> <span>@lang('modules.employees.profile')</span></a>
             </li>
             <!--<li class="clientProjects"><a href="{{ route('admin.clients.projects', $client->id) }}"><i class="icon-layers"></i> <span>@lang('app.menu.projects')</span></a>
             </li>
@@ -11,16 +11,14 @@
             </li>
             <li class="clientPayments"><a href="{{ route('admin.clients.payments', $client->id) }}"><i class="ti-receipt"></i> <span>@lang('app.menu.payments')</span></a>
             </li>-->
-            <li class="clientDocs"><a href="{{ route('admin.client-docs.show', $client->id) }}"><i class="icon-docs"></i> <span> CIM document</span></a>
+
+            <li class="clientDocs"><a href="{{ route('admin.buyer_doucument', $client->id) }}"><i class="icon-docs"></i> <span>Document</span></a>
             </li>
-            <li class="clientQuestion"><a href="{{ route('admin.clientquestion', $client->id) }}"><i class="icon-docs"></i> <span>Seller Questionnaires</span></a>
-            </li>
+            <li class="clientNotes"><a href="{{ route('admin.show_buyer_note', $client->id) }}"><i class="fa fa-sticky-note-o"></i> <span>@lang('app.menu.notes')</span></a>
             @if($gdpr->enable_gdpr)
             <li class="clientGdpr"><a href="{{ route('admin.clients.gdpr', $client->id) }}"><i class="icon-lock"></i> <span>@lang('modules.gdpr.gdpr')</span></a>
             </li>
             @endif
-            <li class="clientNotes"><a href="{{ route('admin.notes.show', $client->id) }}"><i class="fa fa-sticky-note-o"></i> <span>@lang('app.menu.notes')</span></a>
-         
         </ul>
     </nav>
 </div>

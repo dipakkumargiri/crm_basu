@@ -44,7 +44,11 @@ class ClientDetails extends BaseModel
         'facebook',
         'twitter',
         'linkedin',
-        'gst_number'
+        'gst_number',
+        'lead_source',
+        'lead_stage',
+        'lead_status',
+        'agent_id'
     ];
 
     protected $appends = ['image_url'];
@@ -102,5 +106,7 @@ class ClientDetails extends BaseModel
     {
         return $this->hasMany(Contract::class, 'client_id', 'user_id');
     }
+
+    
 
 }

@@ -130,6 +130,21 @@
             @if(in_array('products',$modules) && $user->cans('view_product'))
                 <li><a href="{{ route('member.products.index') }}" class="waves-effect"><i class="icon-basket fa-fw"></i> <span class="hide-menu">@lang('app.menu.products') </span></a> </li>
             @endif
+            
+            @if(in_array('leads',$modules))
+                <li><a href="{{ route('member.leads.index') }}" class="waves-effect"><i class="icon-doc fa-fw"></i> <span class="hide-menu">@lang('app.menu.lead') </span></a> </li>
+            @endif
+            <li><a href="#" class="waves-effect
+                   
+                    "><i class="ti-user fa-fw"></i> <span class="hide-menu">@lang('app.contactManagement')<span class="fa arrow"></span> </span></a>
+                    <ul class="nav nav-second-level con_tack_man ">
+                    <li><a href="{{ route('member.seller') }}" class="waves-effect seller_tab ">@lang('app.seller')</a>
+                            </li>
+                            <li><a href="{{ route('member.buyer') }}" class="waves-effect seller_tab ">Buyer</a>
+                            </li>
+                        
+                    </ul>
+                </li>
 
             @if(in_array('tasks',$modules))
             <li><a href="{{ route('member.task.index') }}" class="waves-effect"><i class="ti-layout-list-thumb fa-fw"></i> <span class="hide-menu"> @lang('app.menu.tasks') <span class="fa arrow"></span> </span></a>
@@ -141,10 +156,7 @@
                 </ul>
             </li>
             @endif
-
-            @if(in_array('leads',$modules))
-                <li><a href="{{ route('member.leads.index') }}" class="waves-effect"><i class="icon-doc fa-fw"></i> <span class="hide-menu">@lang('app.menu.lead') </span></a> </li>
-            @endif
+           
 
             @if(in_array('timelogs',$modules))
                 <li><a href="{{ route('member.all-time-logs.index') }}" class="waves-effect"><i class="icon-clock fa-fw"></i> <span class="hide-menu">@lang('app.menu.timeLogs') </span></a> </li>

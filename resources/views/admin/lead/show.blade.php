@@ -92,7 +92,18 @@
                                                     <p class="text-muted">{{ $lead->client_email ?? '-'}}</p>
                                                 </div>
                                                 <div class="col-xs-6 col-md-4"> <strong>@lang('app.lead') @lang('app.value')</strong> <br>
-                                                    <p class="text-muted">{{ company()->currency->currency_symbol.$lead->value ?? '-'}}</p>
+                                                    <p class="text-muted">
+                                                        @foreach($currencies as $currency)
+                                                             @if($currency->id == $lead->currency_id) 
+                                                             {{ ucwords($currency->currency_symbol.$lead->value ?? '-') }} 
+                                                             @endif 
+                                                        @endforeach 
+                                            
+                                            
+                                           
+                                                        
+                                                        
+                                                        </p>
                                                 </div>
                                             </div>
                                             <hr>

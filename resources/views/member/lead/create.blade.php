@@ -120,6 +120,36 @@
                                         </div>
                                     
                                     </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="">@lang('app.industry')</label>
+                                            <select class="select2 form-control client-category" data-placeholder="@lang('app.industry')"  id="industry_id" name="industry_id">
+                                            <option value="">@lang('messages.pleaseSelectIndustry')</option>
+                                            @forelse($categories as $category)
+                                            <option value="{{ $category->id }}">{{ ucwords($category->category_name) }}</option>
+                                              @empty
+                                            <option value="">@lang('messages.noIndustryAdded')</option>
+                                             @endforelse
+                                                
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="">@lang('app.subIndustry')</label>
+                                            <select class="selectpicker form-control select-category" data-placeholder="@lang('modules.clients.clientSubCategory')"  id="sub_industry_id" name="sub_industry_id">                                                 
+                                            <option value="">@lang('messages.noSubCategoryAdded')</option> 
+                                            @forelse($subcategories as $subCategory)
+                                            <option value="{{ $subCategory->id }}">{{ ucwords($subCategory->category_name) }}</option>
+                                        @empty
+                                            <option value="">@lang('messages.noSubIndustryAdded')</option>
+                                        @endforelse  
+                                            </select>
+                                        </div>
+                                    </div>
+                                    </div>
                                 <h3 class="box-title m-t-40">@lang('modules.lead.leadDetails')</h3>
                                 <hr>
                                 <div class="row">
@@ -135,7 +165,18 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label>@lang('app.currency')</label>
+                                            <select class="form-control" name="currency_id" id="currency_id">
+                                                <option value="">@lang('app.selectCurrency')</option>
+                                                @foreach($currencies as $currency)
+                                                    <option value="{{ $currency->id }}" @if($currency->id == $currency_id)selected @endif >{{ $currency->currency_symbol.' ('.$currency->currency_code.')' }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <label>@lang('app.lead') @lang('app.value')</label>
                                             <input type="number" min="0" value="0" name="value" id="value"  class="form-control">
@@ -377,6 +418,35 @@
             data: $('#createLead').serialize()
         })
     });
+    $('#sub_industry_id').html("");
+    var categories = @json($categories);
+    $('#industry_id').change(function (e) {
+        var cat_id = $(this).val();
+        getCategory(cat_id);
+       
+    });
+    function getCategory(cat_id){
+        var url = "{{route('member.clients.getSubcategory')}}";
+        var token = "{{ csrf_token() }}";
+        $.easyAjax({
+        url: url,
+        type: "POST",
+        data: {'_token': token, cat_id: cat_id},
+        success: function (data) {
+            var options = [];
+            var rData = [];
+            rData = data.subcategory;
+            $.each(rData, function( index, value ) {
+                var selectData = '';
+                selectData = '<option value="'+value.id+'">'+value.category_name+'</option>';
+                options.push(selectData);
+            });
+            $('#sub_industry_id').html(options);
+            $('#sub_industry_id').selectpicker('refresh');
+        
+        }
+        })
+    }
     $('#cog_countries_id').on('change',function(){
         // alert($(this).val());
         var country_id = $(this).val();

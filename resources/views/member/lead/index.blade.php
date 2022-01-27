@@ -43,9 +43,11 @@
                 </select>
             </div>
         </div>
+       <?php /*?>
         <div class="col-xs-12">
             <div class="form-group">
                 <label for="">@lang('modules.tickets.chooseAgents')</label>
+                
                 <select class="selectpicker form-control" data-placeholder="@lang('modules.tickets.chooseAgents')" id="agent_id" name="agent_id">
                     <option value="all">@lang('modules.lead.all')</option>
                     @foreach($leadAgents as $emp)
@@ -55,8 +57,10 @@
                 </select>
             </div>
         </div>
+         <?php */?>
         <div class="col-xs-12">
             <div class="form-group">
+                <input type="hidden" id="agent_id" name="agent_id" value="{{ $user->id }}">
                 <label class="control-label">@lang('modules.lead.followUp')</label>
                 <select class="form-control selectpicker" name="followUp" id="followUp" data-style="form-control">
                     <option value="all">@lang('modules.lead.all')</option>
@@ -104,11 +108,15 @@
                 <table class="table table-bordered table-hover toggle-circle default footable-loaded footable" id="users-table">
                     <thead>
                     <tr>
-                        <th>@lang('app.id')</th>
+                        <th>#</th>
+                        <th>@lang('app.leadId')</th>
                         <th>@lang('app.clientName')</th>
                         <th>@lang('modules.lead.companyName')</th>
-                        <th>@lang('app.createdOn')</th>
+                        <th>@lang('modules.lead.client_email')</th>
+                        <th>@lang('app.mobile')</th>
+                        <th>@lang('app.leadValue')</th>
                         <th>@lang('modules.lead.nextFollowUp')</th>
+                        <th>@lang('app.createdOn')</th>
                         <th>@lang('app.status')</th>
                         <th>@lang('app.action')</th>
                     </tr>
@@ -186,10 +194,14 @@
                 },
                 columns: [
                     { data: 'DT_RowIndex', orderable: false, searchable: false },
+                    { data: 'lead_id', name: 'lead_id' },
                     { data: 'client_name', name: 'client_name' },
                     { data: 'company_name', name: 'company_name' },
-                    { data: 'created_at', name: 'created_at' },
+                    { data: 'client_email', name: 'client_email' },
+                    { data: 'mobile', name: 'mobile' },
+                    { data: 'value', name: 'value' },
                     { data: 'next_follow_up_date', name: 'next_follow_up_date' },
+                    { data: 'created_at', name: 'created_at' },
                     { data: 'status', name: 'status'},
                     { data: 'action', name: 'action'}
                 ]

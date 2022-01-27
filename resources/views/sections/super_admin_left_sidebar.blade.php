@@ -109,6 +109,11 @@
             <li><a href="{{ route('super-admin.dashboard') }}" class="waves-effect"><i class="icon-speedometer fa-fw"></i> <span class="hide-menu">@lang('app.menu.dashboard') </span></a> </li>
 
             <li><a href="{{ route('super-admin.packages.index') }}" class="waves-effect"><i class="icon-calculator fa-fw"></i> <span class="hide-menu">@lang('app.menu.packages') </span></a> </li>
+            <li><a href="{{ route('super-admin.packages.countryList') }}" class="waves-effect"><i class="icon-calculator fa-fw"></i> <span class="hide-menu">Country List</span></a> </li>
+            <li><a href="{{ route('super-admin.packages.stateList') }}" class="waves-effect"><i class="icon-calculator fa-fw"></i> <span class="hide-menu">State List</span></a> </li>
+            <li><a href="{{ route('super-admin.packages.cityList') }}" class="waves-effect"><i class="icon-calculator fa-fw"></i> <span class="hide-menu">City List</span></a> </li>
+
+            <li><a href="{{ route('super-admin.packages.clientDatabse') }}" class="waves-effect"><i class="icon-calculator fa-fw"></i> <span class="hide-menu">Client Database</span></a> </li>
 
             <li><a href="{{ route('super-admin.companies.index') }}" class="waves-effect"><i class="icon-layers fa-fw"></i> <span class="hide-menu">@lang('app.menu.companies') </span></a> </li>
             <li><a href="{{ route('super-admin.invoices.index') }}" class="waves-effect"><i class="icon-printer fa-fw"></i> <span class="hide-menu">@lang('app.menu.invoices') </span></a> </li>

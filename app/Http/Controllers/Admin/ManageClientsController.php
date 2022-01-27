@@ -31,7 +31,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Yajra\DataTables\Facades\DataTables;
-
+use App\CogCountry;
+use App\LeadAgent;
+use App\DataTables\Admin\BuyerDataTable;
+use Auth;
 class ManageClientsController extends AdminBaseController
 {
 
@@ -73,7 +76,28 @@ class ManageClientsController extends AdminBaseController
     {
         if ($leadID) {
             $this->leadDetail = Lead::findOrFail($leadID);
+           // echo "<pre>";
+           // print_r($this->leadDetail);die;
             $this->leadName = $this->leadDetail->client_name;
+            $source_id=!empty($leadDetail->source_id)?$leadDetail->source_id:Null;
+            $status_id=!empty($leadDetail->status_id)?$leadDetail->status_id:Null;
+            $stage_id=!empty($leadDetail->stage_id)?$leadDetail->stage_id:Null;
+            if(!empty($source_id)){
+                $this->sourceDetails=DB::table('lead_sources')->where('id',$source_id)->first();
+            }else{
+                $this->sourceDetails=array();
+            }
+            if(!empty($status_id)){
+                $this->statusDetails=DB::table('lead_status')->where('id',$status_id)->first();
+            }else{
+                $this->statusDetails=array();
+            }
+            if(!empty($stage_id)){
+                $this->stageDetails=DB::table('lead_stages')->where('id',$stage_id)->first();
+            }else{
+                $this->stageDetails=array();
+            }
+           // var_dump($this->statusDetails);die;
             $this->firstName = '';
             $firstNameArray = ['mr','mrs','miss','dr','sir','madam'];
             $firstName = explode(' ', $this->leadDetail->client_name);
@@ -94,7 +118,8 @@ class ManageClientsController extends AdminBaseController
         $this->subcategories = ClientSubCategory::all();
         $this->fields = $client->getCustomFieldGroupsWithFields()->fields;
         $this->countries = Country::all();
-
+        $this->Allcountries = CogCountry::all();
+        $this->leadAgents = LeadAgent::with('user')->get();
         if (request()->ajax()) {
             return view('admin.clients.ajax-create', $this->data);
         }
@@ -171,10 +196,10 @@ class ManageClientsController extends AdminBaseController
             $client->email = $request->input('email');
             $client->mobile = ($new_code != null) ? $new_code->phonecode.' '.$request->input('mobile') : ' ';
             $client->office_phone = $request->input('office_phone');
-            $client->city = $request->input('city');
-            $client->state = $request->input('state');
+            $client->city = $request->input('city_id');
+            $client->state = $request->input('state_id');
             $client->postal_code = $request->input('postal_code');
-            $client->country_id = $request->country_id;
+            $client->country_id = $request->input('cog_countries_id');
             $client->category_id = ($request->input('category_id') != 0 && $request->input('category_id') != '') ? $request->input('category_id') : null;
             $client->sub_category_id = ($request->input('sub_category_id') != 0 && $request->input('sub_category_id') != '') ? $request->input('sub_category_id') : null;
             $client->company_name = $request->company_name;
@@ -187,11 +212,30 @@ class ManageClientsController extends AdminBaseController
             $client->linkedin = $request->linkedin;
             $client->gst_number = $request->gst_number;
             $client->shipping_address = $request->shipping_address;
+           // $client->lead_source = $request->input('cog_countries_id');
+            $client->lead_stage = $request->input('stages');
+            $client->lead_status = $request->input('status');
+            $client->agent_id = $request->input('agent_id');
+            $client->type = $request->input('client_type');    
             if ($request->has('email_notifications')) {
                 $client->email_notifications = $request->email_notifications;
             }
             // echo "<pre>"; print_r($client);exit;
             $client->save();
+            $created_by=date('Y-m-d');
+            DB::table('client_database')->insert(
+                array(
+                       'frist_name' => $request->salutation, 
+                       'last_name' => $request->input('name'),
+                       'organization'=>$request->company_name,
+                       'address'=> $request->address,
+                       'email'=> $request->input('email'),
+                       'phonenumber' =>$request->input('office_phone'),
+                       'note'=>$request->note,
+                       'created_at' =>Auth::user()->id,
+                       'created_by'=>$created_by
+                )
+           );
             
             // attach role
             if ($existing_user) {
@@ -232,7 +276,12 @@ class ManageClientsController extends AdminBaseController
             return Reply::successWithData(__('messages.clientAdded'), ['teamData' => $teamData]);
         }
 
-        return Reply::redirect(route('admin.clients.index'));
+      if($request->input('client_type')=='1'){
+        return Reply::redirect(route('admin.buyer'));
+      }else{
+        return Reply::redirect(route('admin.seller'));
+      }
+     
     }
 
     /**
@@ -243,10 +292,54 @@ class ManageClientsController extends AdminBaseController
      */
     public function show($id)
     {
+        $get_client_details=ClientDetails::where('user_id', '=',$id)->first();
+        $companyId=$get_client_details['company_id'];
+        $clientId=$get_client_details['id'];
+        $leadDetails=DB::table('leads')->where('client_id',$id)->first();
+        if(!empty($leadDetails)){
+            $this->leadDetails=$leadDetails;
+            $againt_id=!empty($leadDetails->agent_id)?$leadDetails->agent_id:Null;
+            $source_id=!empty($leadDetails->source_id)?$leadDetails->source_id:Null;
+            $status_id=!empty($leadDetails->status_id)?$leadDetails->status_id:Null;
+            $stage_id=!empty($leadDetails->stage_id)?$leadDetails->stage_id:Null;
+            if(!empty($source_id)){
+                $this->sourceDetails=DB::table('lead_sources')->where('id',$source_id)->first();
+            }else{
+                $this->sourceDetails=array();
+            }
+            if(!empty($status_id)){
+                $this->statusDetails=DB::table('lead_status')->where('id',$status_id)->first();
+            }else{
+                $this->statusDetails=array();
+            }
+            if(!empty($stage_id)){
+                $this->stageDetails=DB::table('lead_stages')->where('id',$stage_id)->first();
+            }else{
+                $this->stageDetails=array();
+            }
+            if(!empty($againt_id)){
+                $againtDetails=DB::table('lead_agents')->where('company_id',$againt_id)->first();
+                if(!empty($againtDetails)){
+                    $userId=$againtDetails->user_id;
+                    $this->againtDetails= User::where('id',$userId)->first();
+                   // var_dump($this->againtDetails);die;
+                }else{
+                    $this->againtDetails=array();
+                }
+            }else{
+                $this->leadDetails=array();
+                $this->againtDetails=array();
+            }
+        }else{
+            $this->leadDetails=array();
+        }
+       // echo "<pre>";
+        //print_r($leadDetails);
+        //die;
         $this->client = User::findClient($id);
         $this->categories = ClientCategory::all();
         $this->subcategories = ClientSubCategory::all();
-        $this->clientDetail = ClientDetails::where('user_id', '=', $this->client->id)->first();
+        $c_details=$this->clientDetail = ClientDetails::where('user_id', '=', $this->client->id)->first();
         if(is_null($this->clientDetail)){
             abort(404);
         }
@@ -256,6 +349,7 @@ class ManageClientsController extends AdminBaseController
             $this->clientDetail = $this->clientDetail->withCustomFields();
             $this->fields = $this->clientDetail->getCustomFieldGroupsWithFields()->fields;
         }
+      
         return view('admin.clients.show', $this->data);
     }
 
@@ -271,9 +365,45 @@ class ManageClientsController extends AdminBaseController
             ->where('client_details.id', $id)
             ->select('client_details.id', 'client_details.name', 'client_details.email', 'client_details.user_id', 'client_details.mobile', 'users.locale', 'users.status', 'users.login')
             ->first();
-
         $this->clientDetail = ClientDetails::where('user_id', '=', $this->userDetail->user_id)->first();
-
+        $leadDetails=DB::table('leads')->where('client_id',$this->userDetail->user_id)->first();
+        if(!empty($leadDetails)){
+            $this->leadDetails=$leadDetails;
+            $againt_id=!empty($leadDetails->agent_id)?$leadDetails->agent_id:Null;
+            $source_id=!empty($leadDetails->source_id)?$leadDetails->source_id:Null;
+            $status_id=!empty($leadDetails->status_id)?$leadDetails->status_id:Null;
+            $stage_id=!empty($leadDetails->stage_id)?$leadDetails->stage_id:Null;
+            if(!empty($source_id)){
+                $this->sourceDetails=DB::table('lead_sources')->where('id',$source_id)->first();
+            }else{
+                $this->sourceDetails=array();
+            }
+            if(!empty($status_id)){
+                $this->statusDetails=DB::table('lead_status')->where('id',$status_id)->first();
+            }else{
+                $this->statusDetails=array();
+            }
+            if(!empty($stage_id)){
+                $this->stageDetails=DB::table('lead_stages')->where('id',$stage_id)->first();
+            }else{
+                $this->stageDetails=array();
+            }
+            if(!empty($againt_id)){
+                $againtDetails=DB::table('lead_agents')->where('company_id',$againt_id)->first();
+                if(!empty($againtDetails)){
+                    $userId=$againtDetails->user_id;
+                    $this->againtDetails= User::where('id',$userId)->first();
+                   // var_dump($this->againtDetails);die;
+                }else{
+                    $this->againtDetails=array();
+                }
+            }else{
+                $this->leadDetails=array();
+                $this->againtDetails=array();
+            }
+        }else{
+            $this->leadDetails=array();
+        }
         if (!is_null($this->clientDetail)) {
             $this->clientDetail = $this->clientDetail->withCustomFields();
             $this->fields = $this->clientDetail->getCustomFieldGroupsWithFields()->fields;
@@ -281,9 +411,10 @@ class ManageClientsController extends AdminBaseController
         $this->clientWebsite = $this->websiteCheck($this->clientDetail->website);
 
         $this->countries = Country::all();
+        $this->Allcountries = CogCountry::all();
         $this->categories = ClientCategory::all();
         $this->subcategories = ClientSubCategory::all();
-
+        $this->leadAgents = LeadAgent::with('user')->get();
         return view('admin.clients.edit', $this->data);
     }
 
@@ -325,11 +456,11 @@ class ManageClientsController extends AdminBaseController
         $client->name = $request->input('name');
         $client->email = $request->input('email');
         $client->mobile = ($new_code != null) ? $new_code->phonecode.' '.$request->input('mobile') : ' ';
-        $client->country_id = $request->input('country_id');
+        $client->country_id = $request->input('cog_countries_id');
         $client->address = $request->address;
         $client->office_phone = $request->input('office_phone');
-        $client->city = $request->input('city');
-        $client->state = $request->input('state');
+        $client->city = $request->input('city_id');
+        $client->state = $request->input('state_id');
         $client->postal_code = $request->input('postal_code');
         $client->category_id = ($request->input('category_id') != 0 && $request->input('category_id') != '') ? $request->input('category_id') : null;
         $client->sub_category_id = ($request->input('sub_category_id') != 0 && $request->input('sub_category_id') != '') ? $request->input('sub_category_id') : null;
@@ -342,6 +473,10 @@ class ManageClientsController extends AdminBaseController
         $client->gst_number = $request->gst_number;
         $client->shipping_address = $request->shipping_address;
         $client->email_notifications = $request->email_notifications;
+        $client->lead_source = $request->input('lead_source');
+        $client->lead_stage = $request->input('stages');
+        $client->lead_status = $request->input('status');
+        $client->agent_id = $request->input('agent_id');
         $client->save();
 //        $user = User::withoutGlobalScope([[CompanyScope::class], 'active']);
         $user = $client->user;
@@ -369,7 +504,7 @@ class ManageClientsController extends AdminBaseController
         $user->locale = $request->locale;
         $user->save();
 
-        return Reply::redirect(route('admin.clients.index'));
+        return Reply::redirect(route('admin.seller'));
     }
 
     /**
@@ -624,6 +759,218 @@ class ManageClientsController extends AdminBaseController
        $this->countries = Country::all();
         $this->subcategories = ClientSubCategory::all();
         return $dataTable->render('admin.clients.seller', $this->data);
+    }
+
+    public function buyer(BuyerDataTable $dataTable)
+    {
+
+        
+        $this->clients = User::allBuyer();
+     
+        $this->totalClients = count($this->clients);
+        //var_dump($this->totalClients);die;
+       $this->categories = ClientCategory::all();
+        $this->projects = Project::all();
+        $this->contracts = ContractType::all();
+       $this->countries = Country::all();
+        $this->subcategories = ClientSubCategory::all();
+        return $dataTable->render('admin.clients.buyer', $this->data);
+    }
+    public function show_buyer($id)
+    {
+        $get_client_details=ClientDetails::where('user_id', '=',$id)->first();
+        $companyId=$get_client_details['company_id'];
+        $clientId=$get_client_details['id'];
+        $leadDetails=DB::table('leads')->where('client_id',$id)->first();
+        if(!empty($leadDetails)){
+            $this->leadDetails=$leadDetails;
+            $againt_id=!empty($leadDetails->agent_id)?$leadDetails->agent_id:Null;
+            $source_id=!empty($leadDetails->source_id)?$leadDetails->source_id:Null;
+            $status_id=!empty($leadDetails->status_id)?$leadDetails->status_id:Null;
+            $stage_id=!empty($leadDetails->stage_id)?$leadDetails->stage_id:Null;
+            if(!empty($source_id)){
+                $this->sourceDetails=DB::table('lead_sources')->where('id',$source_id)->first();
+            }else{
+                $this->sourceDetails=array();
+            }
+            if(!empty($status_id)){
+                $this->statusDetails=DB::table('lead_status')->where('id',$status_id)->first();
+            }else{
+                $this->statusDetails=array();
+            }
+            if(!empty($stage_id)){
+                $this->stageDetails=DB::table('lead_stages')->where('id',$stage_id)->first();
+            }else{
+                $this->stageDetails=array();
+            }
+            if(!empty($againt_id)){
+                $againtDetails=DB::table('lead_agents')->where('company_id',$againt_id)->first();
+                if(!empty($againtDetails)){
+                    $userId=$againtDetails->user_id;
+                    $this->againtDetails= User::where('id',$userId)->first();
+                   // var_dump($this->againtDetails);die;
+                }else{
+                    $this->againtDetails=array();
+                }
+            }else{
+                $this->leadDetails=array();
+                $this->againtDetails=array();
+            }
+        }else{
+            $this->leadDetails=array();
+        }
+       // echo "<pre>";
+        //print_r($leadDetails);
+        //die;
+        $this->client = User::findClient($id);
+        $this->categories = ClientCategory::all();
+        $this->subcategories = ClientSubCategory::all();
+        $c_details=$this->clientDetail = ClientDetails::where('user_id', '=', $this->client->id)->first();
+        if(is_null($this->clientDetail)){
+            abort(404);
+        }
+        $this->clientStats = $this->clientStats($id);
+
+        if (!is_null($this->clientDetail)) {
+            $this->clientDetail = $this->clientDetail->withCustomFields();
+            $this->fields = $this->clientDetail->getCustomFieldGroupsWithFields()->fields;
+        }
+        //var_dump($this->clientDetail);die;
+      
+        return view('admin.clients.show_buyer', $this->data);
+    }
+     /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit_buyer($id)
+    {
+        //die('In Progress');
+        $this->userDetail = ClientDetails::join('users', 'client_details.user_id', '=', 'users.id')
+            ->where('client_details.id', $id)
+            ->select('client_details.id', 'client_details.name', 'client_details.email', 'client_details.user_id', 'client_details.mobile', 'users.locale', 'users.status', 'users.login')
+            ->first();
+        $this->clientDetail = ClientDetails::where('user_id', '=', $this->userDetail->user_id)->first();
+        $leadDetails=DB::table('leads')->where('client_id',$this->userDetail->user_id)->first();
+        if(!empty($leadDetails)){
+            $this->leadDetails=$leadDetails;
+            $againt_id=!empty($leadDetails->agent_id)?$leadDetails->agent_id:Null;
+            $source_id=!empty($leadDetails->source_id)?$leadDetails->source_id:Null;
+            $status_id=!empty($leadDetails->status_id)?$leadDetails->status_id:Null;
+            $stage_id=!empty($leadDetails->stage_id)?$leadDetails->stage_id:Null;
+            if(!empty($source_id)){
+                $this->sourceDetails=DB::table('lead_sources')->where('id',$source_id)->first();
+            }else{
+                $this->sourceDetails=array();
+            }
+            if(!empty($status_id)){
+                $this->statusDetails=DB::table('lead_status')->where('id',$status_id)->first();
+            }else{
+                $this->statusDetails=array();
+            }
+            if(!empty($stage_id)){
+                $this->stageDetails=DB::table('lead_stages')->where('id',$stage_id)->first();
+            }else{
+                $this->stageDetails=array();
+            }
+            if(!empty($againt_id)){
+                $againtDetails=DB::table('lead_agents')->where('company_id',$againt_id)->first();
+                if(!empty($againtDetails)){
+                    $userId=$againtDetails->user_id;
+                    $this->againtDetails= User::where('id',$userId)->first();
+                   // var_dump($this->againtDetails);die;
+                }else{
+                    $this->againtDetails=array();
+                }
+            }else{
+                $this->leadDetails=array();
+                $this->againtDetails=array();
+            }
+        }else{
+            $this->leadDetails=array();
+        }
+        if (!is_null($this->clientDetail)) {
+            $this->clientDetail = $this->clientDetail->withCustomFields();
+            $this->fields = $this->clientDetail->getCustomFieldGroupsWithFields()->fields;
+        }
+        $this->clientWebsite = $this->websiteCheck($this->clientDetail->website);
+
+        $this->countries = Country::all();
+        $this->Allcountries = CogCountry::all();
+        $this->categories = ClientCategory::all();
+        $this->subcategories = ClientSubCategory::all();
+        $this->leadAgents = LeadAgent::with('user')->get();
+        
+        return view('admin.clients.edit_buyer', $this->data);
+    }
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update_buyer(UpdateClientRequest $request, $id)
+    {
+      //  echo 'ddd';die;
+        $new_code = Country::select('phonecode')->where('id', $request->phone_code)->first();
+        $client = ClientDetails::find($id);
+
+        $client->company_name = $request->company_name;
+        $client->name = $request->input('name');
+     //   $client->email = $request->input('email');
+        $client->mobile = ($new_code != null) ? $new_code->phonecode.' '.$request->input('mobile') : ' ';
+        $client->country_id = $request->input('cog_countries_id');
+        $client->address = $request->address;
+        $client->office_phone = $request->input('office_phone');
+        $client->city = $request->input('city_id');
+        $client->state = $request->input('state_id');
+        $client->postal_code = $request->input('postal_code');
+        $client->category_id = ($request->input('category_id') != 0 && $request->input('category_id') != '') ? $request->input('category_id') : null;
+        $client->sub_category_id = ($request->input('sub_category_id') != 0 && $request->input('sub_category_id') != '') ? $request->input('sub_category_id') : null;
+        $client->website = $request->hyper_text.''.$request->website;
+        $client->note = $request->note;
+        $client->skype = $request->skype;
+        $client->facebook = $request->facebook;
+        $client->twitter = $request->twitter;
+        $client->linkedin = $request->linkedin;
+        $client->gst_number = $request->gst_number;
+        $client->shipping_address = $request->shipping_address;
+        $client->email_notifications = $request->email_notifications;
+        $client->lead_source = $request->input('lead_source');
+        $client->lead_stage = $request->input('stages');
+        $client->lead_status = $request->input('status');
+        $client->agent_id = $request->input('agent_id');
+        $client->save();
+//        $user = User::withoutGlobalScope([[CompanyScope::class], 'active']);
+        $user = $client->user;
+        $user->name = $request->input('name');
+      //  $user->email = $request->input('email');
+        $user->country_id = $request->input('phone_code');
+        if ($request->password != '') {
+            $user->password = Hash::make($request->input('password'));
+        }
+        if ($request->hasFile('image')) {
+            $user->image = Files::upload($request->image, 'avatar', 300);
+        }
+
+        $user->save();
+        // To add custom fields data
+        if ($request->get('custom_fields_data')) {
+            $client->updateCustomFieldData($request->get('custom_fields_data'));
+        }
+
+        $user = User::withoutGlobalScopes(['active', CompanyScope::class])->findOrFail($client->user_id);
+
+        if ($request->password != '') {
+            $user->password = Hash::make($request->input('password'));
+        }
+        $user->locale = $request->locale;
+        $user->save();
+
+        return Reply::redirect(route('admin.buyer'));
     }
 
 }

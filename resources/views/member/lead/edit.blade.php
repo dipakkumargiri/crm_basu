@@ -147,6 +147,36 @@
                                 </div>
                                     
                                 </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group" style="margin-bottom: -3px;">
+                                            <label for="">@lang('app.industry')</label>
+                                            <select class="select2 form-control" data-placeholder="@lang('modules.clients.clientCategory')"  id="industry_id" name="industry_id">
+                                                <option value="">Select @lang('app.industry')</option>
+                                             @forelse($idustries as $industry)
+                                             <option @if( $industry->id == $lead->industry_id) selected @endif value="{{ $industry->id }}">{{ ucwords($industry->category_name) }}</option>
+                                              @empty
+                                             <option value="">@lang('messages.noIndustryAdded')</option>
+                                              @endforelse                
+                                             </select>
+                                         </div>
+                                    </div> 
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="">@lang('app.subIndustry')</label>
+                                            
+                                            <select class="select2 form-control" data-placeholder="@lang('modules.client.clientSubCategory')"  id="sub_industry_id" name="sub_industry_id">
+                                            <option value="">Select @lang('app.subIndustry')</option>    
+                                            @forelse($subidustries as $subindustry)
+                                         
+                                            <option  value="{{ $subindustry->id }}" @if( $subindustry->id == $lead->sub_industry_id) selected @endif>{{ ucwords($subindustry->category_name) }}</option>
+                                             @empty
+                                            <option value="">@lang('messages.noSubIndustryAdded')</option>
+                                            @endforelse                            
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
 
                             <h3 class="box-title m-t-40">@lang('modules.lead.leadDetails')</h3>
                             <hr>
@@ -185,13 +215,13 @@
                             <div class="row">
                                 <!--/span-->
 
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label>@lang('modules.lead.mobile')</label>
                                         <input type="tel" name="mobile" id="mobile" value="{{ $lead->mobile }}" class="form-control">
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label>@lang('app.next_follow_up')</label>
                                         <select name="next_follow_up" id="next_follow_up" class="form-control">
@@ -199,6 +229,17 @@
                                                     @endif value="yes"> @lang('app.yes')</option>
                                            <option @if($lead->next_follow_up == 'no') selected
                                                     @endif value="no"> @lang('app.no')</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label>@lang('app.currency')</label>
+                                        <select class="form-control" name="currency_id" id="currency_id">
+                                            <option value="">@lang('app.selectCurrency')</option>
+                                            @foreach($currencies as $currency)
+                                                <option value="{{ $currency->id }}" @if($currency->id == $lead->currency_id)selected @endif >{{ $currency->currency_symbol.' ('.$currency->currency_code.')' }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
@@ -216,6 +257,7 @@
                                           <label >@lang('modules.lead.leadStage')</label>
                                         <select class="select2 form-control" name="stage_id" id="stage_id"
                                             data-style="form-control">
+                                            <option value="">@lang('app.selectCurrency')</option>
                                             @forelse($stages as $stage)
                                             <option value="{{ $stage->id }}"
                                                 @if($lead->stage_id == $stage->id)
@@ -425,6 +467,28 @@
             data: $('#updateLead').serialize()
         })
     });
+    
+    var subCategories = @json($subidustries);
+    $('#industry_id').change(function (e) {
+        // get projects of selected users
+        var opts = '';
+        console.log(subCategories);
+        var subCategory = subCategories.filter(function (item) {
+            return item.category_id == e.target.value
+        });
+        subCategory.forEach(project => {
+            console.log(project);
+            opts += `<option value='${project.id}'>${project.category_name}</option>`
+        })
+
+        $('#sub_industry_id').html('<option value=" ">Select Sub Industry..</option>'+opts)
+        $("#sub_industry_id").select2({
+            formatNoMatches: function () {
+                return "{{ __('messages.noRecordFound') }}";
+            }
+        });
+    });
+    
     
     var AllStates = @json($AllStates);
     

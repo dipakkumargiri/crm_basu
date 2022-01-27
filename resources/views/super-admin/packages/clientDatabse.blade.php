@@ -6,7 +6,7 @@
         <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12 bg-title-left">
             <h4 class="page-title"> Client Data Base
                 <span class="text-info b-l p-l-10 m-l-5"></span> <span
-                        class="font-12 text-muted m-l-5">Client Data Base</span>
+                        class="font-12 text-muted m-l-5">Client Data Base </span>
             </h4>
         </div>
         <!-- /.page title -->

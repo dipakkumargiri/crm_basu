@@ -4,14 +4,14 @@
     <div class="row bg-title">
         <!-- .page title -->
         <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12 bg-title-left">
-            <h4 class="page-title"><i class="{{ $pageIcon }}"></i>Edit Seller</h4>
+            <h4 class="page-title"><i class="{{ $pageIcon }}"></i>@lang('app.editBuyer')</h4>
         </div>
         <!-- /.page title -->
         <!-- .breadcrumb -->
         <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12 bg-title-right">
             <ol class="breadcrumb">
                 <li><a href="{{ route('admin.dashboard') }}">@lang('app.menu.home')</a></li>
-                <li><a href="{{ route('admin.clients.index') }}">Edit Seller</a></li>
+                <li><a href="{{ route('admin.clients.index') }}">@lang('app.editBuyer')</a></li>
                 <li class="active">@lang('app.edit')</li>
             </ol>
         </div>
@@ -33,7 +33,7 @@
         <div class="col-xs-12">
 
             <div class="panel panel-inverse">
-                <div class="panel-heading">@lang('app.updateSellerInfo')
+                <div class="panel-heading">@lang('app.updatebuyerInfo')
                     [ {{ $clientDetail->name }} ]
                 </div>
                 <div class="panel-wrapper collapse in" aria-expanded="true">
@@ -41,7 +41,7 @@
                         {!! Form::open(['id'=>'updateClient','class'=>'ajax-form','method'=>'PUT']) !!}
                         <div class="form-body">
 
-                            <h3 class="box-title ">@lang('app.updateSellerDetails')</h3>
+  
                             <hr>
                             <div class="row">
                                 <div class="col-md-6">
@@ -542,9 +542,9 @@
 
     $('#save-form').click(function () {
         $.easyAjax({
-            url: '{{route('admin.clients.update', [$clientDetail->id])}}',
+            url: '{{route('admin.update_buyer', [$clientDetail->id])}}',
             container: '#updateClient',
-            type: "POST",
+            type: "PUT",
             redirect: true,
             data: $('#updateClient').serialize()
         })
@@ -601,7 +601,7 @@ $('#cog_countries_id').on('click',function(){
                 $('#state_id').val('<?php echo $clientDetail->state; ?>');
                 var state_id='<?php echo $clientDetail->state; ?>';
                if(state_id!=''){
-                $("#state_id").trigger("click");
+                $("#state_id").trigger("change");
                }
                 $('#state_id').selectpicker('refresh');
                
@@ -609,7 +609,7 @@ $('#cog_countries_id').on('click',function(){
             }
         })
         }
-        $('#state_id').on('click',function(){
+        $('#state_id').on('change',function(){
             // alert($(this).val());
             var state_id = $(this).val();
             getCity(state_id);

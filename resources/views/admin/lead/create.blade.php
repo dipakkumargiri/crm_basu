@@ -117,26 +117,64 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="">@lang('modules.stripeCustomerAddress.state')
-                                                        
-                                                </label>
-                                                <select class="selectpicker form-control select-category" data-placeholder="@lang('modules.stripeCustomerAddress.state')"  id="state_id" name="state_id">                                                 
-                                              
-                                                </select>
-                                            </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="">@lang('modules.stripeCustomerAddress.state')
+                                                
+                                        </label>
+                                        <select class="selectpicker form-control select-category" data-placeholder="@lang('modules.stripeCustomerAddress.state')"  id="state_id" name="state_id">                                                 
+                                      
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="">@lang('modules.stripeCustomerAddress.city')
+                                                
+                                        </label>
+                                        <select class="selectpicker form-control select-category" data-placeholder="@lang('modules.stripeCustomerAddress.city')"  id="city_id" name="city_id">                                                 
+                                      
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                              
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="">@lang('app.industry')
+                                                    <a href="javascript:;" id="addClientCategory" class="text-info"><i
+                                                            class="ti-settings text-info"></i> </a>
+                                            </label>
+                                            <select class="select2 form-control client-category" data-placeholder="@lang('app.industry')"  id="industry_id" name="industry_id">
+                                            <option value="">@lang('messages.pleaseSelectIndustry')</option>
+                                            @forelse($categories as $category)
+                                            <option value="{{ $category->id }}">{{ ucwords($category->category_name) }}</option>
+                                              @empty
+                                            <option value="">@lang('messages.noIndustryAdded')</option>
+                                             @endforelse
+                                                
+                                            </select>
                                         </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label for="">@lang('modules.stripeCustomerAddress.city')
-                                                        
-                                                </label>
-                                                <select class="selectpicker form-control select-category" data-placeholder="@lang('modules.stripeCustomerAddress.city')"  id="city_id" name="city_id">                                                 
-                                              
-                                                </select>
-                                            </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="">@lang('app.subIndustry')
+                                                    <a href="javascript:;" id="addClientSubCategory" class="text-info">
+                                                    <i class="ti-settings text-info"></i> </a>
+                                            </label>
+                                            <select class="selectpicker form-control select-category" data-placeholder="@lang('modules.clients.clientSubCategory')"  id="sub_industry_id" name="sub_industry_id">                                                 
+                                            <option value="">@lang('messages.noSubCategoryAdded')</option> 
+                                            @forelse($subcategories as $subCategory)
+                                            <option value="{{ $subCategory->id }}">{{ ucwords($subCategory->category_name) }}</option>
+                                        @empty
+                                            <option value="">@lang('messages.noSubIndustryAdded')</option>
+                                        @endforelse  
+                                            </select>
                                         </div>
+                                    </div>
+                                    
+                               
                                 
 
 
@@ -184,10 +222,21 @@
                                     <!--/span-->
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-4">
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label>@lang('app.currency')</label>
+                                            <select class="form-control" name="currency_id" id="currency_id">
+                                                <option value="">@lang('app.selectCurrency')</option>
+                                                @foreach($currencies as $currency)
+                                                    <option value="{{ $currency->id }}" @if($currency->id == $currency_id)selected @endif >{{ $currency->currency_symbol.' ('.$currency->currency_code.')' }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
                                         <div class="form-group">
                                             <label>@lang('app.lead') @lang('app.value')</label>
-                                            <input type="number" min="0" value="0" name="value" id="value"  class="form-control">
+                                            <input type="number" min="0" value="0" name="value" id="value"  class="form-control" step=".01">
                                         </div>
                                     </div>
                                     <div class="col-md-4">
@@ -451,6 +500,45 @@
     })
     $('#addLeadType').click(function () {
         var url = '{{ route('admin.leadType.create')}}';
+        $('#modelHeading').html('...');
+        $.ajaxModal('#projectCategoryModal', url);
+    })
+    $('#sub_industry_id').html("");
+    var categories = @json($categories);
+    $('#industry_id').change(function (e) {
+        var cat_id = $(this).val();
+        getCategory(cat_id);
+       
+    });
+    function getCategory(cat_id){
+        var url = "{{route('admin.clients.getSubcategory')}}";
+        var token = "{{ csrf_token() }}";
+        $.easyAjax({
+        url: url,
+        type: "POST",
+        data: {'_token': token, cat_id: cat_id},
+        success: function (data) {
+            var options = [];
+            var rData = [];
+            rData = data.subcategory;
+            $.each(rData, function( index, value ) {
+                var selectData = '';
+                selectData = '<option value="'+value.id+'">'+value.category_name+'</option>';
+                options.push(selectData);
+            });
+            $('#sub_industry_id').html(options);
+            $('#sub_industry_id').selectpicker('refresh');
+        
+        }
+        })
+    }
+    $('#addClientCategory').click(function () {
+        var url = '{{ route('admin.clientCategory.create')}}';
+        $('#modelHeading').html('...');
+        $.ajaxModal('#projectCategoryModal', url);
+    })
+    $('#addClientSubCategory').click(function () {
+        var url = '{{ route('admin.clientSubCategory.create')}}';
         $('#modelHeading').html('...');
         $.ajaxModal('#projectCategoryModal', url);
     })

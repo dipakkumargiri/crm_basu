@@ -1,13 +1,13 @@
 <link rel="stylesheet" href="{{ asset('plugins/bower_components/bootstrap-datepicker/bootstrap-datepicker.min.css') }}">
 <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-    <h4 class="modal-title"> <i class="fa fa-plus"></i>  @lang('app.menu.clientDocs')</h4>
+    <h4 class="modal-title"> <i class="fa fa-plus"></i>Seller Questionnaires</h4>
 </div>
 <div class="modal-body">
     @if($upload)
         {!! Form::open(array('id' => 'add_docs_form', 'class'=>'form-horizontal ','method'=>'POST')) !!}
         <input type="hidden" name="user_id" value="{{ $clientID }}">
-        <input type="hidden" name="type" value="1">
+        <input type="hidden" name="type" value="2">
         <div class="form-body">
             <div class="row">
                 <div id="addMoreBox1" class="clearfix">
@@ -31,9 +31,7 @@
                 <div class="clearfix">
 
                 </div>
-                <button type="button" id="plusButton" class="btn btn-sm btn-info" style="margin-bottom: 20px">
-                    Add More <i class="fa fa-plus"></i>
-                </button>
+                
                 <div class="alert alert-info"><i class="fa fa-info-circle"></i> @lang('messages.employeeDocsAllowedFormat')</div>
             </div>
             <!--/row-->

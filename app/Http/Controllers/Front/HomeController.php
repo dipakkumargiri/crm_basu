@@ -50,6 +50,7 @@ use Illuminate\Support\Facades\Notification;
 use App\Module;
 use App\InvoiceSetting;
 use App\Lead;
+use App\Inquiry;
 use App\LeadCustomForm;
 use App\LeadStatus;
 use App\OfflinePaymentMethod;
@@ -963,7 +964,9 @@ class HomeController extends FrontBaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function leadStore(StoreRequest $request)
+
+     //==============================Indrajit 22-01-2022======================
+   /* public function leadStore(StoreRequest $request)
     {
         $setting = \App\Company::findOrFail($request->company_id);
 
@@ -996,7 +999,32 @@ class HomeController extends FrontBaseController
         $lead->save();
 
         return Reply::success(__('messages.LeadAddedUpdated'));
+    }*/
+    //==============================Indrajit 22-01-2022======================
+
+
+    public function leadStore(StoreRequest $request)
+    {
+        /*echo "<pre>";
+        print_r($request);
+        exit; */
+        $inquiry = new Inquiry();
+       
+        $inquiry->clint_name  		= 	(request()->has('name') ? $request->name : '');
+        $inquiry->email      		= 	(request()->has('email') ? $request->email : '');
+        $inquiry->company_name      	= 	(request()->has('company_name') ? $request->company_name : '');      
+        $inquiry->website 		= 	(request()->has('website') ? $request->website : '');
+        $inquiry->address       	= 	(request()->has('address') ? $request->address : '');
+        $inquiry->mobile       		= 	(request()->has('mobile') ? $request->mobile : '');
+        $inquiry->Message         	= 	$request->message;
+        //echo "111111111"; exit;
+        $inquiry->save();
+          
+        return Reply::success(__('messages.LeadAddedUpdated'));
     }
+
+
+
 
     /**
      * custom lead form

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
 
-class SellersDataTable extends BaseDataTable
+class BuyerDataTable extends BaseDataTable
 {
 
     /**
@@ -28,8 +28,8 @@ class SellersDataTable extends BaseDataTable
                  <button aria-expanded="false" data-toggle="dropdown" class="btn btn-default dropdown-toggle waves-effect waves-light" type="button"><i class="fa fa-gears "></i></button>
                 <ul role="menu" class="dropdown-menu pull-right">
                  
-                  <li><a href="' . route('admin.clients.show', [$row->user_id]) . '"><i class="fa fa-search" aria-hidden="true"></i> ' . __('app.view') . '</a></li>
-                  <li><a href="' . route('admin.clients.edit', [$row->id]) . '"><i class="fa fa-pencil" aria-hidden="true"></i> ' . trans('app.edit') . '</a></li>';
+                  <li><a href="' . route('admin.show_buyer', [$row->user_id]) . '"><i class="fa fa-search" aria-hidden="true"></i> ' . __('app.view') . '</a></li>
+                  <li><a href="' . route('admin.edit_buyer', [$row->id]) . '"><i class="fa fa-pencil" aria-hidden="true"></i> ' . trans('app.edit') . '</a></li>';
 
                 $action .= '</ul> </div>';
 
@@ -38,7 +38,7 @@ class SellersDataTable extends BaseDataTable
             ->editColumn(
                 'name',
                 function ($row) {
-                    return '<a href="' . route('admin.clients.show', $row->user_id) . '">' . ucfirst($row->name) . '</a>';
+                    return '<a href="' . route('admin.show_buyer', $row->user_id) . '">' . ucfirst($row->name) . '</a>';
                 }
             )
             ->editColumn(
@@ -76,7 +76,7 @@ class SellersDataTable extends BaseDataTable
             ->leftJoin('countries', 'client_details.country_id', '=', 'countries.id')
             ->select('client_details.id','client_details.company_id', 'client_details.user_id', 'client_details.name', 'client_details.company_name', 'client_details.email', 'client_details.created_at',
             'client_details.mobile', 'countries.phonecode')
-            ->where('client_details.type','2')
+            ->where('client_details.type','1')
             ->groupBy('client_details.id');
 
         if ($request->startDate !== null && $request->startDate != 'null' && $request->startDate != '') {

@@ -13,13 +13,19 @@ use App\Notifications\NewUser;
 use App\Role;
 use App\Scopes\CompanyScope;
 use App\User;
+use App\ClientCategory;
+use App\ClientSubCategory;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\Facades\DataTables;
-
+use App\Project;
+use App\ContractType;
+use App\Country;
+use App\DataTables\Member\SellersDataTableMember;
+use App\DataTables\Member\BuyerDataTableMember;
 class MemberClientsController extends MemberBaseController
 {
 
@@ -301,6 +307,13 @@ class MemberClientsController extends MemberBaseController
         $this->client = User::findClient($id);
         return view('member.clients.projects', $this->data);
     }
+    
+    public function getSubcategory(Request $request)
+    {
+        $this->subcategories = ClientSubCategory::where('category_id', $request->cat_id)->get();
+
+        return Reply::dataOnly(['subcategory' => $this->subcategories]);
+    }
 
     public function showInvoices($id)
     {
@@ -368,6 +381,36 @@ class MemberClientsController extends MemberBaseController
                 });
             });
         })->download('xlsx');
+    }
+    public function seller(SellersDataTableMember $dataTable)
+    {
+
+        
+        $this->clients = User::allSeller();
+     
+        $this->totalClients = count($this->clients);
+        //var_dump($this->totalClients);die;
+       $this->categories = ClientCategory::all();
+        $this->projects = Project::all();
+        $this->contracts = ContractType::all();
+       $this->countries = Country::all();
+        $this->subcategories = ClientSubCategory::all();
+        return $dataTable->render('member.clients.seller', $this->data);
+    }
+
+    public function buyer(BuyerDataTableMember $dataTable)
+    {
+        
+        $this->clients = User::allBuyer();
+     
+        $this->totalClients = count($this->clients);
+        //var_dump($this->totalClients);die;
+       $this->categories = ClientCategory::all();
+        $this->projects = Project::all();
+        $this->contracts = ContractType::all();
+       $this->countries = Country::all();
+        $this->subcategories = ClientSubCategory::all();
+        return $dataTable->render('member.clients.buyer', $this->data);
     }
 
 }

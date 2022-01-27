@@ -18,6 +18,9 @@ use App\CogCity;
 use App\LeadStage;
 use Carbon\Carbon;
 use App\LeadCategory;
+use App\ClientCategory;
+use App\ClientSubCategory;
+use App\Currency;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Http\Request;
 use App\Country;
@@ -44,12 +47,13 @@ class MemberLeadController extends MemberBaseController
 
         $agent = LeadAgent::where('user_id', $this->user->id)->first();
         $agentId = ($agent) ? $agent->id : '';
-
+        // echo $this->user->cans('view_lead')."BBBBB";
 
         if (!$this->user->cans('view_lead')) {
             $this->totalLeads = Lead::where('leads.agent_id', $agentId)->get();
         } else {
-            $this->totalLeads = Lead::all();
+            // $this->totalLeads = Lead::all();
+            $this->totalLeads = Lead::where('leads.agent_id', $agentId)->get();
         }
         
         $this->totalClientConverted = $this->totalLeads->filter(function ($value, $key) {
@@ -95,21 +99,22 @@ class MemberLeadController extends MemberBaseController
     {
         $currentDate = Carbon::today()->format('Y-m-d');
         $lead = Lead::select(
-            'leads.id',
+            'leads.id','leads.lead_id', 'leads.mobile', 'leads.client_email',
             'leads.client_id',
-            'leads.next_follow_up',
+            'leads.next_follow_up','leads.client_type',
             'client_name',
             'company_name',
             'lead_status.type as statusName',
             'status_id',
             'leads.created_at',
-            'lead_sources.type as source',
+            'lead_sources.type as source',\DB::raw('CONCAT(currencies.currency_symbol, leads.value) AS value'),
             'lead_agents.user_id as agent_user_id',
             \DB::raw("(select next_follow_up_date from lead_follow_up where lead_id = leads.id and leads.next_follow_up  = 'yes' and DATE(next_follow_up_date) >= {$currentDate} ORDER BY next_follow_up_date asc limit 1) as next_follow_up_date")
         )
             ->leftJoin('lead_status', 'lead_status.id', 'leads.status_id')
             ->leftJoin('lead_sources', 'lead_sources.id', 'leads.source_id')
-            ->leftJoin('lead_agents', 'lead_agents.id', 'leads.agent_id');
+            ->leftJoin('lead_agents', 'lead_agents.id', 'leads.agent_id')
+            ->leftJoin('currencies', 'currencies.id', 'leads.currency_id');
 
         if ($request->followUp != 'all' && $request->followUp != '' && $request->followUp != 'undefined') {
             $lead = $lead->leftJoin('lead_follow_up', 'lead_follow_up.lead_id', 'leads.id')
@@ -126,7 +131,10 @@ class MemberLeadController extends MemberBaseController
         }
 
         if ($request->agent != 'all' && $request->agent != '' && $request->has('agent') && $request->agent != 'undefined') {
-            $lead = $lead->where('agent_id', $request->agent);
+            // $lead = $lead->where('agent_id', $request->agent);
+            $agent = LeadAgent::where('user_id', $this->user->id)->first();
+            $agentId = ($agent) ? $agent->id : '';
+            $lead = $lead->where('leads.agent_id', $agentId);
         }
 
         if (!$this->user->cans('view_lead')) {
@@ -135,15 +143,20 @@ class MemberLeadController extends MemberBaseController
             $lead = $lead->where('leads.agent_id', $agentId);
         }
 
-        $lead = $lead->groupBy('leads.id')->get();
+        $lead = $lead->groupBy('leads.id')->orderby('leads.id', 'DESC')->get();
 
         return DataTables::of($lead)
             ->addIndexColumn()
             ->addColumn('action', function ($row) {
                 $follow = '';
                 if (($row->client_id == null || $row->client_id == '' || $row->agent_user_id == $this->user->id)) {
+                    if($row->client_type == 1){
+                        $client_type = __('modules.lead.changeToBuyer');
+                    }else{
+                        $client_type = __('modules.lead.changeToSeller');
+                    }
                     if ($this->user->cans('add_clients')) {
-                        $follow = '<li><a href="' . route('member.clients.create') . '/' . $row->id . '"><i class="fa fa-user"></i> ' . __('modules.lead.changeToClient') . '</a></li>';
+                        $follow = '<li><a href="' . route('member.clients.create') . '/' . $row->id . '"><i class="fa fa-user"></i> ' . $client_type . '</a></li>';
                     }
                     if ($row->next_follow_up == 'yes' && ($this->user->cans('edit_lead') || $row->agent_user_id == $this->user->id)) {
                         $follow .= '<li onclick="followUp(' . $row->id . ')"><a href="javascript:;"><i class="fa fa-thumbs-up"></i> ' . __('modules.lead.addFollowUp') . '</a></li>';
@@ -163,11 +176,13 @@ class MemberLeadController extends MemberBaseController
                 $action = '<div class="btn-group m-r-10">
                 <button aria-expanded="false" data-toggle="dropdown" class="btn btn-info btn-outline  dropdown-toggle waves-effect waves-light" type="button">' . __('modules.lead.action') . ' <span class="caret"></span></button>
                 <ul role="menu" class="dropdown-menu">
-                    <li><a href="' . route('member.leads.show', $row->id) . '"><i class="fa fa-search"></i> ' . __('modules.lead.view') . '</a></li>
-                     ' . $edit . '   
+                    <li><a href="' . route('member.leads.show', $row->id) . '"><i class="fa fa-search"></i> ' . __('modules.lead.view') . '</a></li>';
+                if ($row->client_id == null && $row->client_id == '') {     
+                $action .=  $edit . '   
                      ' . $follow . '   
-                     ' . $delete . '   
-                </ul>
+                     ' . $delete ;
+                }       
+                $action .='</ul>
               </div>';
                 return $action;
             })
@@ -196,7 +211,12 @@ class MemberLeadController extends MemberBaseController
             })
             ->editColumn('client_name', function ($row) {
                 if ($row->client_id != null && $row->client_id != '') {
-                    $label = '<label class="label label-success">' . __('app.client') . '</label>';
+                    if($row->client_type == 1){
+                        $client_type = __('Buyer');
+                    }else{
+                        $client_type = __('Seller');
+                    }
+                    $label = '<label class="label label-success">' .$client_type . '</label>';
                 } else {
                     $label = '<label class="label label-info">' . __('app.lead') . '</label>';
                 }
@@ -218,12 +238,29 @@ class MemberLeadController extends MemberBaseController
             ->editColumn('created_at', function ($row) {
                 return $row->created_at->format($this->global->date_format);
             })
+            ->editColumn('client_email', function ($row) {
+                if ($row->client_email != null && $row->client_email != '') {
+                    return ($row->client_email);
+                } else {
+                    return '--';
+                }
+            })
+            ->editColumn('mobile', function ($row) {
+                if(!is_null($row->mobile) && $row->mobile != ' ')
+                    {
+                        return '<a href="tel:+'. ($row->mobile) . '">'.'+'.($row->mobile) .'</a>';
+                }
+                    return '--';
+
+            })
             ->removeColumn('status_id')
             ->removeColumn('client_id')
+            ->removeColumn('lead_value')
             ->removeColumn('source')
             ->removeColumn('next_follow_up')
             ->removeColumn('statusName')
-            ->rawColumns(['status', 'action', 'client_name', 'next_follow_up_date'])
+            ->addIndexColumn()
+            ->rawColumns(['status', 'action', 'client_name', 'next_follow_up_date', 'agent_name','mobile','client_email'])
             ->make(true);
     }
 
@@ -235,6 +272,7 @@ class MemberLeadController extends MemberBaseController
     public function create()
     {
         abort_if(!$this->user->cans('add_lead'), 403);
+        // echo $this->user->id;die;
         $this->leadAgents = LeadAgent::with('user')->get();
         $this->sources = LeadSource::all();
         $this->status = LeadStatus::all();
@@ -242,6 +280,10 @@ class MemberLeadController extends MemberBaseController
         $this->countries = Country::all();
         $this->stages = LeadStage::all();
         $this->Allcountries = CogCountry::all();
+        $this->currencies = Currency::all();
+        $this->categories = ClientCategory::all();
+        $this->subcategories = ClientSubCategory::all();
+        $this->currency_id = company()->currency_id;
         $lead = new Lead();
         $this->fields = $lead->getCustomFieldGroupsWithFields()->fields;
 
@@ -257,6 +299,8 @@ class MemberLeadController extends MemberBaseController
     public function store(StoreRequest $request)
     {
         $lead = new Lead();
+        
+        
         $lead->company_name = $request->company_name;
         $lead->website = $request->website;
         $lead->address = $request->address;
@@ -276,6 +320,10 @@ class MemberLeadController extends MemberBaseController
         $lead->category_id = $request->category_id;
         $lead->client_type = $request->type_id;
         $lead->stage_id = $request->stage_id;
+        $lead->created_by = $this->user->id;
+        $lead->currency_id = ($request->currency_id) ? $request->currency_id : company()->currency_id;
+        $lead->industry_id = ($request->input('industry_id') != 0 && $request->input('industry_id') != '') ? $request->input('industry_id') : null;
+        $lead->sub_industry_id = ($request->input('sub_industry_id') != 0 && $request->input('sub_industry_id') != '') ? $request->input('sub_industry_id') : null;
 
         $lead->save();
 
@@ -283,6 +331,14 @@ class MemberLeadController extends MemberBaseController
         if ($request->get('custom_fields_data')) {
             $lead->updateCustomFieldData($request->get('custom_fields_data'));
         }
+        
+         //maintain assign log table created by Basu
+        $post1['lead_id'] = $lead->id;
+        $post1['client_id']  = null;
+        $post1['assigned_agent']  = ($request->agent_id) ? $request->agent_id : null;
+        $post1['company_id'] = $this->user->company_id;
+        $post1['assigned_by'] = $this->user->id;
+        $insert=DB::table('lead_assign_history')->insert($post1);
 
         return Reply::redirect(route('member.leads.index'), __('messages.LeadAddedUpdated'));
     }
@@ -306,6 +362,10 @@ class MemberLeadController extends MemberBaseController
         $this->Allcountries = CogCountry::all();
         $this->AllStates = CogState::all();
         $this->AllCities = CogCity::all();
+        $this->currencies = Currency::all();
+        $this->currency_id = company()->currency_id;
+        $this->idustries = ClientCategory::all();
+        $this->subidustries = ClientSubCategory::all();
         return view('member.lead.edit', $this->data);
     }
 
@@ -320,6 +380,7 @@ class MemberLeadController extends MemberBaseController
     {
         abort_if(!$this->user->cans('edit_lead'), 403);
         $lead = Lead::findOrFail($id);
+        
         $lead->company_name = $request->company_name;
         $lead->website = $request->website;
         $lead->address = $request->address;
@@ -340,11 +401,28 @@ class MemberLeadController extends MemberBaseController
         $lead->category_id = $request->category_id;
         $lead->client_type = $request->type_id;
         $lead->stage_id = $request->stage_id;
+        $lead->currency_id = ($request->currency_id) ? $request->currency_id : company()->currency_id;
+        $lead->industry_id = ($request->input('industry_id') != 0 && $request->input('industry_id') != '') ? $request->input('industry_id') : null;
+        $lead->sub_industry_id = ($request->input('sub_industry_id') != 0 && $request->input('sub_industry_id') != '' && $request->input('sub_industry_id') != null) ? $request->input('sub_industry_id') : null;
+        // dd($lead);exit;
         $lead->save();
 
         // To add custom fields data
         if ($request->get('custom_fields_data')) {
             $lead->updateCustomFieldData($request->get('custom_fields_data'));
+        }
+        
+        //checking assigned_agent and assigned_by 
+        $agent_id = ($request->agent_id) ? $request->agent_id : null;
+        $data = DB::table('lead_assign_history')->where(['lead_id'=> $id,'assigned_agent'=> $agent_id,'assigned_by'=> $this->user->id])->get();
+        $dataCount = $data->count();
+        if($dataCount==0){
+            $post1['lead_id'] = $lead->id;
+            $post1['company_id'] = $this->user->company_id;
+            $post1['client_id']  = null;
+            $post1['assigned_agent']  = $agent_id;
+            $post1['assigned_by'] = $this->user->id;
+            $insert=DB::table('lead_assign_history')->insert($post1);
         }
 
         return Reply::redirect(route('member.leads.index'), __('messages.LeadUpdated'));

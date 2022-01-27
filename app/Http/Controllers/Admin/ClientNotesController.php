@@ -100,6 +100,7 @@ class ClientNotesController extends AdminBaseController
      */
     public function show($id)
     {
+       
         $this->clients = User::allClients();
         $this->employees = User::allEmployees()->where('id', '!=', $this->user->id);
         $this->notes = Notes::where('client_id', $id)->get();
@@ -193,5 +194,19 @@ class ClientNotesController extends AdminBaseController
             )
             ->first();
     }
+    public function show_buyer_note($id)
+    {
+       
+       
+        $this->clients = User::allClients();
+        $this->employees = User::allEmployees()->where('id', '!=', $this->user->id);
+        $this->notes = Notes::where('client_id', $id)->get();
+         $this->client = User::findClient($id);
+        $this->clientDetail = ClientDetails::where('user_id', '=', $this->client->id)->first();
+        $this->clientStats = $this->clientStats($id);
+       // echo 'ddd';die;
+        return view('admin.notes.show_buyer', $this->data);
+    }
+    
 
 }

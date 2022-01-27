@@ -158,14 +158,13 @@ class LeadsDataTable extends BaseDataTable
         $setting = company();
         $currentDate = Carbon::now()->timezone($setting->timezone)->format('Y-m-d H:i');
         //        dd($currentDate);
-        $lead = Lead::select('leads.id','leads.lead_id', 'leads.client_id', 'leads.mobile', 'leads.client_email', 'leads.next_follow_up','leads.client_type', 'client_name', 'company_name', 'lead_status.type as statusName', 'status_id', 'leads.created_at',DB::raw('CONCAT(currencies.currency_symbol, leads.value) AS value'), 'lead_sources.type as source', 'users.name as agent_name', 'users.image',
+        $lead = Lead::select('leads.id', 'leads.client_id', 'leads.mobile', 'leads.client_email', 'leads.next_follow_up','leads.client_type', 'client_name', 'company_name', 'lead_status.type as statusName', 'status_id', 'leads.created_at', 'leads.value', 'lead_sources.type as source', 'users.name as agent_name', 'users.image',
             \DB::raw("(select next_follow_up_date from lead_follow_up where lead_id = leads.id and leads.next_follow_up  = 'yes' and next_follow_up_date >= '{$currentDate}' 
             ORDER BY next_follow_up_date asc limit 1) as next_follow_up_date"))
             ->leftJoin('lead_status', 'lead_status.id', 'leads.status_id')
             ->leftJoin('lead_agents', 'lead_agents.id', 'leads.agent_id')
             ->leftJoin('users', 'users.id', 'lead_agents.user_id')
-            ->leftJoin('lead_sources', 'lead_sources.id', 'leads.source_id')
-            ->leftJoin('currencies', 'currencies.id', 'leads.currency_id');
+            ->leftJoin('lead_sources', 'lead_sources.id', 'leads.source_id');
         if ($this->request()->followUp != 'all' && $this->request()->followUp != '') {
             $lead = $lead->leftJoin('lead_follow_up', 'lead_follow_up.lead_id', 'leads.id');
             if ($this->request()->followUp == 'yes') {
@@ -205,9 +204,7 @@ class LeadsDataTable extends BaseDataTable
             $lead = $lead->where('source_id', $this->request()->source_id);
         }
 
-        $lead = $lead->groupBy('leads.id');
-        //dd($lead);
-        return $lead;
+        return $lead->groupBy('leads.id');
     }
 
     /**
@@ -256,15 +253,14 @@ class LeadsDataTable extends BaseDataTable
         return [
             __('app.id') => ['data' => 'id', 'name' => 'id', 'visible' => false, 'exportable' => false],
             '#' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false],
-            __('app.leadId') => ['data' => 'lead_id', 'name' => 'lead_id'],
             __('app.clientName') => ['data' => 'client_name', 'name' => 'client_name'],
             __('modules.lead.companyName') => ['data' => 'company_name', 'name' => 'company_name'],
+            __('app.leadValue') => ['data' => 'value', 'name' => 'value'],
+            __('app.createdOn') => ['data' => 'created_at', 'name' => 'created_at'],
+            __('modules.lead.nextFollowUp') => ['data' => 'next_follow_up_date', 'name' => 'next_follow_up_date', 'orderable' => false, 'searchable' => false],
+            __('modules.lead.leadAgent') => ['data' => 'agent_name', 'name' => 'users.name'],
             __('modules.lead.client_email') => ['data' => 'client_email', 'name' => 'client_email'],
             __('app.mobile') => ['data' => 'mobile', 'name' => 'mobile'],
-            __('app.leadValue') => ['data' => 'value', 'name' => 'value'],
-            __('modules.lead.leadAgent') => ['data' => 'agent_name', 'name' => 'users.name'],
-            __('modules.lead.nextFollowUp') => ['data' => 'next_follow_up_date', 'name' => 'next_follow_up_date', 'orderable' => false, 'searchable' => false],
-            __('app.createdOn') => ['data' => 'created_at', 'name' => 'created_at'],
             __('app.status') => ['data' => 'status', 'name' => 'status', 'exportable' => false],
             __('app.leadStatus') => ['data' => 'leadStatus', 'name' => 'leadStatus', 'visible' => false, 'orderable' => false, 'searchable' => false],
             Column::computed('action', __('app.action'))

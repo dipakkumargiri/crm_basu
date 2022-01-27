@@ -161,37 +161,43 @@
                                             <input type="tel" name="mobile" id="mobile" class="mobile" autocomplete="nope" value="{{ $mobileNo ?? '' }}">
                                         </div>
                                     </div>
-                                    <div class="col-md-3 ">
+                                    <div class="col-md-3">
                                         <div class="form-group">
-                                            <label>@lang('modules.clients.officePhoneNumber')</label>
-                                            <input type="text" name="office_phone" id="office_phone"  value="{{ $leadDetail->office_phone ?? '' }}" class="form-control">
-                                        </div>
-                                    </div>
-                                <div class="col-md-3 ">
-                                        <div class="form-group">
-                                            <label>@lang('modules.stripeCustomerAddress.city')</label>
-                                            <input type="text" name="city" id="city" value="{{ $leadDetail->city ?? '' }}" class="form-control">
+                                            <label for="">@lang('modules.clients.country')</label>
+                                            <select class="select2 form-control" name="cog_countries_id" id="cog_countries_id"
+                                                data-style="form-control">
+                                                    @forelse($Allcountries as $coun)
+                                                    <option value="{{ $coun->id }}">{{ ucwords($coun->name) }}</option>
+                                                    @endforeach
+                                                </select>
                                         </div>
                                     </div>
                                     <div class="col-md-3 ">
                                         <div class="form-group">
                                             <label>@lang('modules.stripeCustomerAddress.state')</label>
-                                            <input type="text" name="state" id="state"  value="{{ $leadDetail->state ?? '' }}"   class="form-control">
-                                        </div>
+                                            <select class="selectpicker form-control select-category" data-placeholder="@lang('modules.stripeCustomerAddress.state')"  id="state_id" name="state_id">                                                 
+                                              </select>
+                                         </div>
+                                    </div>
+                                   
+                                <div class="col-md-3 ">
+                                        <div class="form-group">
+                                            <label>@lang('modules.stripeCustomerAddress.city')</label>
+                                            <select class="selectpicker form-control select-category" data-placeholder="@lang('modules.stripeCustomerAddress.city')"  id="city_id" name="city_id">                                                 
+                                            </select>
+                                          </div>
                                     </div>
                                    
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-3">
+                                <div class="col-md-3 ">
                                         <div class="form-group">
-                                            <label for="">@lang('modules.clients.country')</label>
-                                            <select class="select2 form-control"  id="country_id" name="country_id">
-                                                @foreach($countries as $country)
-                                                    <option @if(isset($leadDetail->country) && $leadDetail->country == $country->nicename) selected @endif value="{{ $country->id }}">{{ $country->nicename }}</option>
-                                                @endforeach
-                                            </select>
+                                            <label>@lang('modules.clients.officePhoneNumber')</label>
+                                            <input type="text" name="office_phone" id="office_phone"  value="{{ $leadDetail->office_phone ?? '' }}" class="form-control">
                                         </div>
                                     </div>
+
+
                                     <div class="col-md-3 ">
                                         <div class="form-group">
                                             <label>@lang('modules.stripeCustomerAddress.postalCode')</label>
@@ -236,10 +242,10 @@
                                     
                                 </div>
                                 </div>
-
+                             <!--
                                 <h3 class="box-title m-t-20">@lang('modules.client.clientOtherDetails')</h3>
                                 <hr>
-                                <!--/row-->
+                                <!--/row
                                 <div class="row">
 
                                     <div class="col-md-3">
@@ -248,7 +254,7 @@
                                             <input type="text" name="skype" id="skype" class="form-control">
                                         </div>
                                     </div>
-                                    <!--/span-->
+                                    <!--/span
 
                                     <div class="col-md-3">
                                         <div class="form-group">
@@ -256,7 +262,7 @@
                                             <input type="text" name="linkedin" id="linkedin" class="form-control">
                                         </div>
                                     </div>
-                                    <!--/span-->
+                                    <!--/span
 
                                     <div class="col-md-3">
                                         <div class="form-group">
@@ -264,7 +270,7 @@
                                             <input type="text" name="twitter" id="twitter" class="form-control">
                                         </div>
                                     </div>
-                                    <!--/span-->
+                                    <!--/span
 
                                     <div class="col-md-3">
                                         <div class="form-group">
@@ -272,9 +278,12 @@
                                             <input type="text" name="facebook" id="facebook" class="form-control">
                                         </div>
                                     </div>
-                                    <!--/span-->
+                                    <!--/span
                                 </div>
-                                <!--/row-->
+                                <!--/row
+
+                                -->
+                                <!--
                                 <div class="row">
                                    
                                     <div class="col-md-3">
@@ -284,6 +293,8 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                -->
                                 <!--/row-->
 
                                 <div class="row">
@@ -344,6 +355,47 @@
                                     @endif
 
                                 </div>
+                                <h3 class="box-title ">@lang('app.leadInformation')</h3>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                    <input type="hidden" name="client_type" id="client_type">
+                                        <label>@lang('app.assignTo')</label>
+                                      <!--  <a href="javascript:;"  id="addLeadAgent" class="btn btn-xs btn-outline btn-success"><i
+                                                            class="fa fa-plus"></i> @lang('app.add') @lang('app.leadAgent')</a>--></label>
+                                            <select class="select2 form-control" data-placeholder="@lang('modules.tickets.chooseAgents')" id="agent_id" name="agent_id">
+                                                <option value="">@lang('modules.tickets.chooseAgents')</option>
+                                                @foreach($leadAgents as $emp)
+                                                    <option value="{{ $emp->id }}">{{ ucwords($emp->user->name) }} @if($emp->user->id == $user->id)
+                                                            (YOU) @endif</option>
+                                                @endforeach
+                                            </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>@lang('app.changeStatus')</label>
+                                        <select class="form-control" name="status" id="status">
+                                            <option>--Select--</opton>
+                                            <option value="pending">pending</opton>
+                                            <option value="inprocess">inprocess</opton>
+                                            <option value="converted">converted</opton>
+                                       </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>@lang('app.changeStages')</label>
+                                        <select class="form-control" name="stages" id="stages">
+                                            <option value="Discussion">Discussion</opton>
+                                            <option value="Docu Sign">Docu Sign</opton>
+                                       </select>
+                                    </div>
+                                </div>
+                               </div> 
+                                <!--
                                 <div class="row">
                                     <div class="col-xs-12">
                                         <label>@lang('app.shippingAddress')</label>
@@ -352,6 +404,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                -->
                                 <div class="row">
                                     <div class="col-xs-12">
                                         <label>@lang('app.note')</label>
@@ -360,6 +413,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!--
                                 <div class="row" style="margin-bottom: 20px;">
                                     <div class="col-md-4">
                                         <div class="form-group">
@@ -414,6 +468,8 @@
                                             </div>
                                     </div>
                                 </div>
+
+                                -->
                             </div>
                             <div class="form-actions">
                                 <button type="submit" id="save-form" class="btn btn-success"> <i class="fa fa-check"></i> @lang('app.save')</button>
@@ -456,6 +512,10 @@
 <script src="{{ asset('plugins/bower_components/summernote/dist/summernote.min.js') }}"></script>
 
 <script>
+ $('#cog_countries_id').val('<?php echo $leadDetail->cog_countries_id; ?>');
+    $(document).ready(function(){
+        $("#cog_countries_id").trigger("click");
+});
     function checkboxChange(parentClass, id){
         var checkedData = '';
         $('.'+parentClass).find("input[type= 'checkbox']:checked").each(function () {
@@ -556,6 +616,73 @@
             $('#password').removeAttr('readonly');
         }
     });
+    $('#cog_countries_id').on('click',function(){
+     //   alert($(this).val());
+        var country_id = $(this).val();
+        getState(country_id);
+    });
+    function getState(country_id){
+            var url = "{{route('admin.leads.getState')}}";
+            var token = "{{ csrf_token() }}";
+            $.easyAjax({
+            url: url,
+            type: "POST",
+            data: {'_token': token, country_id: country_id},
+            success: function (data) {
+                console.log(data);
+                var options = [];
+                var rData = [];
+                rData = data.AllStates;
+                $.each(rData, function( index, value ) {
+                    var selectData = '';
+                    selectData = '<option value="'+value.id+'">'+value.name+'</option>';
+                    options.push(selectData);
+                });
+                $('#state_id').html(options);
+                $('#state_id').val('<?php echo $leadDetail->cog_state_id; ?>');
+                var state_id='<?php echo $leadDetail->cog_state_id; ?>';
+               if(state_id!=''){
+                $("#state_id").trigger("change");
+               }
+                $('#state_id').selectpicker('refresh');
+               
+
+            }
+        })
+        }
+        $('#state_id').on('change',function(){
+           // alert($(this).val());
+            var state_id = $(this).val();
+            getCity(state_id);
+        });
+        function getCity(state_id){
+                var url = "{{route('admin.leads.getCity')}}";
+                var token = "{{ csrf_token() }}";
+                $.easyAjax({
+                url: url,
+                type: "POST",
+                data: {'_token': token, state_id: state_id},
+                success: function (data) {
+                    console.log(data);
+                    var options = [];
+                    var rData = [];
+                    rData = data.AllCities;
+                    $.each(rData, function( index, value ) {
+                        var selectData = '';
+                        selectData = '<option value="'+value.id+'">'+value.name+'</option>';
+                        options.push(selectData);
+                    });
+                    $('#city_id').html(options);
+                    $('#city_id').val('<?php echo $leadDetail->cog_city_id; ?>');
+                    $('#city_id').selectpicker('refresh');
+    
+                }
+            })
+            }
+            $('#agent_id').val('<?php echo $leadDetail->agent_id; ?>');
+            $('#client_type').val('<?php echo $leadDetail->client_type; ?>');
+            
+           
 </script>
 @endpush
 

@@ -12,7 +12,7 @@ use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
-
+use App\Notes;
 class ClientDocsController extends AdminBaseController
 {
 
@@ -144,10 +144,13 @@ class ClientDocsController extends AdminBaseController
                 if ($value != '' && $name != '' && $value != null && $name != null) {
                     $upload = can_upload($value->getSize() / (1000 * 1024));
                     if ($upload) {
+                        if($request->type='2'){
+                            $res=ClientDocs::where('user_id',$request->user_id)->where('type','2')->delete();
+                        }
                         $file = new ClientDocs();
                         $file->user_id = $request->user_id;
                         $file->hashname = Files::uploadLocalOrS3($value, 'client-docs/' . $request->user_id);
-
+                        $file->type =$request->type;
                         $file->name = $name;
                         $file->filename = $value->getClientOriginalName();
                         $file->size = $value->getSize();
@@ -162,11 +165,14 @@ class ClientDocsController extends AdminBaseController
         if ($limitReached) {
             return Reply::error(__('messages.storageLimitExceed', ['here' => '<a href=' . route('admin.billing.packages') . '>Here</a>']));
         }
-
-        $this->ClientDocs = ClientDocs::where('user_id', $request->user_id)->get();
-
+        if($request->type='2'){
+         $this->ClientDocs = ClientDocs::where('user_id', $request->user_id)->where('type','2')->get();
+        }else{
+            $this->ClientDocs = ClientDocs::where('user_id', $request->user_id)->where('type','1')->get();
+        }
+        
         $view = view('admin.clients.docs-list', $this->data)->render();
-
+      
         return Reply::successWithData(__('messages.fileUploaded'), ['html' => $view]);
     }
 
@@ -178,9 +184,10 @@ class ClientDocsController extends AdminBaseController
      */
     public function show($id)
     {
+        
         $this->client       = User::findClient($id);
         $this->clientDetail = ClientDetails::where('user_id', '=', $this->client->id)->first();
-        $this->clientDocs   = clientDocs::where('user_id', '=', $this->client->id)->get();
+        $this->clientDocs   = clientDocs::where('user_id', '=', $this->client->id)->where('type','1')->get();
         $clientController   = new ManageClientsController();
         $this->clientStats  = $clientController->clientStats($id);
 
@@ -250,5 +257,43 @@ class ClientDocsController extends AdminBaseController
         $file = ClientDocs::findOrFail($id);
         return download_local_s3($file, 'client-docs/' . $file->user_id . '/' . $file->hashname);
     }
+
+    public function clientquestion($id){
+        $this->client       = User::findClient($id);
+        $this->clientDetail = ClientDetails::where('user_id', '=', $this->client->id)->first();
+        $this->clientDocs   = clientDocs::where('user_id', '=', $this->client->id)->where('type',2)->get();
+        $clientController   = new ManageClientsController();
+        $this->clientStats  = $clientController->clientStats($id);
+
+        return view('admin.clients.questiony', $this->data);
+    }   
+    public function quickCreateQuestion($id)
+    {
+       // echo $id;die;
+        $this->clientID = $id;
+        $this->upload = can_upload();
+        return view('admin.clients.docs-create-question', $this->data);
+    }
+    public function buyer_doucument($id)
+    {
+        
+        
+        $this->client       = User::findClient($id);
+        $this->clientDetail = ClientDetails::where('user_id', '=', $this->client->id)->first();
+        $this->clientDocs   = clientDocs::where('user_id', '=', $this->client->id)->get();
+        $clientController   = new ManageClientsController();
+        $this->clientStats  = $clientController->clientStats($id);
+       
+        return view('admin.clients.docs_buyer', $this->data);
+    }
+
+    public function quick_create_buer($id)
+    {
+      //  echo 'ddd';die;
+        $this->clientID = $id;
+        $this->upload = can_upload();
+        return view('admin.clients.docs-create-buyer', $this->data);
+    }
+
 
 }

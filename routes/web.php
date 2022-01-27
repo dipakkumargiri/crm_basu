@@ -44,6 +44,7 @@ Route::get('/gantt-chart/{id}', ['uses' => 'Front\HomeController@gantt'])->name(
 Route::get('/lead-form/{id}', ['uses' => 'Front\HomeController@leadForm'])->name('front.leadForm');
 Route::get('/ticket-form/{id}', ['uses' => 'Front\HomeController@ticketForm'])->name('front.ticketForm');
 Route::post('/lead-form/leadStore', ['uses' => 'Front\HomeController@leadStore'])->name('front.leadStore');
+Route::post('/lead-form/enqueryStore', ['uses' => 'Front\HomeController@enqueryStore'])->name('front.enqueryStore');
 Route::get('/proposal/{id}', ['uses' => 'Front\HomeController@proposal'])->name('front.proposal');
 Route::get('/proposal/download/{id}', ['uses' => 'Front\HomeController@downloadProposal'])->name('front.download-proposal');
 Route::get('/proposal-action/{id}', ['uses' => 'Front\HomeController@proposalAction'])->name('front.proposal-action');
@@ -144,7 +145,23 @@ Route::group(['middleware' => 'auth'], function () {
             Route::resource('/packages', 'SuperAdminPackageController');
             Route::get('/clientDatabse',['uses' => 'SuperAdminPackageController@clientDatabse'])->name('packages.clientDatabse');
             Route::get('/addDatabase',['uses' => 'SuperAdminPackageController@addDatabase'])->name('packages.addDatabase');
-
+            Route::get('/databaseExport',['uses' => 'SuperAdminPackageController@databaseExport'])->name('packages.databaseExport');
+            Route::get('/viewDetails/{dBIdId}', ['uses' => 'SuperAdminPackageController@viewDetails'])->name('packages.viewDetails');
+            Route::get('/deleteClent/{dBIdId}', ['uses' => 'SuperAdminPackageController@deleteClent'])->name('packages.deleteClent');
+            Route::get('/countryList',['uses' => 'SuperAdminPackageController@countryList'])->name('packages.countryList');
+            Route::get('/deleteCountry/{dBIdId}', ['uses' => 'SuperAdminPackageController@deleteCountry'])->name('packages.deleteCountry');
+            Route::get('/addCountry',['uses' => 'SuperAdminPackageController@addCountry'])->name('packages.addCountry');
+            Route::get('/stateList',['uses' => 'SuperAdminPackageController@stateList'])->name('packages.stateList');
+            Route::get('/deleteState/{dBIdId}', ['uses' => 'SuperAdminPackageController@deleteState'])->name('packages.deleteState');
+            Route::get('/addState',['uses' => 'SuperAdminPackageController@addState'])->name('packages.addState');
+            Route::get('/cityList',['uses' => 'SuperAdminPackageController@cityList'])->name('packages.cityList');
+            Route::get('/deleteCity/{dBIdId}', ['uses' => 'SuperAdminPackageController@deleteCity'])->name('packages.deleteCity');
+          
+            
+            
+            
+            
+            
             // Companies routes
             Route::get('companies/data', ['uses' => 'SuperAdminCompanyController@data'])->name('companies.data');
             Route::get('companies/editPackage/{companyId}', ['uses' => 'SuperAdminCompanyController@editPackage'])->name('companies.edit-package.get');
@@ -154,7 +171,11 @@ Route::group(['middleware' => 'auth'], function () {
             Route::post('companies/verify-user', ['uses' => 'SuperAdminCompanyController@verifyUser'])->name('companies.verifyUser');
             Route::post('/companies', ['uses' => 'SuperAdminCompanyController@store']);
             Route::post('/companies/{id}/login', 'SuperAdminCompanyController@loginAsCompany')->name('companies.loginAsCompany');
-
+            Route::post('companies/saveClientDataBase',['uses' => 'SuperAdminCompanyController@save_client_data_base'])->name('companies.saveClientDataBase');
+            Route::post('companies/saveCountry',['uses' => 'SuperAdminCompanyController@saveCountry'])->name('companies.saveCountry');
+            Route::post('companies/saveState',['uses' => 'SuperAdminCompanyController@saveState'])->name('companies.saveState');
+          
+            
             Route::resource('/companies', 'SuperAdminCompanyController');
             Route::get('invoices/data', ['uses' => 'SuperAdminInvoiceController@data'])->name('invoices.data');
             Route::resource('/invoices', 'SuperAdminInvoiceController', ['only' => ['index']]);
@@ -331,7 +352,14 @@ Route::group(['middleware' => 'auth'], function () {
                 Route::get('/project-dashboard', 'AdminDashboardController@projectDashboard')->name('projectDashboard');
                 Route::get('/ticket-dashboard', 'AdminDashboardController@ticketDashboard')->name('ticketDashboard');
                 Route::post('/dashboard/widget/{dashboardType}', 'AdminDashboardController@widget')->name('dashboard.widget');
-
+                Route::get('/clientDatabase', 'AdminDashboardController@clientDatabase')->name('clientDatabase');
+                Route::post('saveClientDataBase', 'AdminDashboardController@saveClientDataBase')->name('saveClientDataBase');
+                Route::get('/deleteClent/{dBIdId}','AdminDashboardController@deleteClent')->name('deleteClent');
+                Route::get('/sellerQuerSet','AdminDashboardController@sellerQuerSet')->name('sellerQuerSet');
+                Route::post('/saveSellerQuery','AdminDashboardController@saveSellerQuery')->name('saveSellerQuery');
+                Route::get('/addDatabase','AdminDashboardController@addDatabase')->name('addDatabase');
+                Route::get('/viewDetails/{dBIdId}','AdminDashboardController@viewDetails')->name('viewDetails');
+          
 
                 Route::get('designations/quick-create', ['uses' => 'ManageDesignationController@quickCreate'])->name('designations.quick-create');
                 Route::post('designations/quick-store', ['uses' => 'ManageDesignationController@quickStore'])->name('designations.quick-store');
@@ -360,6 +388,19 @@ Route::group(['middleware' => 'auth'], function () {
                 Route::get('clients/create/{clientID?}', ['uses' => 'ManageClientsController@create'])->name('clients.create');
                 Route::resource('clients', 'ManageClientsController', ['except' => ['create']]);
                 Route::post('clients/getSubcategory', ['uses' => 'ManageClientsController@getSubcategory'])->name('clients.getSubcategory');
+                
+                //Seller
+                Route::get('/seller', ['uses' => 'ManageClientsController@seller'])->name('seller');
+                //buyer
+                Route::get('/buyer', ['uses' => 'ManageClientsController@buyer'])->name('buyer');
+                Route::get('/edit_buyer/{id}', ['uses' => 'ManageClientsController@edit_buyer'])->name('edit_buyer');
+                Route::get('/show_buyer/{id}', ['uses' => 'ManageClientsController@show_buyer'])->name('show_buyer');
+                Route::put('/update_buyer/{id}', ['uses' => 'ManageClientsController@update_buyer'])->name('update_buyer');
+                Route::post('leads/getState', ['uses' => 'LeadController@getState'])->name('leads.getState');
+                Route::post('leads/getCity', ['uses' => 'LeadController@getCity'])->name('leads.getCity');
+                Route::get('buyer_doucument/{id}', ['uses' => 'ClientDocsController@buyer_doucument'])->name('buyer_doucument');
+                Route::get('quick_create_buer/{id}', ['uses' => 'ClientDocsController@quick_create_buer'])->name('quick_create_buer');      
+                Route::get('show_buyer_note/{id}', ['uses' => 'ClientNotesController@show_buyer_note'])->name('show_buyer_note');
 
                 Route::get('leads/kanban-board', ['uses' => 'LeadController@kanbanboard'])->name('leads.kanbanboard');
                 Route::get('leads/kanban-board', ['uses' => 'LeadController@kanbanboard'])->name('leads.kanbanboard');
@@ -386,6 +427,11 @@ Route::group(['middleware' => 'auth'], function () {
                 Route::get('leadType/create-cat', ['uses' => 'LeadTypeController@create'])->name('leadType.create-cat');
                 Route::post('leadType/store-cat', ['uses' => 'LeadTypeController@storeCat'])->name('leadType.store-cat');
                 Route::resource('leadType', 'LeadTypeController');
+                
+                Route::get('leadStage/create-cat', ['uses' => 'LeadStageController@create'])->name('leadStage.create-cat');
+                Route::post('leadStage/store-cat', ['uses' => 'LeadStageController@storeCat'])->name('leadStage.store-cat');
+                Route::resource('leadStage', 'LeadStageController');
+                
                 Route::resource('leadCategory', 'LeadCategoryController');
                 Route::resource('events-type', 'EventTypeController');
                 Route::resource('events-category', 'EventCategoryController');
@@ -679,7 +725,13 @@ Route::group(['middleware' => 'auth'], function () {
 
                         Route::get('client-docs/download/{id}', ['uses' => 'ClientDocsController@download'])->name('client-docs.download');
                         Route::get('client-docs/quick-create/{id}', ['uses' => 'ClientDocsController@quickCreate'])->name('client-docs.quick-create');
+  
+                      
+                        Route::get('client-docs/quick-create-question/{id}', ['uses' => 'ClientDocsController@quickCreateQuestion'])->name('client-docs.quick-create-question');
+                       
                         Route::resource('client-docs', 'ClientDocsController');
+                        Route::get('clientquestion/{id}', ['uses' => 'ClientDocsController@clientquestion'])->name('clientquestion');
+               
                     }
                 );
 
@@ -1107,6 +1159,9 @@ Route::group(['middleware' => 'auth'], function () {
             Route::resource('project-template-member', 'ProjectMemberTemplateController');
 
             Route::resource('project-template-task', 'ProjectTemplateTaskController');
+            
+            Route::post('leads/getState', ['uses' => 'MemberLeadController@getState'])->name('leads.getState');
+            Route::post('leads/getCity', ['uses' => 'MemberLeadController@getCity'])->name('leads.getCity');
 
             Route::get('leads/data', ['uses' => 'MemberLeadController@data'])->name('leads.data');
             Route::post('leads/change-status', ['uses' => 'MemberLeadController@changeStatus'])->name('leads.change-status');
@@ -1118,6 +1173,13 @@ Route::group(['middleware' => 'auth'], function () {
             Route::post('leads/follow-up-delete/{id}', ['uses' => 'MemberLeadController@deleteFollow'])->name('leads.follow-up-delete');
             Route::get('leads/follow-up-sort', ['uses' => 'MemberLeadController@followUpSort'])->name('leads.follow-up-sort');
             Route::resource('leads', 'MemberLeadController');
+            
+            Route::resource('clients', 'MemberClientsController', ['except' => ['create']]);
+            Route::post('clients/getSubcategory', ['uses' => 'MemberClientsController@getSubcategory'])->name('clients.getSubcategory');
+            //Seller//
+
+            Route::get('/seller', ['uses' => 'MemberClientsController@seller'])->name('seller');
+            Route::get('/buyer', ['uses' => 'MemberClientsController@buyer'])->name('buyer');
 
             // Lead Files
             Route::get('lead-files/download/{id}', ['uses' => 'LeadFilesController@download'])->name('lead-files.download');
@@ -1355,7 +1417,6 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('clients/data', ['uses' => 'MemberClientsController@data'])->name('clients.data');
             Route::get('clients/create/{clientID?}', ['uses' => 'MemberClientsController@create'])->name('clients.create');
             Route::resource('clients', 'MemberClientsController', ['except' => ['create']]);
-
 
             Route::get('employees/docs-create/{id}', ['uses' => 'MemberEmployeesController@docsCreate'])->name('employees.docs-create');
             Route::get('employees/tasks/{userId}/{hideCompleted}', ['uses' => 'MemberEmployeesController@tasks'])->name('employees.tasks');
