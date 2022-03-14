@@ -112,7 +112,6 @@ class ManageEmployeesController extends AdminBaseController
      */
     public function store(StoreRequest $request)
     {
-        //exit;
 
         $company = company();
 
@@ -126,7 +125,6 @@ class ManageEmployeesController extends AdminBaseController
         DB::beginTransaction();
         try {
             $data = $request->all();
-
             $data['password'] = Hash::make($request->password);
 
             if ($request->hasFile('image')) {
@@ -145,16 +143,14 @@ class ManageEmployeesController extends AdminBaseController
                 'employee_id' => $request->employee_id,
                 'address' => $request->address,
                 'hourly_rate' => $request->hourly_rate,
-                /*'slack_username' => $request->slack_username,
+                'slack_username' => $request->slack_username,
                 'joining_date' => Carbon::createFromFormat($this->global->date_format, $request->joining_date)->format('Y-m-d'),
-                'last_date' => ($request->last_date != '') ? Carbon::createFromFormat($this->global->date_format, $request->last_date)->format('Y-m-d') : null,*/
-
+                'last_date' => ($request->last_date != '') ? Carbon::createFromFormat($this->global->date_format, $request->last_date)->format('Y-m-d') : null,
                 'department_id' => $request->department,
                 'designation_id' => $request->designation,
             ]);
 
             $tags = json_decode($request->tags);
-           
             if (!empty($tags)) {
                 foreach ($tags as $tag) {
                     // check or store skills
@@ -173,9 +169,8 @@ class ManageEmployeesController extends AdminBaseController
             }
 
             $role = Role::where('name', 'employee')->first();
-           
             $user->attachRole($role->id);
-           DB::commit();
+            DB::commit();
         } catch (\Swift_TransportException $e) {
             DB::rollback();
             return Reply::error('Please configure SMTP details to add employee. Visit Settings -> Email setting to set SMTP', 'smtp_error');

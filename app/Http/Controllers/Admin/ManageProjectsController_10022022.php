@@ -27,7 +27,6 @@ use App\TaskboardColumn;
 use App\TaskCategory;
 use App\ClientCategory;
 use App\ClientSubCategory;
-use App\Lead;
 use App\LeadAgent;
 use App\LeadStage;
 use App\LeadSource;
@@ -124,8 +123,8 @@ class ManageProjectsController extends AdminBaseController
         $this->marketing_status = ProjectMarketingStatus::all();
         $this->templates = ProjectTemplate::all();
         $this->currencies = Currency::all();
-        // $this->industries = ClientCategory::all();
-        // $this->subindustries = ClientSubCategory::all();
+        $this->industries = ClientCategory::all();
+        $this->subindustries = ClientSubCategory::all();
         $this->leadAgents = LeadAgent::with('user')->get();
         $this->stages = LeadStage::all();
         $this->sources = LeadSource::all();
@@ -197,44 +196,25 @@ class ManageProjectsController extends AdminBaseController
         }
 
         $project->hours_allocated = $request->hours_allocated;
-        $project->lead_id = $request->lead_id;
-        $project->agent_id = $request->agent_id;
-        $project->franchise = $request->franchise;
-        $project->franchise_office = $request->franchise_office;
-        $project->marketing_status_id = $request->marketing_status_id;
         $project->status = $request->status;
-        $project->has_image = $request->has_image;
-        $project->project_admin = $this->user->id;
+
         $project->save();
 
-        // if ($request->template_id) {
-            // $template = ProjectTemplate::findOrFail($request->template_id);
+        if ($request->template_id) {
+            $template = ProjectTemplate::findOrFail($request->template_id);
 
-            // foreach ($template->members as $member) {
-            
-                $agent = LeadAgent::where('id', $request->agent_id)->first();
-                
-                $user_id = ($agent) ? $agent->user_id : '';
-                
+            foreach ($template->members as $member) {
                 $projectMember = new ProjectMember();
-                $project_id = $project->id;
-                // $project_id = 1;
-                $projectMember->user_id    = $user_id;
-                $projectMember->project_id = $project_id;
+
+                $projectMember->user_id    = $member->user_id;
+                $projectMember->project_id = $project->id;
                 $projectMember->save();
-                
-                $member = ProjectMember::firstOrCreate([
-                    'user_id' => $user_id,
-                    'project_id' => $project_id
-                ]);
-    
-                $this->logProjectActivity($project_id, ucwords($member->user->name) . ' ' . __('messages.isAddedAsProjectMember'));
-               
-                /*if ($member->user_id == $this->user->id) {
+
+                if ($member->user_id == $this->user->id) {
                     $memberExistsInTemplate = true;
-                }*/
-            // }
-            /*foreach ($template->tasks as $task) {
+                }
+            }
+            foreach ($template->tasks as $task) {
                 $projectTask = new Task();
 
                 $projectTask->project_id  = $project->id;
@@ -261,152 +241,34 @@ class ManageProjectsController extends AdminBaseController
                         ]
                     );
                 }
-            }*/
-        // }
-        
-        //Added by Basu
-        $ProjectAggrement = new ProjectAggrement();
-        $ProjectAggrement->project_id = $project_id;
-        $ProjectAggrement->reffered_by = $request->reffered_by;
-        $ProjectAggrement->reffered_fee = $request->reffered_fee;
-        $ProjectAggrement->agreement_type = $request->agreement_type;
-        $ProjectAggrement->agency_type = $request->agency_type;
-        $ProjectAggrement->save();
-        
-        
-        $ProjectBusiness = new ProjectBusiness();
-        $ProjectBusiness->project_id = $project_id;
-        $ProjectBusiness->represented = $request->represented;
-        $ProjectBusiness->established = $request->established;
-        $ProjectBusiness->owned = $request->owned;
-        $ProjectBusiness->from_ownership = $request->from_ownership;
-        $ProjectBusiness->comments = $request->comments;
-        $ProjectBusiness->down_payment = $request->down_payment;
-        $ProjectBusiness->vat_value = $request->vat_value;
-        $ProjectBusiness->value_tax = $request->value_tax;
-        $ProjectBusiness->realestate_price = $request->realestate_price;
-        $ProjectBusiness->training_support = $request->training_support;
-        $ProjectBusiness->nooftraining_week = $request->nooftraining_week;
-        $ProjectBusiness->sale_reason = $request->sale_reason;
-        $ProjectBusiness->save();
-        
-        
-        $ProjectDetail = new ProjectDetail();
-        $ProjectDetail->project_id = $project_id;
-        $ProjectDetail->ad_headline = $request->ad_headline;
-        $ProjectDetail->listing_url = $request->listing_url;
-        $ProjectDetail->office_location = $request->office_location;
-        $ProjectDetail->promoted = $request->promoted;
-        $ProjectDetail->agent_promoted = $request->agent_promoted;
-        $ProjectDetail->project_summary = $request->project_summary;
-        $ProjectDetail->business_history = $request->business_history;
-        $ProjectDetail->competitive_overview = $request->competitive_overview;
-        $ProjectDetail->potential_growth = $request->potential_growth;
-        $ProjectDetail->showing_instruction = $request->showing_instruction;
-        $ProjectDetail->showing_comments = $request->showing_comments;
-        $ProjectDetail->general_location = $request->general_location;
-        $ProjectDetail->gmap_url = $request->gmap_url;
-        $ProjectDetail->address = $request->address;
-        $ProjectDetail->post_code = $request->post_code;
-        $ProjectDetail->country_id = $request->country_id;
-        $ProjectDetail->state_id = $request->state_id;
-        $ProjectDetail->city_id  = $request->city_id;
-        $ProjectDetail->save();
-        
-        $ProjectGeneralAsset = new ProjectGeneralAsset();
-        $ProjectGeneralAsset->project_id = $project_id;
-        $ProjectGeneralAsset->business_hours  = $request->business_hours;
-        $ProjectGeneralAsset->weekly_hours  = $request->weekly_hours;
-        $ProjectGeneralAsset->relocation  = $request->relocation;
-        $ProjectGeneralAsset->franchisee_operations  = $request->franchisee_operations;
-        $ProjectGeneralAsset->franchise_mart  = $request->franchise_mart;
-        $ProjectGeneralAsset->home_based  = $request->home_based;
-        $ProjectGeneralAsset->no_of_emp  = $request->no_of_emp;
-        $ProjectGeneralAsset->inventory_value  = $request->inventory_value;
-        $ProjectGeneralAsset->ff_value  = $request->ff_value;
-        $ProjectGeneralAsset->accounts_recieveable  = $request->accounts_recieveable;
-        $ProjectGeneralAsset->leashold  = $request->leashold;
-        $ProjectGeneralAsset->estate_value  = $request->estate_value;
-        $ProjectGeneralAsset->other_assets  = $request->other_assets;
-        $ProjectGeneralAsset->total_assets  = $request->total_assets;
-        $ProjectGeneralAsset->inventory_inlcuded  = $request->inventory_inlcuded;
-        $ProjectGeneralAsset->fe_inlcuded  = $request->fe_inlcuded;
-        $ProjectGeneralAsset->accounts_recieveable_include  = $request->accounts_recieveable_include;
-        $ProjectGeneralAsset->leashold_include  = $request->leashold_include;
-        $ProjectGeneralAsset->estate_value_available  = $request->estate_value_available;
-        $ProjectGeneralAsset->estate_value_include  = $request->estate_value_include;
-        $ProjectGeneralAsset->other_assets_inlcuded  = $request->other_assets_inlcuded;
-        $ProjectGeneralAsset->type_of_location  = $request->type_of_location;
-        $ProjectGeneralAsset->facilities  = $request->facilities;
-        $ProjectGeneralAsset->monthly_rent  = $request->monthly_rent;
-        $ProjectGeneralAsset->square_units  = $request->square_units;
-        $ProjectGeneralAsset->lease_expiration  = Carbon::createFromFormat($this->global->date_format, $request->lease_expiration)->format('Y-m-d');;
-        $ProjectGeneralAsset->square_units  = $request->square_units;
-        $ProjectGeneralAsset->save();
-        
-        
-        $ProjectFinance = new ProjectFinance();
-        $ProjectFinance->project_id = $project_id;
-        $ProjectFinance->finance_year = $request->finance_year;
-        $ProjectFinance->date_source = $request->date_source;
-        $ProjectFinance->total_sales = $request->total_sales;
-        $ProjectFinance->cost_ship = $request->cost_ship;
-        $ProjectFinance->total_expenses = $request->total_expenses;
-        $ProjectFinance->owner_salary = $request->owner_salary;
-        $ProjectFinance->beneficial_addblocks = $request->beneficial_addblocks;
-        $ProjectFinance->interest = $request->interest;
-        $ProjectFinance->depreciation = $request->depreciation;
-        $ProjectFinance->other = $request->other;
-        $ProjectFinance->seller_earnings = $request->seller_earnings;
-        $ProjectFinance->owner_financing = $request->owner_financing;
-        $ProjectFinance->owner_financing_interest = $request->owner_financing_interest;
-        $ProjectFinance->ownership_months = $request->ownership_months;
-        $ProjectFinance->ownership_monthly_pay = $request->ownership_monthly_pay;
-        $ProjectFinance->seller_financing = $request->seller_financing;
-        $ProjectFinance->assumable_financing = $request->assumable_financing;
-        $ProjectFinance->assumable_finterest = $request->assumable_finterest;
-        $ProjectFinance->seller_ntcomplete = $request->seller_ntcomplete;
-        $ProjectFinance->no_seller_nincomplete = $request->no_seller_nincomplete;
-        $ProjectFinance->commission_rate = $request->commission_rate;
-        $ProjectFinance->minimum_commission = $request->minimum_commission;
-        $ProjectFinance->fees_retainers = $request->fees_retainers;
-        $ProjectFinance->total_commission = $request->total_commission;
-        $ProjectFinance->my_ncommission = $request->my_ncommission;
-        $ProjectFinance->my_ncommission_split = $request->my_ncommission_split;
-        $ProjectFinance->buyable_broker = $request->buyable_broker;
-        $ProjectFinance->probability_pipeline = $request->probability_pipeline;
-        $ProjectFinance->probability_ofclosing = $request->probability_ofclosing;
-        $ProjectFinance->noof_listed_days = $request->noof_listed_days;
-        $ProjectFinance->sold_price = $request->sold_price;
-        $ProjectFinance->commission = $request->commission;
-        $ProjectFinance->activated_date = Carbon::createFromFormat($this->global->date_format, $request->activated_date)->format('Y-m-d');//
-        $ProjectFinance->save();
-        
+            }
+        }
+
         // To add custom fields data
         if ($request->get('custom_fields_data')) {
             $project->updateCustomFieldData($request->get('custom_fields_data'));
         }
 
-        /*$users = $request->user_id;
+        $users = $request->user_id;
 
         foreach ($users as $user) {
             //            $member = new ProjectMember();
             $member = ProjectMember::firstOrCreate([
                 'user_id' => $user,
-                'project_id' => $project_id
+                'project_id' => $project->id
             ]);
             //            $member->user_id = $user;
-            //            $member->project_id = $project_id;
+            //            $member->project_id = $project->id;
             //            $member->save();
 
-            $this->logProjectActivity($project_id, ucwords($member->user->name) . ' ' . __('messages.isAddedAsProjectMember'));
-        }*/
+            $this->logProjectActivity($project->id, ucwords($member->user->name) . ' ' . __('messages.isAddedAsProjectMember'));
+        }
 
-        $this->logSearchEntry($project_id, 'Project: ' . $project->project_name, 'admin.projects.show', 'project');
+        $this->logSearchEntry($project->id, 'Project: ' . $project->project_name, 'admin.projects.show', 'project');
 
-        $this->logProjectActivity($project_id, ucwords($project->project_name) . ' ' . __('messages.addedAsNewProject'));
+        $this->logProjectActivity($project->id, ucwords($project->project_name) . ' ' . __('messages.addedAsNewProject'));
 
-        return Reply::dataOnly(['projectID' => $project_id]);
+        return Reply::dataOnly(['projectID' => $project->id]);
 
         //return Reply::redirect(route('admin.projects.index'), __('modules.projects.projectUpdated'));
     }
@@ -580,22 +442,11 @@ class ManageProjectsController extends AdminBaseController
      */
     public function edit($id)
     {
-        $this->clients = User::allSeller();
+        $this->clients = User::allClients();
         $this->categories = ProjectCategory::all();
-        $this->project = Project::with('aggrement', 'business', 'detail', 'asset', 'finance', 'lead')->findOrFail($id)->withCustomFields();
-        // echo "<pre>"; print_r($this->project);exit;
+        $this->project = Project::findOrFail($id)->withCustomFields();
         $this->fields = $this->project->getCustomFieldGroupsWithFields()->fields;
         $this->currencies = Currency::all();
-        
-        $this->marketing_status = ProjectMarketingStatus::all();
-        $this->leadAgents = LeadAgent::with('user')->get();
-        $this->stages = LeadStage::all();
-        $this->sources = LeadSource::all();
-        $this->Allcountries = CogCountry::all();
-        $this->AllStates = CogState::all();
-        $this->AllCities = CogCity::all();
-        $this->employees = User::allEmployees()->where('status', 'active');
-        
         return view('admin.projects.edit', $this->data);
     }
 
@@ -667,131 +518,12 @@ class ManageProjectsController extends AdminBaseController
         $project->status = $request->status;
 
         $project->save();
-        $project_id = $project->id;
-        $ProjectAggrement = ProjectAggrement::findOrFail($request->aggrement_id);
-       
-        // $ProjectAggrement = new ProjectAggrement();
-        $ProjectAggrement->project_id = $project_id;
-        $ProjectAggrement->reffered_by = $request->reffered_by;
-        $ProjectAggrement->reffered_fee = $request->reffered_fee;
-        $ProjectAggrement->agreement_type = $request->agreement_type;
-        $ProjectAggrement->agency_type = $request->agency_type;
-        $ProjectAggrement->save();
-         
-        $ProjectBusiness = ProjectBusiness::findOrFail($request->business_id);
-        // $ProjectBusiness = new ProjectBusiness();
-        $ProjectBusiness->project_id = $project_id;
-        $ProjectBusiness->represented = $request->represented;
-        $ProjectBusiness->established = $request->established;
-        $ProjectBusiness->owned = $request->owned;
-        $ProjectBusiness->from_ownership = $request->from_ownership;
-        $ProjectBusiness->comments = $request->comments;
-        $ProjectBusiness->down_payment = $request->down_payment;
-        $ProjectBusiness->vat_value = $request->vat_value;
-        $ProjectBusiness->value_tax = $request->value_tax;
-        $ProjectBusiness->realestate_price = $request->realestate_price;
-        $ProjectBusiness->training_support = $request->training_support;
-        $ProjectBusiness->nooftraining_week = $request->nooftraining_week;
-        $ProjectBusiness->sale_reason = $request->sale_reason;
-        $ProjectBusiness->save();
-        
-        $ProjectDetail = ProjectDetail::findOrFail($request->detail_id);
-        // $ProjectDetail = new ProjectDetail();
-        $ProjectDetail->project_id = $project_id;
-        $ProjectDetail->ad_headline = $request->ad_headline;
-        $ProjectDetail->listing_url = $request->listing_url;
-        $ProjectDetail->office_location = $request->office_location;
-        $ProjectDetail->promoted = $request->promoted;
-        $ProjectDetail->agent_promoted = $request->agent_promoted;
-        $ProjectDetail->project_summary = $request->project_summary;
-        $ProjectDetail->business_history = $request->business_history;
-        $ProjectDetail->competitive_overview = $request->competitive_overview;
-        $ProjectDetail->potential_growth = $request->potential_growth;
-        $ProjectDetail->showing_instruction = $request->showing_instruction;
-        $ProjectDetail->showing_comments = $request->showing_comments;
-        $ProjectDetail->general_location = $request->general_location;
-        $ProjectDetail->gmap_url = $request->gmap_url;
-        $ProjectDetail->address = $request->address;
-        $ProjectDetail->post_code = $request->post_code;
-        $ProjectDetail->country_id = $request->country_id;
-        $ProjectDetail->state_id = $request->state_id;
-        $ProjectDetail->city_id  = $request->city_id;
-        $ProjectDetail->save();
-        
-        $ProjectGeneralAsset = ProjectGeneralAsset::findOrFail($request->asset_id);
-        // $ProjectGeneralAsset = new ProjectGeneralAsset();
-        $ProjectGeneralAsset->project_id = $project_id;
-        $ProjectGeneralAsset->business_hours  = $request->business_hours;
-        $ProjectGeneralAsset->weekly_hours  = $request->weekly_hours;
-        $ProjectGeneralAsset->relocation  = $request->relocation;
-        $ProjectGeneralAsset->franchisee_operations  = $request->franchisee_operations;
-        $ProjectGeneralAsset->franchise_mart  = $request->franchise_mart;
-        $ProjectGeneralAsset->home_based  = $request->home_based;
-        $ProjectGeneralAsset->no_of_emp  = $request->no_of_emp;
-        $ProjectGeneralAsset->inventory_value  = $request->inventory_value;
-        $ProjectGeneralAsset->ff_value  = $request->ff_value;
-        $ProjectGeneralAsset->accounts_recieveable  = $request->accounts_recieveable;
-        $ProjectGeneralAsset->leashold  = $request->leashold;
-        $ProjectGeneralAsset->estate_value  = $request->estate_value;
-        $ProjectGeneralAsset->other_assets  = $request->other_assets;
-        $ProjectGeneralAsset->total_assets  = $request->total_assets;
-        $ProjectGeneralAsset->inventory_inlcuded  = $request->inventory_inlcuded;
-        $ProjectGeneralAsset->fe_inlcuded  = $request->fe_inlcuded;
-        $ProjectGeneralAsset->accounts_recieveable_include  = $request->accounts_recieveable_include;
-        $ProjectGeneralAsset->leashold_include  = $request->leashold_include;
-        $ProjectGeneralAsset->estate_value_available  = $request->estate_value_available;
-        $ProjectGeneralAsset->estate_value_include  = $request->estate_value_include;
-        $ProjectGeneralAsset->other_assets_inlcuded  = $request->other_assets_inlcuded;
-        $ProjectGeneralAsset->type_of_location  = $request->type_of_location;
-        $ProjectGeneralAsset->facilities  = $request->facilities;
-        $ProjectGeneralAsset->monthly_rent  = $request->monthly_rent;
-        $ProjectGeneralAsset->square_units  = $request->square_units;
-        $ProjectGeneralAsset->lease_expiration  = Carbon::createFromFormat($this->global->date_format, $request->lease_expiration)->format('Y-m-d');;
-        $ProjectGeneralAsset->square_units  = $request->square_units;
-        $ProjectGeneralAsset->save();
-        // echo "<pre>"; print_r($ProjectGeneralAsset);die();
-        $ProjectFinance = ProjectFinance::findOrFail($request->finance_id);
-        // $ProjectFinance = new ProjectFinance();
-        $ProjectFinance->project_id = $project_id;
-        $ProjectFinance->finance_year = $request->finance_year;
-        $ProjectFinance->date_source = $request->date_source;
-        $ProjectFinance->total_sales = $request->total_sales;
-        $ProjectFinance->cost_ship = $request->cost_ship;
-        $ProjectFinance->total_expenses = $request->total_expenses;
-        $ProjectFinance->owner_salary = $request->owner_salary;
-        $ProjectFinance->beneficial_addblocks = $request->beneficial_addblocks;
-        $ProjectFinance->interest = $request->interest;
-        $ProjectFinance->depreciation = $request->depreciation;
-        $ProjectFinance->other = $request->other;
-        $ProjectFinance->seller_earnings = $request->seller_earnings;
-        $ProjectFinance->owner_financing = $request->owner_financing;
-        $ProjectFinance->owner_financing_interest = $request->owner_financing_interest;
-        $ProjectFinance->ownership_months = $request->ownership_months;
-        $ProjectFinance->ownership_monthly_pay = $request->ownership_monthly_pay;
-        $ProjectFinance->seller_financing = $request->seller_financing;
-        $ProjectFinance->assumable_financing = $request->assumable_financing;
-        $ProjectFinance->assumable_finterest = $request->assumable_finterest;
-        $ProjectFinance->seller_ntcomplete = $request->seller_ntcomplete;
-        $ProjectFinance->no_seller_nincomplete = $request->no_seller_nincomplete;
-        $ProjectFinance->commission_rate = $request->commission_rate;
-        $ProjectFinance->minimum_commission = $request->minimum_commission;
-        $ProjectFinance->fees_retainers = $request->fees_retainers;
-        $ProjectFinance->total_commission = $request->total_commission;
-        $ProjectFinance->my_ncommission = $request->my_ncommission;
-        $ProjectFinance->my_ncommission_split = $request->my_ncommission_split;
-        $ProjectFinance->buyable_broker = $request->buyable_broker;
-        $ProjectFinance->probability_pipeline = $request->probability_pipeline;
-        $ProjectFinance->probability_ofclosing = $request->probability_ofclosing;
-        $ProjectFinance->noof_listed_days = $request->noof_listed_days;
-        $ProjectFinance->sold_price = $request->sold_price;
-        $ProjectFinance->commission = $request->commission;
-        $ProjectFinance->activated_date = Carbon::createFromFormat($this->global->date_format, $request->activated_date)->format('Y-m-d');//
-        $ProjectFinance->save();
-       
+
         // To add custom fields data
         if ($request->get('custom_fields_data')) {
             $project->updateCustomFieldData($request->get('custom_fields_data'));
         }
+
         $this->logProjectActivity($project->id, ucwords($project->project_name) . __('modules.projects.projectUpdated'));
         return Reply::redirect(route('admin.projects.index'), __('messages.projectUpdated'));
     }
@@ -1152,22 +884,6 @@ class ManageProjectsController extends AdminBaseController
 
         return view('admin.projects.burndown', $this->data);
     }
-    
-    /**
-     * Project discussions
-     *
-     * @param  int $projectId
-     * @return \Illuminate\Http\Response
-     */
-    public function leadInfo(DiscussionDataTable $dataTable, $projectId)
-    {
-        $this->project = Project::findOrFail($projectId);
-        $this->ProjectAggrement = $ProjectAggrement = ProjectAggrement::findOrFail($projectId);;
-        // $this->ProjectAggrement = ProjectAggrement::orderBy('order', 'asc')->get();
-        // dd($this->data);
-        return view('admin.projects.aggrement', $this->data);
-        // return $dataTable->with('project_id', $projectId)->render('admin.projects.aggrement', $this->data);
-    }
 
     /**
      * Project discussions
@@ -1196,25 +912,7 @@ class ManageProjectsController extends AdminBaseController
         $this->discussionReplies = DiscussionReply::with('user')->where('discussion_id', $discussionId)->orderBy('id', 'asc')->get();
         return view('admin.projects.discussion.replies', $this->data);
     }
-        
-    /**
-     * @param $templateId
-     * @return mixed
-     */
-    public function leadData($clientId)
-    {
-        $leadDetail  = [];
-        
-        // $leadDetail = Lead::first($clientId);
-        $leadDetail = Lead::where('client_id', $clientId)->first();
-        // $leadDetail['agent'] = $leadDetail->lead_agent->user->name;
-        // $leadDetail['generated_by'] = $leadDetail->created_by_user->user->name;
-        $user = DB::table('users')->select('name')->where('id', $leadDetail->created_by_id)->first();
-        $leadDetail['created_by_name'] = $user->name;
-        // echo "<pre>"; print_r($leadDetail);exit;
-        return Reply::dataOnly(['leadDetail' => $leadDetail]);
-    }
-    
+
     /**
      * @param $templateId
      * @return mixed

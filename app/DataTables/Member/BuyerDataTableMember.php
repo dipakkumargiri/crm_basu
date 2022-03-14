@@ -8,7 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
-
+use Auth;
 class BuyerDataTableMember extends BaseDataTable
 {
 
@@ -28,8 +28,8 @@ class BuyerDataTableMember extends BaseDataTable
                  <button aria-expanded="false" data-toggle="dropdown" class="btn btn-default dropdown-toggle waves-effect waves-light" type="button"><i class="fa fa-gears "></i></button>
                 <ul role="menu" class="dropdown-menu pull-right">
                  
-                  <li><a href="' . route('admin.show_buyer', [$row->user_id]) . '"><i class="fa fa-search" aria-hidden="true"></i> ' . __('app.view') . '</a></li>
-                  <li><a href="' . route('admin.edit_buyer', [$row->id]) . '"><i class="fa fa-pencil" aria-hidden="true"></i> ' . trans('app.edit') . '</a></li>';
+                  <li><a href="' . route('member.show_buyer', [$row->user_id]) . '"><i class="fa fa-search" aria-hidden="true"></i> ' . __('app.view') . '</a></li>
+                  <li><a href="' . route('member.edit_buyer', [$row->id]) . '"><i class="fa fa-pencil" aria-hidden="true"></i> ' . trans('app.edit') . '</a></li>';
 
                 $action .= '</ul> </div>';
 
@@ -38,7 +38,7 @@ class BuyerDataTableMember extends BaseDataTable
             ->editColumn(
                 'name',
                 function ($row) {
-                    return '<a href="' . route('admin.show_buyer', $row->user_id) . '">' . ucfirst($row->name) . '</a>';
+                    return '<a href="' . route('member.show_buyer', $row->user_id) . '">' . ucfirst($row->name) . '</a>';
                 }
             )
             ->editColumn(
@@ -70,6 +70,7 @@ class BuyerDataTableMember extends BaseDataTable
      */
     public function query(ClientDetails $model)
     {
+      //  var_dump(Auth::user()->id);die;
         $request = $this->request();
 
         $model = $model->join('users', 'client_details.user_id', '=', 'users.id')
@@ -77,6 +78,8 @@ class BuyerDataTableMember extends BaseDataTable
             ->select('client_details.id','client_details.company_id', 'client_details.user_id', 'client_details.name', 'client_details.company_name', 'client_details.email', 'client_details.created_at',
             'client_details.mobile', 'countries.phonecode')
             ->where('client_details.type','1')
+            ->where('client_details.agent_id',Auth::user()->id)
+            ->where('client_details.business_sale_flag','0')
             ->groupBy('client_details.id');
 
         if ($request->startDate !== null && $request->startDate != 'null' && $request->startDate != '') {

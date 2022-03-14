@@ -33,6 +33,14 @@ class Lead extends BaseModel
     {
         return $this->belongsTo(LeadAgent::class, 'agent_id');
     }
+    public function created_by_user()
+    {
+        return $this->belongsTo('App\User', 'created_by_id', 'id');
+    }
+    public function client()
+    {
+        return $this->belongsTo(User::class, 'client_id');
+    }
 
     public function lead_status()
     {
@@ -48,6 +56,11 @@ class Lead extends BaseModel
     {
         return $this->hasMany(LeadFollowUp::class);
     }
+    public function project()
+    {
+        return $this->hasMany(Project::class);
+    }
+    
 
     public function files()
     {
@@ -59,10 +72,7 @@ class Lead extends BaseModel
         return $this->belongsTo(LeadCategory::class, 'category_id');
     }
 
-    public function client()
-    {
-        return $this->belongsTo(User::class, 'client_id');
-    }
+    
 
     public function currency()
     {

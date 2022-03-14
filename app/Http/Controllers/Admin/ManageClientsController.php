@@ -35,6 +35,10 @@ use App\CogCountry;
 use App\LeadAgent;
 use App\DataTables\Admin\BuyerDataTable;
 use Auth;
+use App\LeadStatus;
+use App\LeadStage;
+use App\DataTables\Admin\DealsDataTable;
+use App\BuyerBusinessDetails;
 class ManageClientsController extends AdminBaseController
 {
 
@@ -216,7 +220,8 @@ class ManageClientsController extends AdminBaseController
             $client->lead_stage = $request->input('stages');
             $client->lead_status = $request->input('status');
             $client->agent_id = $request->input('agent_id');
-            $client->type = $request->input('client_type');    
+            $client->type = $request->input('client_type'); 
+            $client->business_value = $request->lead_value;   
             if ($request->has('email_notifications')) {
                 $client->email_notifications = $request->email_notifications;
             }
@@ -415,6 +420,8 @@ class ManageClientsController extends AdminBaseController
         $this->categories = ClientCategory::all();
         $this->subcategories = ClientSubCategory::all();
         $this->leadAgents = LeadAgent::with('user')->get();
+        $this->status = LeadStatus::all();
+        $this->stages = LeadStage::all();
         return view('admin.clients.edit', $this->data);
     }
 
@@ -477,6 +484,8 @@ class ManageClientsController extends AdminBaseController
         $client->lead_stage = $request->input('stages');
         $client->lead_status = $request->input('status');
         $client->agent_id = $request->input('agent_id');
+        $client->business_name = $request->input('business_name');
+        $client->agent_commission = $request->input('agentCommission');
         $client->save();
 //        $user = User::withoutGlobalScope([[CompanyScope::class], 'active']);
         $user = $client->user;
@@ -853,6 +862,7 @@ class ManageClientsController extends AdminBaseController
             ->select('client_details.id', 'client_details.name', 'client_details.email', 'client_details.user_id', 'client_details.mobile', 'users.locale', 'users.status', 'users.login')
             ->first();
         $this->clientDetail = ClientDetails::where('user_id', '=', $this->userDetail->user_id)->first();
+        $this->sellerDetails = ClientDetails::where('type', '=','2')->where('business_sale_flag', '=','0')->get();
         $leadDetails=DB::table('leads')->where('client_id',$this->userDetail->user_id)->first();
         if(!empty($leadDetails)){
             $this->leadDetails=$leadDetails;
@@ -902,7 +912,9 @@ class ManageClientsController extends AdminBaseController
         $this->categories = ClientCategory::all();
         $this->subcategories = ClientSubCategory::all();
         $this->leadAgents = LeadAgent::with('user')->get();
-        
+        $this->status = LeadStatus::all();
+        $this->stages = LeadStage::all();
+     //   var_dump($this->status);die;
         return view('admin.clients.edit_buyer', $this->data);
     }
     /**
@@ -943,7 +955,29 @@ class ManageClientsController extends AdminBaseController
         $client->lead_stage = $request->input('stages');
         $client->lead_status = $request->input('status');
         $client->agent_id = $request->input('agent_id');
+        $client->agent_commission = $request->input('agentCommission');
         $client->save();
+        $created_by=date('Y-m-d');
+        if(!empty($request->input('business'))){
+            $clientDetail = ClientDetails::where('id', '=', $request->input('business'))->first();
+                DB::table('client_details')
+                ->where('id', $request->input('business'))
+                ->update(['business_sale_flag' => '1']);
+                DB::table('client_details')
+                ->where('id', $id)
+                ->update(['business_sale_flag' => '1']);
+
+                DB::table('buyer_business_details')->insert(
+                    array(
+                           'buyer_client_details_id'=> $id,
+                           'seller_client_details_id'   =>$request->input('business'),
+                           'business_namae'=>'',
+                           'created_at'=>$created_by,
+                           'created_by'=>Auth::user()->id
+                    )
+               );
+
+        }
 //        $user = User::withoutGlobalScope([[CompanyScope::class], 'active']);
         $user = $client->user;
         $user->name = $request->input('name');
@@ -971,6 +1005,16 @@ class ManageClientsController extends AdminBaseController
         $user->save();
 
         return Reply::redirect(route('admin.buyer'));
+    }
+
+    function dels(){
+       
+        $this->employees = User::allEmployees();
+        $this->fromDate = Carbon::today()->subDays(30);
+        $this->toDate = Carbon::today();
+
+        return view('admin.clients.dels', $this->data);
+        
     }
 
 }

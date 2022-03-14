@@ -24,7 +24,7 @@ use App\Currency;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Http\Request;
 use App\Country;
-
+use DB;
 class MemberLeadController extends MemberBaseController
 {
 
@@ -298,9 +298,8 @@ class MemberLeadController extends MemberBaseController
      */
     public function store(StoreRequest $request)
     {
+		$totalLeads = Lead::all();
         $lead = new Lead();
-        
-        
         $lead->company_name = $request->company_name;
         $lead->website = $request->website;
         $lead->address = $request->address;
@@ -320,11 +319,20 @@ class MemberLeadController extends MemberBaseController
         $lead->category_id = $request->category_id;
         $lead->client_type = $request->type_id;
         $lead->stage_id = $request->stage_id;
-        $lead->created_by = $this->user->id;
+        $lead->created_by_id = $this->user->id;
         $lead->currency_id = ($request->currency_id) ? $request->currency_id : company()->currency_id;
         $lead->industry_id = ($request->input('industry_id') != 0 && $request->input('industry_id') != '') ? $request->input('industry_id') : null;
         $lead->sub_industry_id = ($request->input('sub_industry_id') != 0 && $request->input('sub_industry_id') != '') ? $request->input('sub_industry_id') : null;
-
+     if($request->type_id=='2'){
+			$c='';
+			if(!empty($request->company_name)){
+				$c=substr($request->company_name,0,3);
+				
+			}
+			$counter=str_pad (count($totalLeads),4,"0",STR_PAD_LEFT);
+			$fuuId=strToupper($c).'-COMID-'.date('mdy').'-'.$counter;
+			 $lead->system_generated_lead_id = $fuuId;
+		}
         $lead->save();
 
         // To add custom fields data

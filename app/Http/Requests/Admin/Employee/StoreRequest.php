@@ -32,7 +32,7 @@ class StoreRequest extends CoreRequest
             'password' => 'required|min:6',
             'slack_username' => 'nullable|unique:employee_details,slack_username',
             'hourly_rate' => 'nullable|numeric',
-            'joining_date' => 'required',
+            //'joining_date' => 'required',
             'department' => 'required',
             'designation' => 'required',
         ];

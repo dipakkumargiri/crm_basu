@@ -50,6 +50,7 @@ class AdminDashboardController extends AdminBaseController
         parent::__construct();
         $this->pageTitle = 'app.menu.dashboard';
         $this->pageIcon = 'icon-speedometer';
+        die('Basu');
     }
 
     /**
@@ -205,7 +206,7 @@ class AdminDashboardController extends AdminBaseController
 
         $this->widgets = DashboardWidget::where('dashboard_type', 'admin-dashboard')->get();
         $this->activeWidgets = DashboardWidget::where('status', 1)->where('dashboard_type', 'admin-dashboard')->get()->pluck('widget_name')->toArray();
-        
+
         return view('admin.dashboard.index', $this->data);
     }
 
@@ -1160,7 +1161,7 @@ class AdminDashboardController extends AdminBaseController
     }
 
     function clientDatabase(){
-        $this->totalLeads = DB::table('client_database')->where('created_at',Auth::user()->id)->where('status','1')->get()->count();
+      
         $data=array();
         $this->client_data=DB::table('client_database')->where('created_at',Auth::user()->id)->where('status','1')->get();
      // $this->client_data=array();
@@ -1263,7 +1264,14 @@ public function deleteInquiry($id){
 }
 
 
-
+/*public function deleteAll(Request $request)
+    {
+        //echo "kghjkkjk"; exit;
+       
+        $ids = $request->ids;
+        inquiry::whereIn('id',explode(",",$ids))->delete();       
+            return Redirect::to('admin/inquiryList');        
+        }*/
 
 
 public function deleteAll(Request $request)
@@ -1272,20 +1280,6 @@ public function deleteAll(Request $request)
         $delids = explode(",", $delids);       
         foreach($delids as $id){
             DB::delete('DELETE FROM inquiry WHERE id = ?', [$id]);
-        }
-        return response()->json(['status'=>true,'message'=>"Deleted successfully."]);  
-        
-          
-    }
-
-
-
-    public function deleteAllClientDatabase(Request $request)
-    {
-        $delids = $request->all_id;
-        $delids = explode(",", $delids);       
-        foreach($delids as $id){
-            DB::delete('UPDATE client_database SET status = 0 WHERE id = ?', [$id]);
         }
         return response()->json(['status'=>true,'message'=>"Deleted successfully."]);  
         

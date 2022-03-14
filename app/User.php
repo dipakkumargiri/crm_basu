@@ -148,6 +148,12 @@ class User extends BaseModel implements AuthenticatableContract, CanResetPasswor
     {
         return $this->hasMany(LeadAgent::class, 'user_id');
     }
+    
+    public function user()
+    {
+        return $this->hasMany('App\Lead', 'id', 'created_by_id');
+
+    }
 
     public function client_detail()
     {
@@ -566,10 +572,14 @@ class User extends BaseModel implements AuthenticatableContract, CanResetPasswor
     }
     public static function allSeller()
     {
+      
         $clients = ClientDetails::join('users', 'client_details.user_id', '=', 'users.id')
             ->select('users.id', 'client_details.name', 'users.email', 'users.email_notifications', 'users.created_at', 'client_details.company_name', 'users.image', 'users.mobile', 'users.country_id')
            ->where('client_details.type','2')
+           ->where('client_details.business_sale_flag','0')
+
             ->get();
+
 
         return $clients;
     }
@@ -578,6 +588,32 @@ class User extends BaseModel implements AuthenticatableContract, CanResetPasswor
         $clients = ClientDetails::join('users', 'client_details.user_id', '=', 'users.id')
             ->select('users.id', 'client_details.name', 'users.email', 'users.email_notifications', 'users.created_at', 'client_details.company_name', 'users.image', 'users.mobile', 'users.country_id')
            ->where('client_details.type','1')
+           ->where('client_details.business_sale_flag','0')
+            ->get();
+
+        return $clients;
+    }
+    public static function allSellerMember($id)
+    {
+      
+        $clients = ClientDetails::join('users', 'client_details.user_id', '=', 'users.id')
+            ->select('users.id', 'client_details.name', 'users.email', 'users.email_notifications', 'users.created_at', 'client_details.company_name', 'users.image', 'users.mobile', 'users.country_id')
+           ->where('client_details.type','2')
+           ->where('client_details.agent_id',$id)
+           ->where('client_details.business_sale_flag','0')
+
+            ->get();
+
+
+        return $clients;
+    }
+    public static function allBuyerMember($id)
+    {
+        $clients = ClientDetails::join('users', 'client_details.user_id', '=', 'users.id')
+            ->select('users.id', 'client_details.name', 'users.email', 'users.email_notifications', 'users.created_at', 'client_details.company_name', 'users.image', 'users.mobile', 'users.country_id')
+           ->where('client_details.type','1')
+           ->where('client_details.agent_id',$id)
+           ->where('client_details.business_sale_flag','0')
             ->get();
 
         return $clients;

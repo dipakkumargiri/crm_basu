@@ -26,13 +26,21 @@ class UpdateRequest extends CoreRequest
      */
     public function rules()
     {
-
+        if($this->type_id=='1'){
+            $rules = [
+                'client_name' => 'required',
+                'email' => ['required','email',new CheckUniqueEmail($this->company_id, $this->route('lead'))],
+               // 'company_name'=>'required',
+                'type_id'=>'required',
+            ];
+    }else{
         $rules = [
             'client_name' => 'required',
             'email' => ['required','email',new CheckUniqueEmail($this->company_id, $this->route('lead'))],
             'company_name'=>'required',
             'type_id'=>'required',
         ];
+    }
 
         return $rules;
     }

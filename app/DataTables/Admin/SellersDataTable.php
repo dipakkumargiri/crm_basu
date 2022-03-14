@@ -77,6 +77,7 @@ class SellersDataTable extends BaseDataTable
             ->select('client_details.id','client_details.company_id', 'client_details.user_id', 'client_details.name', 'client_details.company_name', 'client_details.email', 'client_details.created_at',
             'client_details.mobile', 'countries.phonecode')
             ->where('client_details.type','2')
+            ->where('client_details.business_sale_flag','0')
             ->groupBy('client_details.id');
 
         if ($request->startDate !== null && $request->startDate != 'null' && $request->startDate != '') {

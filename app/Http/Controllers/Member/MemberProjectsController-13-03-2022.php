@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Member;
 
 use App\DataTables\Member\MemberDiscussionDataTable;
-use App\DataTables\Member\ProjectsDataTable;
+use App\DataTables\Admin\ProjectsDataTable;
 use App\Discussion;
 use App\DiscussionCategory;
 use App\DiscussionReply;
-use App\Expense;
 use App\Helper\Reply;
 use App\Http\Requests\Project\StoreProject;
 use App\Http\Requests\Project\UpdateProject;
@@ -44,12 +43,11 @@ use App\ProjectDetail;
 use App\ProjectGeneralAsset;
 use App\ProjectFinance;
 use App\ProjectMarketingStatus;
-use App\ProjectMilestone;
+
 use App\Traits\ProjectProgress;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 
 /**
@@ -126,7 +124,9 @@ class MemberProjectsController extends MemberBaseController
 
     public function edit($id)
     {
-        $this->clients = User::allSeller();
+        echo "test";
+        exit;
+        /*$this->clients = User::allSeller();
         $this->categories = ProjectCategory::all();
         $this->project = Project::with('aggrement', 'business', 'detail', 'asset', 'finance', 'lead')->findOrFail($id)->withCustomFields();
         // echo "<pre>"; print_r($this->project);exit;
@@ -141,14 +141,15 @@ class MemberProjectsController extends MemberBaseController
         $this->AllStates = CogState::all();
         $this->AllCities = CogCity::all();
         $this->employees = User::allEmployees()->where('status', 'active');
-        return view('member.projects.edit', $this->data);
+        
+        return view('admin.projects.edit', $this->data);*/
     }
 
     /**
      * @param $id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-   /* public function show($id)
+    public function show($id)
     {
         $this->userDetail = auth()->user();
 
@@ -194,164 +195,7 @@ class MemberProjectsController extends MemberBaseController
             // If not authorised user
             abort(403);
         }
-    }*/
-
-
-    public function show($id)
-    {
-        $this->project = Project::findOrFail($id)->withCustomFields();
-        $this->fields = $this->project->getCustomFieldGroupsWithFields()->fields;
-        $this->activeTimers = ProjectTimeLog::projectActiveTimers($this->project->id);
-
-        if (is_null($this->project->deadline)) {
-            $this->daysLeft = 0;
-        } else {
-            if ($this->project->deadline->isPast()) {
-                $this->daysLeft = 0;
-            } else {
-                $this->daysLeft = $this->project->deadline->diff(Carbon::now())->format('%d') + ($this->project->deadline->diff(Carbon::now())->format('%m') * 30) + ($this->project->deadline->diff(Carbon::now())->format('%y') * 12);
-            }
-
-            $this->daysLeftFromStartDate = $this->project->deadline->diff($this->project->start_date)->format('%d') + ($this->project->deadline->diff($this->project->start_date)->format('%m') * 30) + ($this->project->deadline->diff($this->project->start_date)->format('%y') * 12);
-
-            $this->daysLeftPercent = ($this->daysLeftFromStartDate == 0 ? '0' : (($this->daysLeft / $this->daysLeftFromStartDate) * 100));
-        }
-
-
-        $this->hoursLogged = $this->project->times()->sum('total_minutes');
-
-        $this->hoursLogged = intdiv($this->hoursLogged, 60);
-
-        $this->activities = ProjectActivity::getProjectActivities($id, 10);
-        //        $this->earnings = Payment::where('status', 'complete')
-        //            ->where('project_id', $id)
-        //            ->sum('amount');
-
-        $invoices = Payment::join('currencies', 'currencies.id', '=', 'payments.currency_id')
-            ->join('projects', 'projects.id', '=', 'payments.project_id')
-            ->where('payments.status', 'complete')
-            ->where('payments.project_id', $id)
-            ->orderBy('payments.paid_on', 'ASC')
-            ->select(
-                'payments.amount as total',
-                'currencies.currency_code',
-                'currencies.is_cryptocurrency',
-                'currencies.usd_price',
-                'currencies.exchange_rate',
-                'projects.project_name',
-                'projects.id as projectid',
-                'payments.id'
-            )->get();
-
-        $earnings = 0;
-        foreach ($invoices as $invoice) {
-            if ($invoice->currency_code != $this->global->currency->currency_code) {
-                if ($invoice->is_cryptocurrency == 'yes') {
-                    if ($invoice->exchange_rate == 0) {
-                        if ($this->updateExchangeRates()) {
-                            $usdTotal = ($invoice->total * $invoice->usd_price);
-                            $earnings += floor($usdTotal / $invoice->exchange_rate);
-                        }
-                    } else {
-                        $usdTotal = ($invoice->total * $invoice->usd_price);
-                        $earnings += floor($usdTotal / $invoice->exchange_rate);
-                    }
-                } else {
-                    if ($invoice->exchange_rate == 0) {
-                        if ($this->updateExchangeRates()) {
-                            $earnings += floor($invoice->total / $invoice->exchange_rate);
-                        }
-                    } else {
-                        $earnings += floor($invoice->total / $invoice->exchange_rate);
-                    }
-                }
-            } else {
-                $earnings += round($invoice->total, 2);
-            }
-        }
-        $this->earnings = $earnings;
-        $this->expenses = Expense::where(['project_id' => $id, 'status' => 'approved'])->sum('price');
-        $this->milestones = ProjectMilestone::with('currency')->where('project_id', $id)->get();
-
-        $this->taskBoardStatus = TaskboardColumn::all();
-
-        $this->taskStatus = array();
-        $projectTasksCount = Task::where('project_id', $id)->count();
-        if ($projectTasksCount > 0) {
-            foreach ($this->taskBoardStatus as $key => $value) {
-                $totalTasks = Task::leftJoin('projects', 'projects.id', '=', 'tasks.project_id')
-                    ->where('tasks.board_column_id', $value->id)
-                    ->where('tasks.project_id', $id);
-                $taskStatus[$value->slug] = [
-                    'count' => $totalTasks->count(),
-                    'label' => $value->column_name,
-                    'color' => $value->label_color
-                ];
-            }
-            $this->taskStatus = json_encode($taskStatus);
-        }
-
-
-        $incomes = [];
-        $graphData = [];
-        $invoices = Payment::join('currencies', 'currencies.id', '=', 'payments.currency_id')
-            ->where('payments.status', 'complete')
-            ->where('payments.project_id', $id)
-            // ->groupBy('year', 'month')
-            ->orderBy('paid_on', 'ASC')
-            ->get([
-                DB::raw('DATE_FORMAT(paid_on,"%M/%y") as date'),
-                DB::raw('YEAR(paid_on) year, MONTH(paid_on) month'),
-                DB::raw('amount as total'),
-                'currencies.id as currency_id',
-                'currencies.exchange_rate'
-            ]);
-
-        foreach ($invoices as $invoice) {
-            if (!isset($incomes[$invoice->date])) {
-                $incomes[$invoice->date] = 0;
-            }
-
-            if ($invoice->currency_id != $this->global->currency->id && $invoice->exchange_rate > 0) {
-                $incomes[$invoice->date] += floor($invoice->total / $invoice->exchange_rate);
-            } else {
-                $incomes[$invoice->date] += round($invoice->total, 2);
-            }
-        }
-
-        $dates = array_keys($incomes);
-
-        foreach ($dates as $date) {
-            $graphData[] = [
-                'date' => $date,
-                'total' => isset($incomes[$date]) ? round($incomes[$date], 2) : 0,
-            ];
-        }
-
-        usort($graphData, function ($a, $b) {
-            $t1 = strtotime($a['date']);
-            $t2 = strtotime($b['date']);
-            return $t1 - $t2;
-        });
-
-        $this->chartData = json_encode($graphData);
-
-        $this->timechartData = DB::table('project_time_logs');
-
-        $this->timechartData = $this->timechartData->where('project_time_logs.project_id', $id)
-            ->groupBy('date', 'month')
-            ->orderBy('start_time', 'ASC')
-            ->get([
-                DB::raw('DATE_FORMAT(start_time,"%M/%y") as date'),
-                DB::raw('YEAR(start_time) year, MONTH(start_time) month'),
-                // DB::raw('DATE_FORMAT(start_time,\'%d/%M/%y\') as date'),
-                DB::raw('FLOOR(sum(total_minutes/60)) as total_hours')
-            ])
-            ->toJSON();
-
-        return view('member.projects.show', $this->data);
     }
-
 
     public function data(Request $request)
     {
@@ -500,7 +344,7 @@ class MemberProjectsController extends MemberBaseController
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-   /* public function update(UpdateProject $request, $id)
+    public function update(UpdateProject $request, $id)
     {
         $project = Project::findOrFail($id);
         $project->project_name = $request->project_name;
@@ -554,202 +398,7 @@ class MemberProjectsController extends MemberBaseController
 
         $this->logProjectActivity($project->id, ucwords($project->project_name) . __('modules.projects.projectUpdated'));
         return Reply::redirect(route('member.projects.edit', $id), __('messages.projectUpdated'));
-    }*/
-
-
-
-
-    public function update(UpdateProject $request, $id)
-    {
-        $project = Project::findOrFail($id);
-        $project->project_name = $request->project_name;
-        if ($request->project_summary != '') {
-            $project->project_summary = $request->project_summary;
-        }
-        $project->start_date = Carbon::createFromFormat($this->global->date_format, $request->start_date)->format('Y-m-d');
-
-        if (!$request->has('without_deadline')) {
-            $project->deadline = Carbon::createFromFormat($this->global->date_format, $request->deadline)->format('Y-m-d');
-        } else {
-            $project->deadline = null;
-        }
-
-        if ($request->notes != '') {
-            $project->notes = $request->notes;
-        }
-        if ($request->category_id != '') {
-            $project->category_id = $request->category_id;
-        }
-
-        if ($request->client_view_task) {
-            $project->client_view_task = 'enable';
-        } else {
-            $project->client_view_task = 'disable';
-        }
-        if (($request->client_view_task) && ($request->client_task_notification)) {
-            $project->allow_client_notification = 'enable';
-        } else {
-            $project->allow_client_notification = 'disable';
-        }
-        if (($request->client_view_task) && ($request->read_only)) {
-            $project->read_only = 'enable';
-        } else {
-            $project->read_only = 'disable';
-        }
-        if ($request->manual_timelog) {
-            $project->manual_timelog = 'enable';
-        } else {
-            $project->manual_timelog = 'disable';
-        }
-
-        $project->client_id = ($request->client_id == 'null' || $request->client_id == '') ? null : $request->client_id;
-        $project->feedback = $request->feedback;
-
-        if ($request->calculate_task_progress) {
-            $project->calculate_task_progress = $request->calculate_task_progress;
-            $project->completion_percent = $this->calculateProjectProgress($id);
-        } else {
-            $project->calculate_task_progress = 'false';
-            $project->completion_percent = $request->completion_percent;
-        }
-
-
-        $project->project_budget = $request->project_budget;
-        $project->currency_id = $request->currency_id;
-        $project->hours_allocated = $request->hours_allocated;
-        $project->status = $request->status;
-
-        $project->save();
-        $project_id = $project->id;
-        $ProjectAggrement = ProjectAggrement::findOrFail($request->aggrement_id);
-       
-        // $ProjectAggrement = new ProjectAggrement();
-        $ProjectAggrement->project_id = $project_id;
-        $ProjectAggrement->reffered_by = $request->reffered_by;
-        $ProjectAggrement->reffered_fee = $request->reffered_fee;
-        $ProjectAggrement->agreement_type = $request->agreement_type;
-        $ProjectAggrement->agency_type = $request->agency_type;
-        $ProjectAggrement->save();
-         
-        $ProjectBusiness = ProjectBusiness::findOrFail($request->business_id);
-        // $ProjectBusiness = new ProjectBusiness();
-        $ProjectBusiness->project_id = $project_id;
-        $ProjectBusiness->represented = $request->represented;
-        $ProjectBusiness->established = $request->established;
-        $ProjectBusiness->owned = $request->owned;
-        $ProjectBusiness->from_ownership = $request->from_ownership;
-        $ProjectBusiness->comments = $request->comments;
-        $ProjectBusiness->down_payment = $request->down_payment;
-        $ProjectBusiness->vat_value = $request->vat_value;
-        $ProjectBusiness->value_tax = $request->value_tax;
-        $ProjectBusiness->realestate_price = $request->realestate_price;
-        $ProjectBusiness->training_support = $request->training_support;
-        $ProjectBusiness->nooftraining_week = $request->nooftraining_week;
-        $ProjectBusiness->sale_reason = $request->sale_reason;
-        $ProjectBusiness->save();
-        
-        $ProjectDetail = ProjectDetail::findOrFail($request->detail_id);
-        // $ProjectDetail = new ProjectDetail();
-        $ProjectDetail->project_id = $project_id;
-        $ProjectDetail->ad_headline = $request->ad_headline;
-        $ProjectDetail->listing_url = $request->listing_url;
-        $ProjectDetail->office_location = $request->office_location;
-        $ProjectDetail->promoted = $request->promoted;
-        $ProjectDetail->agent_promoted = $request->agent_promoted;
-        $ProjectDetail->project_summary = $request->project_summary;
-        $ProjectDetail->business_history = $request->business_history;
-        $ProjectDetail->competitive_overview = $request->competitive_overview;
-        $ProjectDetail->potential_growth = $request->potential_growth;
-        $ProjectDetail->showing_instruction = $request->showing_instruction;
-        $ProjectDetail->showing_comments = $request->showing_comments;
-        $ProjectDetail->general_location = $request->general_location;
-        $ProjectDetail->gmap_url = $request->gmap_url;
-        $ProjectDetail->address = $request->address;
-        $ProjectDetail->post_code = $request->post_code;
-        $ProjectDetail->country_id = $request->country_id;
-        $ProjectDetail->state_id = $request->state_id;
-        $ProjectDetail->city_id  = $request->city_id;
-        $ProjectDetail->save();
-        
-        $ProjectGeneralAsset = ProjectGeneralAsset::findOrFail($request->asset_id);
-        // $ProjectGeneralAsset = new ProjectGeneralAsset();
-        $ProjectGeneralAsset->project_id = $project_id;
-        $ProjectGeneralAsset->business_hours  = $request->business_hours;
-        $ProjectGeneralAsset->weekly_hours  = $request->weekly_hours;
-        $ProjectGeneralAsset->relocation  = $request->relocation;
-        $ProjectGeneralAsset->franchisee_operations  = $request->franchisee_operations;
-        $ProjectGeneralAsset->franchise_mart  = $request->franchise_mart;
-        $ProjectGeneralAsset->home_based  = $request->home_based;
-        $ProjectGeneralAsset->no_of_emp  = $request->no_of_emp;
-        $ProjectGeneralAsset->inventory_value  = $request->inventory_value;
-        $ProjectGeneralAsset->ff_value  = $request->ff_value;
-        $ProjectGeneralAsset->accounts_recieveable  = $request->accounts_recieveable;
-        $ProjectGeneralAsset->leashold  = $request->leashold;
-        $ProjectGeneralAsset->estate_value  = $request->estate_value;
-        $ProjectGeneralAsset->other_assets  = $request->other_assets;
-        $ProjectGeneralAsset->total_assets  = $request->total_assets;
-        $ProjectGeneralAsset->inventory_inlcuded  = $request->inventory_inlcuded;
-        $ProjectGeneralAsset->fe_inlcuded  = $request->fe_inlcuded;
-        $ProjectGeneralAsset->accounts_recieveable_include  = $request->accounts_recieveable_include;
-        $ProjectGeneralAsset->leashold_include  = $request->leashold_include;
-        $ProjectGeneralAsset->estate_value_available  = $request->estate_value_available;
-        $ProjectGeneralAsset->estate_value_include  = $request->estate_value_include;
-        $ProjectGeneralAsset->other_assets_inlcuded  = $request->other_assets_inlcuded;
-        $ProjectGeneralAsset->type_of_location  = $request->type_of_location;
-        $ProjectGeneralAsset->facilities  = $request->facilities;
-        $ProjectGeneralAsset->monthly_rent  = $request->monthly_rent;
-        $ProjectGeneralAsset->square_units  = $request->square_units;
-        $ProjectGeneralAsset->lease_expiration  = Carbon::createFromFormat($this->global->date_format, $request->lease_expiration)->format('Y-m-d');;
-        $ProjectGeneralAsset->square_units  = $request->square_units;
-        $ProjectGeneralAsset->save();
-        // echo "<pre>"; print_r($ProjectGeneralAsset);die();
-        $ProjectFinance = ProjectFinance::findOrFail($request->finance_id);
-        // $ProjectFinance = new ProjectFinance();
-        $ProjectFinance->project_id = $project_id;
-        $ProjectFinance->finance_year = $request->finance_year;
-        $ProjectFinance->date_source = $request->date_source;
-        $ProjectFinance->total_sales = $request->total_sales;
-        $ProjectFinance->cost_ship = $request->cost_ship;
-        $ProjectFinance->total_expenses = $request->total_expenses;
-        $ProjectFinance->owner_salary = $request->owner_salary;
-        $ProjectFinance->beneficial_addblocks = $request->beneficial_addblocks;
-        $ProjectFinance->interest = $request->interest;
-        $ProjectFinance->depreciation = $request->depreciation;
-        $ProjectFinance->other = $request->other;
-        $ProjectFinance->seller_earnings = $request->seller_earnings;
-        $ProjectFinance->owner_financing = $request->owner_financing;
-        $ProjectFinance->owner_financing_interest = $request->owner_financing_interest;
-        $ProjectFinance->ownership_months = $request->ownership_months;
-        $ProjectFinance->ownership_monthly_pay = $request->ownership_monthly_pay;
-        $ProjectFinance->seller_financing = $request->seller_financing;
-        $ProjectFinance->assumable_financing = $request->assumable_financing;
-        $ProjectFinance->assumable_finterest = $request->assumable_finterest;
-        $ProjectFinance->seller_ntcomplete = $request->seller_ntcomplete;
-        $ProjectFinance->no_seller_nincomplete = $request->no_seller_nincomplete;
-        $ProjectFinance->commission_rate = $request->commission_rate;
-        $ProjectFinance->minimum_commission = $request->minimum_commission;
-        $ProjectFinance->fees_retainers = $request->fees_retainers;
-        $ProjectFinance->total_commission = $request->total_commission;
-        $ProjectFinance->my_ncommission = $request->my_ncommission;
-        $ProjectFinance->my_ncommission_split = $request->my_ncommission_split;
-        $ProjectFinance->buyable_broker = $request->buyable_broker;
-        $ProjectFinance->probability_pipeline = $request->probability_pipeline;
-        $ProjectFinance->probability_ofclosing = $request->probability_ofclosing;
-        $ProjectFinance->noof_listed_days = $request->noof_listed_days;
-        $ProjectFinance->sold_price = $request->sold_price;
-        $ProjectFinance->commission = $request->commission;
-        $ProjectFinance->activated_date = Carbon::createFromFormat($this->global->date_format, $request->activated_date)->format('Y-m-d');//
-        $ProjectFinance->save();
-       
-        // To add custom fields data
-        if ($request->get('custom_fields_data')) {
-            $project->updateCustomFieldData($request->get('custom_fields_data'));
-        }
-        $this->logProjectActivity($project->id, ucwords($project->project_name) . __('modules.projects.projectUpdated'));
-        return Reply::redirect(route('member.projects.index'), __('messages.projectUpdated'));
     }
-
-
 
     public function create()
     {
@@ -1306,20 +955,6 @@ class MemberProjectsController extends MemberBaseController
         $this->discussion = Discussion::with('category')->findOrFail($discussionId);
         $this->discussionReplies = DiscussionReply::with('user')->where('discussion_id', $discussionId)->orderBy('id', 'asc')->get();
         return view('member.projects.discussion.replies', $this->data);
-    }
-
-    public function leadData($clientId)
-    {
-        $leadDetail  = [];
-        
-        // $leadDetail = Lead::first($clientId);
-        $leadDetail = Lead::where('client_id', $clientId)->first();
-        // $leadDetail['agent'] = $leadDetail->lead_agent->user->name;
-        // $leadDetail['generated_by'] = $leadDetail->created_by_user->user->name;
-        $user = DB::table('users')->select('name')->where('id', $leadDetail->created_by_id)->first();
-        $leadDetail['created_by_name'] = $user->name;
-        // echo "<pre>"; print_r($leadDetail);exit;
-        return Reply::dataOnly(['leadDetail' => $leadDetail]);
     }
 
     /**

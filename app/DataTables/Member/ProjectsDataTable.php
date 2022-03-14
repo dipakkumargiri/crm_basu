@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DataTables\Admin;
+namespace App\DataTables\Member;
 
 use App\DataTables\BaseDataTable;
 use App\Payment;
@@ -26,8 +26,8 @@ class ProjectsDataTable extends BaseDataTable
                 $action = '<div class="btn-group dropdown m-r-10">
                  <button aria-expanded="false" data-toggle="dropdown" class="btn btn-default dropdown-toggle waves-effect waves-light" type="button"><i class="fa fa-gears "></i></button>
                 <ul role="menu" class="dropdown-menu pull-right">
-                  <li><a href="' . route('admin.projects.edit', [$row->id]) . '"><i class="fa fa-pencil" aria-hidden="true"></i> ' . trans('app.edit') . '</a></li>
-                  <li><a href="' . route('admin.projects.show', [$row->id]) . '"><i class="fa fa-search" aria-hidden="true"></i> ' . trans('app.view') . ' ' . trans('app.details') . '</a></li>
+                  <li><a href="' . route('member.projects.edit', [$row->id]) . '"><i class="fa fa-pencil" aria-hidden="true"></i> ' . trans('app.edit') . '</a></li>
+                  <li><a href="' . route('member.projects.show', [$row->id]) . '"><i class="fa fa-search" aria-hidden="true"></i> ' . trans('app.view') . ' ' . trans('app.details') . '</a></li>
                   <li><a href="javascript:;" data-user-id="' . $row->id . '" class="archive"><i class="fa fa-archive" aria-hidden="true"></i> ' . trans('app.archive') . '</a></li>
                   <li><a href="javascript:;" data-user-id="' . $row->id . '" class="sa-params"><i class="fa fa-times" aria-hidden="true"></i> ' . trans('app.delete') . '</a></li>';
                   
@@ -68,7 +68,7 @@ class ProjectsDataTable extends BaseDataTable
                 if(($row->pinned_project) ){
                     $pin = '<br><span class="font-12"  data-toggle="tooltip" data-original-title="'.__('app.pinned').'"><i class="icon-pin icon-2"></i></span>';
                 }
-                $name = ' <a href="' . route('admin.projects.show', $row->id) . '">' . ucfirst($row->project_name) . '</a> ' . $pin;
+                $name = ' <a href="' . route('member.projects.show', $row->id) . '">' . ucfirst($row->project_name) . '</a> ' . $pin;
 
                 return $name;
             })

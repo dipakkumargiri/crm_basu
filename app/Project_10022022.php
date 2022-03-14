@@ -30,31 +30,6 @@ class Project extends BaseModel
         return $this->belongsTo(ProjectCategory::class, 'category_id');
     }
 
-    public function aggrement()
-    {
-        return $this->hasOne(ProjectAggrement::class);
-    }
-    public function business()
-    {
-        return $this->hasOne(ProjectBusiness::class);
-    }
-    public function detail()
-    {
-        return $this->hasOne(ProjectDetail::class);
-    }
-    public function asset()
-    {
-        return $this->hasOne(ProjectGeneralAsset::class);
-    } 
-    public function finance()
-    {
-        return $this->hasOne(ProjectFinance::class);
-    }
-    public function lead()
-    {
-        return $this->belongsTo(Lead::class, 'lead_id');
-    }
-    
     public function rating()
     {
         return $this->hasOne(ProjectRating::class);
@@ -74,56 +49,53 @@ class Project extends BaseModel
     {
         return $this->belongsTo(ClientDetails::class, 'client_id', 'user_id');
     }
-    
-    //in list
+
     public function members()
     {
         return $this->hasMany(ProjectMember::class, 'project_id');
     }
-    //in list
+
     public function members_many()
     {
         return $this->belongsToMany(User::class, 'project_members');
     }
 
-    /*public function tasks()
+    public function tasks()
     {
         return $this->hasMany(Task::class, 'project_id')->orderBy('id', 'desc');
-    }*/
+    }
 
     public function files()
     {
         return $this->hasMany(ProjectFile::class, 'project_id')->orderBy('id', 'desc');
     }
-    
-    //in view
-    public function times()
-    {
-        return $this->hasMany(ProjectTimeLog::class, 'project_id')->orderBy('id', 'desc');
-    }
-    /*public function invoices()
+
+    public function invoices()
     {
         return $this->hasMany(Invoice::class, 'project_id')->orderBy('id', 'desc');
-    }*/
+    }
 
-   /* public function issues()
+    public function issues()
     {
         return $this->hasMany(Issue::class, 'project_id')->orderBy('id', 'desc');
     }
 
-    
+    public function times()
+    {
+        return $this->hasMany(ProjectTimeLog::class, 'project_id')->orderBy('id', 'desc');
+    }
 
     public function milestones()
     {
         return $this->hasMany(ProjectMilestone::class, 'project_id');
-    }*/
+    }
 
     public function currency()
     {
         return $this->belongsTo(Currency::class, 'currency_id')->withoutGlobalScopes(['enable']);
     }
 
-    /*public function expenses()
+    public function expenses()
     {
         return $this->hasMany(Expense::class, 'project_id')->orderBy('id', 'desc');
     }
@@ -131,12 +103,12 @@ class Project extends BaseModel
     public function payments()
     {
         return $this->hasMany(Payment::class, 'project_id')->orderBy('id', 'desc');
-    }*/
+    }
 
     /**
      * @return bool
      */
-    /*public function checkProjectUser()
+    public function checkProjectUser()
     {
         $project = ProjectMember::where('project_id', $this->id)
             ->where('user_id', auth()->user()->id)
@@ -147,12 +119,12 @@ class Project extends BaseModel
         } else {
             return false;
         }
-    }*/
+    }
 
     /**
      * @return bool
      */
-    /*public function checkProjectClient()
+    public function checkProjectClient()
     {
         $project = Project::where('id', $this->id)
             ->where('client_id', auth()->user()->id)
@@ -163,7 +135,7 @@ class Project extends BaseModel
         } else {
             return false;
         }
-    }*/
+    }
 
     public static function clientProjects($clientId)
     {
@@ -176,8 +148,7 @@ class Project extends BaseModel
             ->where('project_members.user_id', $employeeId)
             ->get();
     }
-    
-    //in view
+
     public function pinned()
     {
         $pin = Pinned::where('user_id', user()->id)->where('project_id', $this->id)->first();

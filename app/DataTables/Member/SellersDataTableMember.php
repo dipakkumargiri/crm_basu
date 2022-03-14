@@ -8,7 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
-
+use Auth;
 class SellersDataTableMember extends BaseDataTable
 {
 
@@ -28,8 +28,8 @@ class SellersDataTableMember extends BaseDataTable
                  <button aria-expanded="false" data-toggle="dropdown" class="btn btn-default dropdown-toggle waves-effect waves-light" type="button"><i class="fa fa-gears "></i></button>
                 <ul role="menu" class="dropdown-menu pull-right">
                  
-                  <li><a href="' . route('member.clients.show', [$row->user_id]) . '"><i class="fa fa-search" aria-hidden="true"></i> ' . __('app.view') . '</a></li>
-                  <li><a href="' . route('member.clients.edit', [$row->id]) . '"><i class="fa fa-pencil" aria-hidden="true"></i> ' . trans('app.edit') . '</a></li>';
+                  <li><a href="' . route('member.sellerShow', [$row->user_id]) . '"><i class="fa fa-search" aria-hidden="true"></i> ' . __('app.view') . '</a></li>
+                  <li><a href="' . route('member.sellerEdit', [$row->id]) . '"><i class="fa fa-pencil" aria-hidden="true"></i> ' . trans('app.edit') . '</a></li>';
 
                 $action .= '</ul> </div>';
 
@@ -38,7 +38,7 @@ class SellersDataTableMember extends BaseDataTable
             ->editColumn(
                 'name',
                 function ($row) {
-                    return '<a href="' . route('member.clients.show', $row->user_id) . '">' . ucfirst($row->name) . '</a>';
+                    return '<a href="' . route('member.sellerShow', $row->user_id) . '">' . ucfirst($row->name) . '</a>';
                 }
             )
             ->editColumn(
@@ -71,12 +71,14 @@ class SellersDataTableMember extends BaseDataTable
     public function query(ClientDetails $model)
     {
         $request = $this->request();
-
+       // var_dump(Auth::user()->id);die;
         $model = $model->join('users', 'client_details.user_id', '=', 'users.id')
             ->leftJoin('countries', 'client_details.country_id', '=', 'countries.id')
             ->select('client_details.id','client_details.company_id', 'client_details.user_id', 'client_details.name', 'client_details.company_name', 'client_details.email', 'client_details.created_at',
             'client_details.mobile', 'countries.phonecode')
             ->where('client_details.type','2')
+            ->where('client_details.business_sale_flag','0')
+            ->where('client_details.agent_id',Auth::user()->id)
             ->groupBy('client_details.id');
 
         if ($request->startDate !== null && $request->startDate != 'null' && $request->startDate != '') {

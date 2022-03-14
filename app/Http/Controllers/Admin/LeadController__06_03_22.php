@@ -116,7 +116,6 @@ class LeadController extends AdminBaseController
      */
     public function store(StoreRequest $request)
     {
-		$totalLeads = Lead::all();
         $leadStatus = LeadStatus::where('default', '1')->first();
 
         $lead = new Lead();
@@ -146,16 +145,6 @@ class LeadController extends AdminBaseController
         $lead->industry_id = ($request->input('industry_id') != 0 && $request->input('industry_id') != '') ? $request->input('industry_id') : null;
         $lead->sub_industry_id = ($request->input('sub_industry_id') != 0 && $request->input('sub_industry_id') != '') ? $request->input('sub_industry_id') : null;
         $lead->status_id = $leadStatus->id;
-		if($request->type_id=='2'){
-			$c='';
-			if(!empty($request->company_name)){
-				$c=substr($request->company_name,0,3);
-				
-			}
-			$counter=str_pad (count($totalLeads),4,"0",STR_PAD_LEFT);
-			$fuuId=strToupper($c).'-COMID-'.date('mdy').'-'.$counter;
-			 $lead->system_generated_lead_id = $fuuId;
-		}
         // echo "<pre>"; print_r($lead);exit;
         $lead->save();
 

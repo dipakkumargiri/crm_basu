@@ -77,6 +77,7 @@ class BuyerDataTable extends BaseDataTable
             ->select('client_details.id','client_details.company_id', 'client_details.user_id', 'client_details.name', 'client_details.company_name', 'client_details.email', 'client_details.created_at',
             'client_details.mobile', 'countries.phonecode')
             ->where('client_details.type','1')
+            ->where('client_details.business_sale_flag','0')
             ->groupBy('client_details.id');
 
         if ($request->startDate !== null && $request->startDate != 'null' && $request->startDate != '') {
@@ -164,7 +165,7 @@ class BuyerDataTable extends BaseDataTable
             __('app.company_id') => ['data' => 'company_id', 'name' => 'id', 'visible' => false, 'exportable' => false],
             'Serial No' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false],
             __('Full Name') => ['data' => 'name', 'name' => 'name'],
-            __('Organization') => ['data' => 'company_name', 'name' => 'client_details.company_name'],
+           // __('Organization') => ['data' => 'company_name', 'name' => 'client_details.company_name'],
             __('Email') => ['data' => 'email', 'name' => 'email'],
             __('Phone Number') => ['data' => 'mobile', 'name' => 'mobile'],
             __('app.createdAt') => ['data' => 'created_at', 'name' => 'created_at'],

@@ -28,11 +28,10 @@ class ProjectsDataTable extends BaseDataTable
                 <ul role="menu" class="dropdown-menu pull-right">
                   <li><a href="' . route('admin.projects.edit', [$row->id]) . '"><i class="fa fa-pencil" aria-hidden="true"></i> ' . trans('app.edit') . '</a></li>
                   <li><a href="' . route('admin.projects.show', [$row->id]) . '"><i class="fa fa-search" aria-hidden="true"></i> ' . trans('app.view') . ' ' . trans('app.details') . '</a></li>
+                  <li><a href="' . route('admin.projects.gantt', [$row->id]) . '"><i class="fa fa-bar-chart" aria-hidden="true"></i> ' . trans('modules.projects.viewGanttChart') . '</a></li>
+                  <li><a href="' . route('front.gantt', [md5($row->id)]) . '" target="_blank"><i class="fa fa-line-chart" aria-hidden="true"></i> ' . trans('modules.projects.viewPublicGanttChart') . '</a></li>
                   <li><a href="javascript:;" data-user-id="' . $row->id . '" class="archive"><i class="fa fa-archive" aria-hidden="true"></i> ' . trans('app.archive') . '</a></li>
                   <li><a href="javascript:;" data-user-id="' . $row->id . '" class="sa-params"><i class="fa fa-times" aria-hidden="true"></i> ' . trans('app.delete') . '</a></li>';
-                  
-                  /*<li><a href="' . route('admin.projects.gantt', [$row->id]) . '"><i class="fa fa-bar-chart" aria-hidden="true"></i> ' . trans('modules.projects.viewGanttChart') . '</a></li>
-                  <li><a href="' . route('front.gantt', [md5($row->id)]) . '" target="_blank"><i class="fa fa-line-chart" aria-hidden="true"></i> ' . trans('modules.projects.viewPublicGanttChart') . '</a></li>*/
 
                 $action .= '</ul> </div>';
 
@@ -44,12 +43,12 @@ class ProjectsDataTable extends BaseDataTable
                 if (count($row->members) > 0) {
                     foreach ($row->members as $member) {
                         $members .= '<img data-toggle="tooltip" data-original-title="' . ucwords($member->user->name) . '" src="' . $member->user->image_url . '"
-                        alt="user" class="img-circle" width="25" height="25"> '. ucwords($member->user->name);
+                        alt="user" class="img-circle" width="25" height="25"> ';
                     }
                 } else {
                     $members .= __('messages.noMemberAddedToProject');
                 }
-                /*$members .= '<a class="btn btn-primary btn-circle" style="width: 25px;height: 25px;padding: 3px;" data-toggle="tooltip" data-original-title="' . __('modules.projects.addMemberTitle') . '"  href="' . route('admin.project-members.show', $row->id) . '"><i class="fa fa-plus" ></i></a>';*/
+                $members .= '<a class="btn btn-primary btn-circle" style="width: 25px;height: 25px;padding: 3px;" data-toggle="tooltip" data-original-title="' . __('modules.projects.addMemberTitle') . '"  href="' . route('admin.project-members.show', $row->id) . '"><i class="fa fa-plus" ></i></a>';
                 return $members;
             })
 
@@ -252,7 +251,7 @@ class ProjectsDataTable extends BaseDataTable
             __('modules.projects.members')  => ['data' => 'members', 'name' => 'members', 'exportable' => false],
             __('modules.projects.projectMembers')  => ['data' => 'name', 'name' => 'name', 'visible' => false],
             __('app.deadline') => ['data' => 'deadline', 'name' => 'deadline'],
-            __('modules.projects.client') => ['data' => 'client_id', 'name' => 'client_id'],
+            __('app.client') => ['data' => 'client_id', 'name' => 'client_id'],
             __('app.completions') => ['data' => 'completion_percent', 'name' => 'completion_percent', 'exportable' => false],
             __('app.completion') => ['data' => 'completion_export', 'name' => 'completion_export', 'visible' => false],
             __('app.status') => ['data' => 'status', 'name' => 'status'],

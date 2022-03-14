@@ -1,14 +1,9 @@
 <?php
 
-namespace App\Http\Requests\Lead;
+namespace App\Http\Requests\Admin\Employee;
 
 use App\Http\Requests\CoreRequest;
-use App\Rules\CheckAfterDate;
-use App\Rules\CheckUniqueEmail;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 
 class StoreRequest extends CoreRequest
 {
@@ -30,44 +25,17 @@ class StoreRequest extends CoreRequest
      */
     public function rules()
     {
-      //  echo $this->type_id;die;
-//        $this->merge(['client_email' => $this->email]);
-
-        if($this->has('company_id')){
-            $setting = \App\Company::findOrFail($this->company_id);
-        }
-        else{
-            $setting = company();
-        }
-
-        $global = \App\GlobalSetting::first();
-        if($this->type_id=='1'){
-            $rules = [
-                'name' => 'required',
-                'email' => ['required','email',new CheckUniqueEmail($this->company_id, null)],
-                //'company_name'=>'required',
-                'type_id'=>'required',
-            ];
-        }else{
-            $rules = [
-                'name' => 'required',
-                'email' => ['required','email',new CheckUniqueEmail($this->company_id, null)],
-                'company_name'=>'required',
-                'type_id'=>'required',
-            ];
-        }
-       
-
-        if(!is_null($setting) && Route::currentRouteName() == 'front.leadStore')
-        {
-            if($global->google_captcha_version == 'v2' && $setting->lead_form_google_captcha){
-                $rules['g-recaptcha-response'] = 'required';
-            }
-
-            if($global->google_captcha_version == 'v3' && $setting->lead_form_google_captcha){
-                $rules['recaptcha_token'] = 'required';
-            }
-        }
+        $rules = [
+            'employee_id' => 'required|unique:employee_details',
+            'name' => 'required',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:6',
+            'slack_username' => 'nullable|unique:employee_details,slack_username',
+            'hourly_rate' => 'nullable|numeric',
+            'joining_date' => 'required',
+            'department' => 'required',
+            'designation' => 'required',
+        ];
 
         if (request()->get('custom_fields_data')) {
             $fields = request()->get('custom_fields_data');
@@ -80,7 +48,6 @@ class StoreRequest extends CoreRequest
                 }
             }
         }
-
         return $rules;
     }
 

@@ -413,4 +413,21 @@ class SuperAdminPackageController extends SuperAdminBaseController
         }
     }
 
+    public function inquiryList(){
+
+       
+        $data=array();
+        $this->inquiry_data=DB::table('inquiry')->get();
+        //var_dump($data['inquiry_data']);die;
+      
+        return view('super-admin.packages.inquiryList', $this->data);
+    }
+
+     public function inquiryDetails($id){
+        $data=array();
+        $this->client_data=$this->client_data=DB::table('inquiry')->where('id',$id)->get();
+        //var_dump($this->client_data[0]);die;
+        return view('super-admin.packages.inquiryDetails', $this->data);
+    }
+
 }

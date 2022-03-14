@@ -515,9 +515,6 @@ Route::group(['middleware' => 'auth'], function () {
                 Route::post('projects/updateStatus/{id}', ['uses' => 'ManageProjectsController@updateStatus'])->name('projects.updateStatus');
                 Route::get('projects/discussion-replies/{projectId}/{discussionId}', ['uses' => 'ManageProjectsController@discussionReplies'])->name('projects.discussionReplies');
                 Route::get('projects/discussion/{projectId}', ['uses' => 'ManageProjectsController@discussion'])->name('projects.discussion');
-                
-                Route::get('projects/leadInfo/{projectId}', ['uses' => 'ManageProjectsController@leadInfo'])->name('projects.leadInfo');
-                
                 Route::get('projects/template-data/{templateId}', ['uses' => 'ManageProjectsController@templateData'])->name('projects.template-data');
                 Route::get('projects/lead-data/{templateId}', ['uses' => 'ManageProjectsController@leadData'])->name('projects.lead-data');
                 Route::get('projects/pinned-project', ['uses' => 'ManageProjectsController@pinnedItem'])->name('projects.pinned-project');
@@ -833,8 +830,6 @@ Route::group(['middleware' => 'auth'], function () {
                         Route::post('/getGenReport', ['uses' => 'LeaveReportController@getGenReport'])->name('getGenReport');
                         Route::post('/exportGenricReport', ['uses' => 'LeaveReportController@exportGenricReport'])->name('exportGenricReport');
                         Route::post('/deleteDeals', ['uses' => 'LeaveReportController@deleteDeals'])->name('deleteDeals');
-                        Route::get('/genericreport', 'LeaveReportController@genericreport')->name('genericreport');
-                        Route::get('/sellerReport', 'LeaveReportController@sellerReport')->name('sellerReport');
                         //endregion
                     }
                 );
@@ -1170,11 +1165,7 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('projects/gantt/{projectId?}', ['uses' => 'MemberProjectsController@gantt'])->name('projects.gantt');
             Route::get('projects/data', ['uses' => 'MemberProjectsController@data'])->name('projects.data');
             Route::get('projects/discussion-replies/{projectId}/{discussionId}', ['uses' => 'MemberProjectsController@discussionReplies'])->name('projects.discussionReplies');
-            
             Route::get('projects/discussion/{projectId}', ['uses' => 'MemberProjectsController@discussion'])->name('projects.discussion');
-            
-            Route::get('projects/leadInfo/{projectId}', ['uses' => 'MemberProjectsController@leadInfo'])->name('projects.leadInfo');
-            
             Route::get('projects/template-data/{templateId}', ['uses' => 'MemberProjectsController@templateData'])->name('projects.template-data');
             Route::get('projects/pinned-project', ['uses' => 'MemberProjectsController@pinnedItem'])->name('projects.pinned-project');
             Route::resource('projects', 'MemberProjectsController');
@@ -1209,8 +1200,6 @@ Route::group(['middleware' => 'auth'], function () {
 
            Route::get('/seller', ['uses' => 'MemberClientsController@seller'])->name('seller');
            Route::get('/buyer', ['uses' => 'MemberClientsController@buyer'])->name('buyer');
-		    Route::get('/genericreport', 'MemberLeavesController@genericreport')->name('genericreport');
-			  Route::post('/getGenReport', ['uses' => 'MemberLeavesController@getGenReport'])->name('getGenReport');
            Route::get('/sellerShow/{id}', ['uses' => 'MemberClientsController@sellerShow'])->name('sellerShow');
            Route::get('/sellerEdit/{id}', ['uses' => 'MemberClientsController@sellerEdit'])->name('sellerEdit');
            Route::get('/seller_document_show/{id}', ['uses' => 'MemberClientsController@seller_document_show'])->name('seller_document_show');

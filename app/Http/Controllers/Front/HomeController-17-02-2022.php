@@ -998,7 +998,7 @@ class HomeController extends FrontBaseController
         $address=$request->input('address');
         $mobile=$request->input('mobile');
         $message=$request->input('message');
-        $type_id=$request->input('type_id');
+        $type_id=1;
         $values = array('clint_name' =>$name,'email' =>$email,'company_name'=>$company_name,'website'=>$website,'address'=>$address,'mobile'=>$mobile,'Message'=>$message,'type_id'=>$type_id);
         $insert=DB::table('inquiry')->insert($values);
         if($insert){

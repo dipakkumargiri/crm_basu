@@ -14,7 +14,10 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
-
+use App\BuyerBusinessDetails;
+use App\ClientDetails;
+use Auth;
+use DB;
 class MemberLeavesController extends MemberBaseController
 {
 
@@ -170,6 +173,71 @@ class MemberLeavesController extends MemberBaseController
             })
             ->rawColumns(['action', 'status'])
             ->make(true);
+    }
+	 public function genericreport()
+    {
+		$userId = Auth::id();
+        $this->business=count(ClientDetails::where('business_sale_flag','1')->where('agent_id',$userId)->get());
+       
+        $this->employees = User::allEmployees();
+        $this->fromDate = Carbon::today()->subDays(30);
+        $this->toDate = Carbon::today();
+
+        return view('member.leaves.genericreport', $this->data);
+    }
+	 public function getGenReport(Request $request)
+    {
+		 $userId = Auth::id();
+        $startDate  = $request->startDate;
+        $endDate    = $request->endDate;
+        $reportType = $request->reportType;
+
+        $startDt = '';
+        $endDt = '';
+
+        $startDate = Carbon::createFromFormat($this->global->date_format, $startDate)->toDateString();
+        $endDate = Carbon::createFromFormat($this->global->date_format, $endDate)->toDateString();
+        //echo $startDate." ".$endDate;die;
+        if (!is_null($startDate)) {
+            $startDt = 'and DATE(`bu.created_at`) >= ' . '"' . $startDate . '"';
+        }
+
+        if (!is_null($endDate)) {
+            $endDt = 'and DATE(`bu.created_at`) <= ' . '"' . $endDate . '"';
+        }
+        $leadlist =DB::table('buyer_business_details as bu')
+        ->select('bu.id','buyerTable.company_name as buyerCompanyName','sellerTable.company_name as sellerCompanyName','sellerTable.business_name as sellerBusinessName','buUser.name as buyerAgiantName','sellerTable.business_value','buyerTable.name as buyer_name')
+        ->join('client_details as buyerTable','bu.buyer_client_details_id','=','buyerTable.id')
+        ->join('client_details as sellerTable','bu.seller_client_details_id','=','sellerTable.id')
+        ->join('users as buUser','buUser.id','=','buyerTable.user_id')
+        ->where('bu.status','1')
+		 ->where('buyerTable.business_sale_flag','1')
+		  ->where('sellerTable.business_sale_flag','1')
+		->where('buyerTable.agent_id',$userId)
+		->orWhere('sellerTable.agent_id',$userId)
+        ->get();
+        return DataTables::of($leadlist)
+        ->addColumn('sellerCompanyName', function ($row) {
+            return ucwords($row->sellerCompanyName);
+        })
+        ->addColumn('buyerCompanyName', function ($row) {
+            return ucwords($row->buyer_name);
+        })
+        ->addColumn('sellerBusinessName', function ($row) {
+            return ucwords($row->sellerBusinessName);
+        })
+        ->addColumn('businessValue', function ($row) {
+            return ucwords($row->business_value);
+            
+        })
+       
+     
+        ->make(true);
+        
+       // var_dump($leadlist);die;
+       // $leaves = $leavesList->groupBy('users.id')->get();
+
+        
     }
 
 }

@@ -55,6 +55,7 @@ class LeadsDataTable extends BaseDataTable
               </div>';
                 return $action;
             })
+			
             ->addColumn('status', function ($row) {
                 $status = LeadStatus::all();
                 $statusLi = '--';
@@ -99,18 +100,21 @@ class LeadsDataTable extends BaseDataTable
 
                 return '<a href="' . route('admin.leads.show', $row->id) . '">' . ucwords($row->client_name) . '</a><div class="clearfix"></div> ' . $label;
             })
-            ->editColumn('next_follow_up_date', function ($row) use ($currentDate) {
-                if ($row->next_follow_up_date != null && $row->next_follow_up_date != '') {
-                    $date = Carbon::parse($row->next_follow_up_date)->format($this->global->date_format .' '.$this->global->time_format);
+			 ->editColumn('client_type', function ($row) {
+                if ($row->client_id != null && $row->client_id != '') {
+                    if($row->client_type == 1){
+                        $client_type = __('Buyer');
+                    }else{
+                        $client_type = __('Seller');
+                    }
+                   
                 } else {
-                    $date = '--';
-                }
-                if ($row->next_follow_up_date < $currentDate && $date != '--') {
-                    return $date . ' <label class="label label-danger">' . __('app.pending') . '</label>';
+                     $client_type = __('Seller');
                 }
 
-                return $date;
+                return $client_type;
             })
+         
             ->editColumn('created_at', function ($row) {
                 return $row->created_at->format($this->global->date_format);
             })
@@ -141,10 +145,10 @@ class LeadsDataTable extends BaseDataTable
             ->removeColumn('client_id')
             ->removeColumn('lead_value')
             ->removeColumn('source')
-            ->removeColumn('next_follow_up')
+           // ->removeColumn('next_follow_up')
             ->removeColumn('statusName')
             ->addIndexColumn()
-            ->rawColumns(['status', 'action', 'client_name', 'next_follow_up_date', 'agent_name','mobile','client_email']);
+            ->rawColumns(['status', 'action', 'client_name', 'next_follow_up_date', 'agent_name','mobile','client_email','client_type']);
     }
 
     /**
@@ -158,7 +162,7 @@ class LeadsDataTable extends BaseDataTable
         $setting = company();
         $currentDate = Carbon::now()->timezone($setting->timezone)->format('Y-m-d H:i');
         //        dd($currentDate);
-        $lead = Lead::select('leads.id','leads.lead_id', 'leads.client_id', 'leads.mobile', 'leads.client_email', 'leads.next_follow_up','leads.client_type', 'client_name', 'company_name', 'lead_status.type as statusName', 'status_id', 'leads.created_at',DB::raw('CONCAT(currencies.currency_symbol, leads.value) AS value'), 'lead_sources.type as source', 'users.name as agent_name', 'users.image',
+        $lead = Lead::select('leads.id','leads.lead_id','leads.client_id', 'leads.mobile', 'leads.client_email', 'leads.next_follow_up','leads.client_type', 'client_name', 'company_name', 'lead_status.type as statusName', 'status_id', 'leads.created_at',DB::raw('CONCAT(currencies.currency_symbol, leads.value) AS value'), 'lead_sources.type as source', 'users.name as agent_name', 'users.image',
             \DB::raw("(select next_follow_up_date from lead_follow_up where lead_id = leads.id and leads.next_follow_up  = 'yes' and next_follow_up_date >= '{$currentDate}' 
             ORDER BY next_follow_up_date asc limit 1) as next_follow_up_date"))
             ->leftJoin('lead_status', 'lead_status.id', 'leads.status_id')
@@ -256,14 +260,15 @@ class LeadsDataTable extends BaseDataTable
         return [
             __('app.id') => ['data' => 'id', 'name' => 'id', 'visible' => false, 'exportable' => false],
             '#' => ['data' => 'DT_RowIndex', 'orderable' => false, 'searchable' => false],
-            __('app.leadId') => ['data' => 'lead_id', 'name' => 'lead_id'],
+           // __('app.leadId') => ['data' => 'lead_id', 'name' => 'lead_id'],
             __('app.clientName') => ['data' => 'client_name', 'name' => 'client_name'],
+			 __('app.leadType') => ['data' => 'client_type', 'name' => 'client_type'],
             __('modules.lead.companyName') => ['data' => 'company_name', 'name' => 'company_name'],
             __('modules.lead.client_email') => ['data' => 'client_email', 'name' => 'client_email'],
             __('app.mobile') => ['data' => 'mobile', 'name' => 'mobile'],
             __('app.leadValue') => ['data' => 'value', 'name' => 'value'],
             __('modules.lead.leadAgent') => ['data' => 'agent_name', 'name' => 'users.name'],
-            __('modules.lead.nextFollowUp') => ['data' => 'next_follow_up_date', 'name' => 'next_follow_up_date', 'orderable' => false, 'searchable' => false],
+          //  __('modules.lead.nextFollowUp') => ['data' => 'next_follow_up_date', 'name' => 'next_follow_up_date', 'orderable' => false, 'searchable' => false],
             __('app.createdOn') => ['data' => 'created_at', 'name' => 'created_at'],
             __('app.status') => ['data' => 'status', 'name' => 'status', 'exportable' => false],
             __('app.leadStatus') => ['data' => 'leadStatus', 'name' => 'leadStatus', 'visible' => false, 'orderable' => false, 'searchable' => false],

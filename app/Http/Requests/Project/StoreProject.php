@@ -27,7 +27,9 @@ class StoreProject extends CoreRequest
         $rules = [
             'project_name' => 'required',
             'start_date' => 'required',
-            'user_id.0' => 'required',
+            'agent_id' => 'required',
+            'franchise' => 'required',
+            'franchise_office' => 'required',
         ];
 
         if (!$this->has('without_deadline')) {
