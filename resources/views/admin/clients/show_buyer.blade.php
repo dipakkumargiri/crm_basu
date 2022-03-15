@@ -75,19 +75,19 @@
                                         </div>
                                         <hr>
                                         <div class="row">
-                                        <div class="col-md-4 col-xs-6 b-r"> <strong>Stage</strong> <br>
+                                        <div class="col-md-4 col-xs-6 b-r"> <strong>@lang('app.stage')</strong> <br>
                                                 <p class="text-muted">{{ (!empty($stageDetails) ) ? ucwords($stageDetails->stage_name) : '-'}}</p>
                                             </div>
-                                            <div class="col-md-4 col-xs-6 b-r"> <strong>Status</strong> <br>
+                                            <div class="col-md-4 col-xs-6 b-r"> <strong>@lang('app.status')</strong> <br>
                                                 <p class="text-muted">{{ $statusDetails->type ?? '-' }}</p>
                                             </div>
-                                            <div class="col-xs-4 b-r"> <strong>Lead Source</strong> <br>
+                                            <div class="col-xs-4 b-r"> <strong>@lang('app.leadSource')</strong> <br>
                                                 <p class="text-muted">{!!  (!empty($sourceDetails)) ? ucwords($sourceDetails->type) : '-' !!}</p>
                                             </div>
                                         </div>
                                         <hr>
                                         <div class="row">
-                                        <div class="col-md-4 col-xs-6 b-r"> <strong>Assigned To</strong> <br>
+                                        <div class="col-md-4 col-xs-6 b-r"> <strong>@lang('app.assignTo')</strong> <br>
                                                 <p class="text-muted">{{ (!empty($againtDetails) ) ? ucwords($againtDetails->name) : '-'}}</p>
                                             </div>
                                            
@@ -100,6 +100,14 @@
                                             <div class="col-md-4 col-xs-6 b-r"> <strong>@lang('modules.clients.clientSubCategory')</strong> <br>
                                                     <p class="text-muted">@if($clientDetail->clientCategory){{ $clientDetail->clientSubcategory->category_name }}@endif</p>
                                                 </div>
+                                        </div>
+                                        <hr>
+                                        <div class="row">
+                                        <div class="col-md-4 col-xs-6 b-r"> <strong>@lang('app.agentCommission')</strong> <br>
+                                                <p class="text-muted">{{ (!empty($clientDetail) ) ? ucwords($clientDetail->agent_commission) : '-'}}</p>
+                                            </div>
+                                           
+                                           
                                         </div>
                                      
                                        <!-- <div class="row">

@@ -10,8 +10,8 @@
         <!-- .breadcrumb -->
         <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12 bg-title-right">
             <ol class="breadcrumb">
-                <li><a href="{{ route('member.dashboard') }}">@lang('app.menu.home')</a></li>
-                <li><a href="{{ route('member.clients.index') }}">{{ __($pageTitle) }}</a></li>
+                <li><a href="{{ route('admin.dashboard') }}">@lang('app.menu.home')</a></li>
+                <li><a href="{{ route('admin.clients.index') }}">{{ __($pageTitle) }}</a></li>
                 <li class="active">@lang('app.addNew')</li>
             </ol>
         </div>
@@ -21,6 +21,29 @@
 
 @push('head-script')
 <link rel="stylesheet" href="{{ asset('plugins/bower_components/bootstrap-datepicker/bootstrap-datepicker.min.css') }}">
+<link rel="stylesheet" href="{{ asset('plugins/bower_components/bootstrap-select/bootstrap-select.min.css') }}">
+<link rel="stylesheet" href="{{ asset('plugins/bower_components/custom-select/custom-select.css') }}">
+<link rel="stylesheet" href="{{ asset('plugins/bower_components/summernote/dist/summernote.css') }}">
+<style>
+ .salutation .form-control {
+     padding: 2px 2px;
+   }
+  .select-category button{
+    background-color: white !important;
+    font-size: 13px;
+    color: #565656;
+    border: 1px solid #e4e7ea !important;
+   }
+   .select-category button:hover{
+    color: #565656;
+    opacity: 1;
+   }
+  
+   .bootstrap-select .dropdown-toggle:focus{
+    outline: none !important;
+   }
+</style>
+
 @endpush
 
 @section('content')
@@ -33,27 +56,73 @@
                 <div class="panel-wrapper collapse in" aria-expanded="true">
                     <div class="panel-body">
                         {!! Form::open(['id'=>'createClient','class'=>'ajax-form','method'=>'POST']) !!}
-                            @if(isset($leadDetail->id))
-                                <input type="hidden" name="lead" value="{{ $leadDetail->id }}">
-                            @endif
+                        @if(isset($leadDetail->id))
+                            <input type="hidden" name="lead" value="{{ $leadDetail->id }}">
+                        @endif
                             <div class="form-body">
-                                <h3 class="box-title">@lang('modules.client.companyDetails')</h3>
+                                <h3 class="box-title ">@lang('modules.client.clientDetails')</h3>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-md-1 ">
+                                        <div class="form-group salutation" style="margin-top: 23px">
+                                        <select name="salutation" id="salutation" class="form-control">
+                                            <option value="">--</option>
+                                            <option @if(isset($firstName) && $firstName == 'mr' ) selected @endif  value="mr">@lang('app.mr')</option>
+                                            <option @if(isset($firstName) && $firstName == 'mrs' ) selected @endif value="mrs">@lang('app.mrs')</option>
+                                            <option @if(isset($firstName) && $firstName == 'miss' ) selected @endif value="miss">@lang('app.miss')</option>
+                                            <option @if(isset($firstName) && $firstName == 'dr' ) selected @endif value="dr">@lang('app.dr')</option>
+                                            <option @if(isset($firstName) && $firstName == 'sir' ) selected @endif value="sir">@lang('app.sir')</option>
+                                            <option @if(isset($firstName) && $firstName == 'madam' ) selected @endif value="madam">@lang('app.madam')</option>
+                                        </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5 ">
+                                        <div class="form-group">
+                                            <label class="required">@lang('modules.client.clientName')</label>
+                                            <input type="text" name="name" id="name"  value="{{ $leadName ?? '' }}"   class="form-control">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="required">@lang('modules.client.clientEmail')</label>
+                                            <input type="email" name="email" id="email" value="{{ $leadDetail->client_email ?? '' }}"  class="form-control">
+                                            <span class="help-block">@lang('modules.client.emailNote')</span>
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="required">@lang('modules.employees.employeePassword')</label>
+                                            <input type="password" style="display: none">
+                                            <input type="password" name="password" id="password" class="form-control" autocomplete="nope">
+                                            <span class="fa fa-fw fa-eye field-icon toggle-password"></span>
+                                            <span class="help-block"> @lang('modules.client.passwordNote') </span>
+                                            <div class="checkbox checkbox-info">
+                                                <input id="random_password" name="random_password" value="true" type="checkbox">
+                                                <label for="random_password">@lang('modules.client.generateRandomPassword')</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <h3 class="box-title m-t-20">@lang('modules.client.companyDetails')</h3>
                                 <hr>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="control-label">@lang('modules.client.companyName')</label>
-                                            <input type="text" id="company_name" value="{{ $leadDetail->company_name ?? '' }}" name="company_name" class="form-control" >
+                                            <input type="text" id="company_name" name="company_name" value="{{ $leadDetail->company_name ?? '' }}" class="form-control" >
                                         </div>
                                     </div>
                                     <!--/span-->
                                     <div class="col-md-1 ">
                                         <div class="form-group salutation" style="margin-top: 23px">
-                                            <select name="hyper_text" id="hyper_text" class="form-control">
-                                                <option value="">--</option>
-                                                <option value="http://">http://</option>
-                                                <option value="https://">https://</option>
-                                            </select>
+                                        <select name="hyper_text" id="hyper_text" class="form-control">
+                                            <option value="">--</option>
+                                            <option value="http://">http://</option>
+                                            <option value="https://">https://</option>
+                                        </select>
                                         </div>
                                     </div>
                                     <div class="col-md-5">
@@ -69,70 +138,114 @@
                                     <div class="col-xs-12">
                                         <div class="form-group">
                                             <label class="control-label">@lang('app.address')</label>
-                                            <textarea name="address"  id="address"  rows="5" class="form-control">{{ $leadDetail->address ?? '' }}</textarea>
+                                            <textarea name="address"  id="address"  rows="5"  class="form-control">{{ $leadDetail->address ?? '' }}</textarea>
                                         </div>
                                     </div>
                                     <!--/span-->
 
                                 </div>
                                 <!--/row-->
-
-                                <h3 class="box-title m-t-40">@lang('modules.client.clientDetails')</h3>
-                                <hr>
                                 <div class="row">
-                                    <div class="col-md-1 ">
-                                        <div class="form-group salutation" style="margin-top: 23px">
-                                            <select name="salutation" id="salutation" class="form-control">
-                                                <option value="">--</option>
-                                                <option @if(isset($firstName) && $firstName == 'mr' ) selected @endif  value="mr">@lang('app.mr')</option>
-                                                <option @if(isset($firstName) && $firstName == 'mrs' ) selected @endif value="mrs">@lang('app.mrs')</option>
-                                                <option @if(isset($firstName) && $firstName == 'miss' ) selected @endif value="miss">@lang('app.miss')</option>
-                                                <option @if(isset($firstName) && $firstName == 'dr' ) selected @endif value="dr">@lang('app.dr')</option>
-                                                <option @if(isset($firstName) && $firstName == 'sir' ) selected @endif value="sir">@lang('app.sir')</option>
-                                                <option @if(isset($firstName) && $firstName == 'madam' ) selected @endif value="madam">@lang('app.madam')</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-5 ">
-                                        <div class="form-group">
-                                            <label>@lang('modules.client.clientName')</label>
-                                            <input type="text" name="name" id="name" value="{{ $leadDetail->client_name ?? '' }}"  class="form-control">
-                                        </div>
-                                    </div>
+                                <div class="col-md-3 ">      
+                                        <label>@lang('app.mobile')</label>
 
-                                    <div class="col-md-6">
                                         <div class="form-group">
-                                            <label>@lang('modules.client.clientEmail')</label>
-                                            <input type="email" name="email" id="email" value="{{ $leadDetail->client_email ?? '' }}" class="form-control">
-                                            <span class="help-block">@lang('modules.client.emailNote')</span>
+                                        <select class="select2 phone_country_code form-control" name="phone_code">
+                                            <option value ="">--</option>
+                                                @foreach ($countries as $item)
+                                                    <option @if (isset($code[0]) && $item->phonecode == $code[0])
+                                                            selected
+                                                            @endif value="{{ $item->id }}">+{{ $item->phonecode.' ('.$item->iso.')' }}</option>
+                                                @endforeach
+                                            </select>
+                                            <input type="tel" name="mobile" id="mobile" class="mobile" autocomplete="nope" value="{{ $mobileNo ?? '' }}">
                                         </div>
                                     </div>
-                                    <!--/span-->
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="">@lang('modules.clients.country')</label>
+                                            <select class="select2 form-control" name="cog_countries_id" id="cog_countries_id"
+                                                data-style="form-control">
+                                                    @forelse($Allcountries as $coun)
+                                                    <option value="{{ $coun->id }}">{{ ucwords($coun->name) }}</option>
+                                                    @endforeach
+                                                </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 ">
+                                        <div class="form-group">
+                                            <label>@lang('modules.stripeCustomerAddress.state')</label>
+                                            <select class="selectpicker form-control select-category" data-placeholder="@lang('modules.stripeCustomerAddress.state')"  id="state_id" name="state_id">                                                 
+                                              </select>
+                                         </div>
+                                    </div>
+                                   
+                                <div class="col-md-3 ">
+                                        <div class="form-group">
+                                            <label>@lang('modules.stripeCustomerAddress.city')</label>
+                                            <select class="selectpicker form-control select-category" data-placeholder="@lang('modules.stripeCustomerAddress.city')"  id="city_id" name="city_id">                                                 
+                                            </select>
+                                          </div>
+                                    </div>
+                                   
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-6">
+                                <div class="col-md-3 ">
                                         <div class="form-group">
-                                            <label class="required">@lang('modules.employees.employeePassword')</label>
-                                            <input type="password" style="display: none">
-                                            <input type="password" name="password" id="password" class="form-control" autocomplete="nope">
-                                            <span class="fa fa-fw fa-eye field-icon toggle-password"></span>
-                                            <span class="help-block"> @lang('modules.client.passwordNote') </span>
-                                            <div class="checkbox checkbox-info">
-                                                <input id="random_password" name="random_password" value="true" type="checkbox">
-                                                <label for="random_password">@lang('modules.client.generateRandomPassword')</label>
+                                            <label>@lang('modules.clients.officePhoneNumber')</label>
+                                            <input type="text" name="office_phone" id="office_phone"  value="{{ $leadDetail->office_phone ?? '' }}" class="form-control">
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-3 ">
+                                        <div class="form-group">
+                                            <label>@lang('modules.stripeCustomerAddress.postalCode')</label>
+                                            <input type="text" name="postal_code" id="postalCode"  value="{{ $leadDetail->postal_code ?? '' }}"  class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                    <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">@lang('modules.clients.clientCategory')
+                                                        <a href="javascript:;" id="addClientCategory" class="text-info"><i
+                                                                class="ti-settings text-info"></i> </a>
+                                                </label>
+                                                <select class="select2 form-control client-category" data-placeholder="@lang('modules.clients.clientCategory')"  id="category_id" name="category_id">
+                                                <option value="">@lang('messages.pleaseSelectCategory')</option>
+                                                @forelse($categories as $category)
+                                                <option value="{{ $category->id }}">{{ ucwords($category->category_name) }}</option>
+                                                  @empty
+                                                <option value="">@lang('messages.noCategoryAdded')</option>
+                                                 @endforelse
+                                                    
+                                                </select>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label>@lang('modules.client.mobile')</label>
-                                            <input type="tel" name="mobile" id="mobile" value="{{ $leadDetail->mobile ?? '' }}" class="form-control">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">@lang('modules.clients.clientSubCategory')
+                                                        <a href="javascript:;" id="addClientSubCategory" class="text-info">
+                                                        <i class="ti-settings text-info"></i> </a>
+                                                </label>
+                                                <select class="selectpicker form-control select-category" data-placeholder="@lang('modules.clients.clientSubCategory')"  id="sub_category_id" name="sub_category_id">                                                 
+                                                <option value="">@lang('messages.noSubCategoryAdded')</option> 
+                                                @forelse($subcategories as $subCategory)
+                                                <option value="{{ $subCategory->id }}">{{ ucwords($subCategory->category_name) }}</option>
+                                            @empty
+                                                <option value="">@lang('messages.noProductCategory')</option>
+                                            @endforelse  
+                                                </select>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <!--/span-->
+                                    
                                 </div>
-                                <!--/row-->
+                                </div>
+                             <!--
+                                <h3 class="box-title m-t-20">@lang('modules.client.clientOtherDetails')</h3>
+                                <hr>
+                                <!--/row
                                 <div class="row">
 
                                     <div class="col-md-3">
@@ -141,7 +254,7 @@
                                             <input type="text" name="skype" id="skype" class="form-control">
                                         </div>
                                     </div>
-                                    <!--/span-->
+                                    <!--/span
 
                                     <div class="col-md-3">
                                         <div class="form-group">
@@ -149,7 +262,7 @@
                                             <input type="text" name="linkedin" id="linkedin" class="form-control">
                                         </div>
                                     </div>
-                                    <!--/span-->
+                                    <!--/span
 
                                     <div class="col-md-3">
                                         <div class="form-group">
@@ -157,7 +270,7 @@
                                             <input type="text" name="twitter" id="twitter" class="form-control">
                                         </div>
                                     </div>
-                                    <!--/span-->
+                                    <!--/span
 
                                     <div class="col-md-3">
                                         <div class="form-group">
@@ -165,11 +278,15 @@
                                             <input type="text" name="facebook" id="facebook" class="form-control">
                                         </div>
                                     </div>
-                                    <!--/span-->
+                                    <!--/span
                                 </div>
-                                <!--/row-->
+                                <!--/row
+
+                                -->
+                                <!--
                                 <div class="row">
-                                    <div class="col-md-6">
+                                   
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label for="gst_number">@lang('app.gstNumber')</label>
                                             <input type="text" id="gst_number" name="gst_number" class="form-control" value="">
@@ -177,12 +294,15 @@
                                     </div>
                                 </div>
 
+                                -->
+                                <!--/row-->
+
                                 <div class="row">
                                     @if(isset($fields))
                                         @foreach($fields as $field)
                                             <div class="col-md-6">
-                                                <label>{{ ucfirst($field->label) }}</label>
                                                 <div class="form-group">
+                                                    <label @if($field->required == 'yes') class="required" @endif>{{ ucfirst($field->label) }}</label>
                                                     @if( $field->type == 'text')
                                                         <input type="text" name="custom_fields_data[{{$field->name.'_'.$field->id}}]" class="form-control" placeholder="{{$field->label}}" value="{{$editUser->custom_fields_data['field_'.$field->id] ?? ''}}">
                                                     @elseif($field->type == 'password')
@@ -235,6 +355,47 @@
                                     @endif
 
                                 </div>
+                                <h3 class="box-title ">@lang('app.leadInformation')</h3>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                    <input type="hidden" name="client_type" id="client_type">
+                                        <label>@lang('app.assignTo')</label>
+                                      <!--  <a href="javascript:;"  id="addLeadAgent" class="btn btn-xs btn-outline btn-success"><i
+                                                            class="fa fa-plus"></i> @lang('app.add') @lang('app.leadAgent')</a>--></label>
+                                            <select class="select2 form-control" data-placeholder="@lang('modules.tickets.chooseAgents')" id="agent_id" name="agent_id">
+                                                <option value="">@lang('modules.tickets.chooseAgents')</option>
+                                                @foreach($leadAgents as $emp)
+                                                    <option value="{{ $emp->id }}">{{ ucwords($emp->user->name) }} @if($emp->user->id == $user->id)
+                                                            (YOU) @endif</option>
+                                                @endforeach
+                                            </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>@lang('app.changeStatus')</label>
+                                        <select class="form-control" name="status" id="status">
+                                            <option>--Select--</opton>
+                                            <option value="pending">pending</opton>
+                                            <option value="inprocess">inprocess</opton>
+                                            <option value="converted">converted</opton>
+                                       </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>@lang('app.changeStages')</label>
+                                        <select class="form-control" name="stages" id="stages">
+                                            <option value="Discussion">Discussion</opton>
+                                            <option value="Docu Sign">Docu Sign</opton>
+                                       </select>
+                                    </div>
+                                </div>
+                               </div> 
+                                <!--
                                 <div class="row">
                                     <div class="col-xs-12">
                                         <label>@lang('app.shippingAddress')</label>
@@ -243,16 +404,61 @@
                                         </div>
                                     </div>
                                 </div>
+                                -->
                                 <div class="row">
                                     <div class="col-xs-12">
                                         <label>@lang('app.note')</label>
                                         <div class="form-group">
-                                            <textarea name="note" id="note" class="form-control" rows="5"></textarea>
+                                            <textarea name="note" id="note" class="form-control summernote" rows="5"></textarea>
                                         </div>
                                     </div>
                                 </div>
+                                <!--
+                                <div class="row" style="margin-bottom: 20px;">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <div style="margin-bottom: 10px;">
+                                                <label class="control-label">@lang('modules.client.sendCredentials')</label>
+                                                <a class="mytooltip" href="javascript:void(0)"> <i class="fa fa-info-circle"></i><span class="tooltip-content5"><span class="tooltip-text3"><span class="tooltip-inner2">@lang('modules.client.sendCredentialsMessage')</span></span></span></a>
+                                            </div>
+                                            <div class="radio radio-inline col-md-4">
+                                                <input type="radio" name="sendMail" id="sendMail1"
+                                                       value="yes">
+                                                <label for="sendMail1" class="">
+                                                    @lang('app.yes') </label>
+                                            </div>
+                                            <div class="radio radio-inline col-md-4">
+                                                <input type="radio" name="sendMail"
+                                                       id="sendMail2" checked value="no">
+                                                <label for="sendMail2" class="">
+                                                    @lang('app.no') </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <div class="m-b-10">
+                                                <label class="control-label">@lang('modules.emailSettings.emailNotifications')</label>
+                                            </div>
+                                            <div class="radio radio-inline">
+                                                <input type="radio" checked name="email_notifications" id="email_notifications1" value="1">
+                                                <label for="email_notifications1" class="">
+                                                    @lang('app.enable') </label>
+    
+                                            </div>
+                                            <div class="radio radio-inline ">
+                                                <input type="radio" name="email_notifications"
+                                                       id="email_notifications2" value="0">
+                                                <label for="email_notifications2" class="">
+                                                    @lang('app.disable') </label>
+                                            </div>
+                                           
+                                        </div>
+                                    </div>
+                                   
+                                </div>
 
-
+                                -->
                             </div>
                             <div class="form-actions">
                                 <button type="submit" id="save-form" class="btn btn-success"> <i class="fa fa-check"></i> @lang('app.save')</button>
@@ -264,25 +470,41 @@
             </div>
         </div>
     </div>    <!-- .row -->
-
+    {{--Ajax Modal--}}
+    <div class="modal fade bs-modal-md in" id="clientCategoryModal" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-md" id="modal-data-application">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                    <span class="caption-subject font-red-sunglo bold uppercase" id="modelHeading"></span>
+                </div>
+                <div class="modal-body">
+                    Loading...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn blue">Save changes</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    {{--Ajax Modal Ends--}}
 @endsection
 
 @push('footer-script')
 <script src="{{ asset('plugins/bower_components/bootstrap-datepicker/bootstrap-datepicker.min.js') }}"></script>
+<script src="{{ asset('plugins/bower_components/bootstrap-select/bootstrap-select.min.js') }}"></script>
+<script src="{{ asset('plugins/bower_components/custom-select/custom-select.min.js') }}"></script>
+<script src="{{ asset('plugins/bower_components/summernote/dist/summernote.min.js') }}"></script>
 
 <script>
-    $('#random_password').change(function () {
-        var randPassword = $(this).is(":checked");
-
-        if(randPassword){
-            $('#password').val('{{ str_random(8) }}');
-            $('#password').attr('readonly', 'readonly');
-        }
-        else{
-            $('#password').val('');
-            $('#password').removeAttr('readonly');
-        }
-    });
+ $('#cog_countries_id').val('<?php echo $leadDetail->cog_countries_id; ?>');
+    $(document).ready(function(){
+        $("#cog_countries_id").trigger("click");
+});
     function checkboxChange(parentClass, id){
         var checkedData = '';
         $('.'+parentClass).find("input[type= 'checkbox']:checked").each(function () {
@@ -295,7 +517,41 @@
         });
         $('#'+id).val(checkedData);
     }
-    
+
+    $('#sub_category_id').html("");
+      var categories = @json($categories);
+        $('#category_id').change(function (e) {
+        var cat_id = $(this).val();
+        getCategory(cat_id);
+           
+        });
+        function getCategory(cat_id){
+            var url = "{{route('admin.clients.getSubcategory')}}";
+            var token = "{{ csrf_token() }}";
+            $.easyAjax({
+            url: url,
+            type: "POST",
+            data: {'_token': token, cat_id: cat_id},
+            success: function (data) {
+                var options = [];
+                        var rData = [];
+                        rData = data.subcategory;
+                        $.each(rData, function( index, value ) {
+                            var selectData = '';
+                            selectData = '<option value="'+value.id+'">'+value.category_name+'</option>';
+                            options.push(selectData);
+                        });
+                        $('#sub_category_id').html(options);
+                        $('#sub_category_id').selectpicker('refresh');
+
+            }
+        })
+        }
+    $(".select2").select2({
+        formatNoMatches: function () {
+            return "{{ __('messages.noRecordFound') }}";
+        }
+    });
     $(".date-picker").datepicker({
         todayHighlight: true,
         autoclose: true,
@@ -312,6 +568,110 @@
             data: $('#createClient').serialize()
         })
     });
+
+    $('.summernote').summernote({
+        height: 200,                 // set editor height
+        minHeight: null,             // set minimum height of editor
+        maxHeight: null,             // set maximum height of editor
+        focus: false,
+        toolbar: [
+            // [groupName, [list of button]]
+            ['style', ['bold', 'italic', 'underline', 'clear']],
+            ['font', ['strikethrough']],
+            ['fontsize', ['fontsize']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ["view", ["fullscreen"]]
+        ]
+    });
+    $('#addClientCategory').click(function () {
+        var url = '{{ route('admin.clientCategory.create')}}';
+        $('#modelHeading').html('...');
+        $.ajaxModal('#clientCategoryModal', url);
+    })
+    $('#addClientSubCategory').click(function () {
+        var url = '{{ route('admin.clientSubCategory.create')}}';
+        $('#modelHeading').html('...');
+        $.ajaxModal('#clientCategoryModal', url);
+    })
+    $('#random_password').change(function () {
+        var randPassword = $(this).is(":checked");
+
+        if(randPassword){
+            $('#password').val('{{ str_random(8) }}');
+            $('#password').attr('readonly', 'readonly');
+        }
+        else{
+            $('#password').val('');
+            $('#password').removeAttr('readonly');
+        }
+    });
+    $('#cog_countries_id').on('click',function(){
+     //   alert($(this).val());
+        var country_id = $(this).val();
+        getState(country_id);
+    });
+    function getState(country_id){
+            var url = "{{route('member.leads.getState')}}";
+            var token = "{{ csrf_token() }}";
+            $.easyAjax({
+            url: url,
+            type: "POST",
+            data: {'_token': token, country_id: country_id},
+            success: function (data) {
+                console.log(data);
+                var options = [];
+                var rData = [];
+                rData = data.AllStates;
+                $.each(rData, function( index, value ) {
+                    var selectData = '';
+                    selectData = '<option value="'+value.id+'">'+value.name+'</option>';
+                    options.push(selectData);
+                });
+                $('#state_id').html(options);
+                $('#state_id').val('<?php echo $leadDetail->cog_state_id; ?>');
+                var state_id='<?php echo $leadDetail->cog_state_id; ?>';
+               if(state_id!=''){
+                $("#state_id").trigger("change");
+               }
+                $('#state_id').selectpicker('refresh');
+               
+
+            }
+        })
+        }
+        $('#state_id').on('change',function(){
+           // alert($(this).val());
+            var state_id = $(this).val();
+            getCity(state_id);
+        });
+        function getCity(state_id){
+                var url = "{{route('member.leads.getCity')}}";
+                var token = "{{ csrf_token() }}";
+                $.easyAjax({
+                url: url,
+                type: "POST",
+                data: {'_token': token, state_id: state_id},
+                success: function (data) {
+                    console.log(data);
+                    var options = [];
+                    var rData = [];
+                    rData = data.AllCities;
+                    $.each(rData, function( index, value ) {
+                        var selectData = '';
+                        selectData = '<option value="'+value.id+'">'+value.name+'</option>';
+                        options.push(selectData);
+                    });
+                    $('#city_id').html(options);
+                    $('#city_id').val('<?php echo $leadDetail->cog_city_id; ?>');
+                    $('#city_id').selectpicker('refresh');
+    
+                }
+            })
+            }
+            $('#agent_id').val('<?php echo $leadDetail->agent_id; ?>');
+            $('#client_type').val('<?php echo $leadDetail->client_type; ?>');
+            
+           
 </script>
 @endpush
 

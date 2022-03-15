@@ -4,7 +4,7 @@
     <div class="row bg-title">
         <!-- .page title -->
         <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12 bg-title-left">
-            <h4 class="page-title"><i class="{{ $pageIcon }}"></i>Seller</h4>
+            <h4 class="page-title"><i class="{{ $pageIcon }}"></i>@lang('app.seller')</h4>
         </div>
         <!-- /.page title -->
         <!-- .breadcrumb -->
@@ -87,16 +87,29 @@
                                         </div>
                                         <hr>
                                         <div class="row">
-                                        <div class="col-md-4 col-xs-6 b-r"> <strong>Assigned To</strong> <br>
+                                        <div class="col-md-4 col-xs-6 b-r"> <strong>@lang('app.assignTo')</strong> <br>
                                                 <p class="text-muted">{{ (!empty($againtDetails) ) ? ucwords($againtDetails->name) : '-'}}</p>
                                             </div>
                                            
                                             <div class="col-md-4 col-xs-6 b-r"> <strong>@lang('modules.clients.clientCategory')</strong> <br>
                                                 <p class="text-muted">@if($clientDetail->clientCategory){{ $clientDetail->clientCategory->category_name }}@endif</p>
                                                 </div>
-                                                <div class="col-md-4 col-xs-6 b-r"> <strong>Last Updated</strong> <br>
+                                                <div class="col-md-4 col-xs-6 b-r"> <strong>@lang('app.lastUpdate')</strong> <br>
                                                 <p class="text-muted">{{ $leadDetails->updated_at ?? '-' }}</p>
                                             </div>
+                                        </div>
+                                        <hr>
+                                        <div class="row">
+                                        <div class="col-md-4 col-xs-6 b-r"> <strong>@lang('app.businessName')</strong> <br>
+                                                <p class="text-muted">{{ (!empty($clientDetail) ) ? ucwords($clientDetail->business_name) : '-'}}</p>
+                                            </div>
+                                           
+                                            <div class="col-md-4 col-xs-6 b-r"> <strong>@lang('app.agentCommission')</strong> <br>
+                                                <p class="text-muted">{{ (!empty($clientDetail) ) ? ucwords($clientDetail->agent_commission) : '-'}}</p>
+                                                </div>
+                                                <div class="col-md-4 col-xs-6 b-r"> <strong>@lang('app.businessValue')</strong> <br>
+                                                <p class="text-muted">{{ (!empty($leadDetails) ) ? ucwords($leadDetails->value) : '-'}}</p>
+                                                </div>
                                         </div>
                                      
                                        <!-- <div class="row">

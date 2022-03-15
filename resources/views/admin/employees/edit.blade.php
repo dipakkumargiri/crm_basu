@@ -70,15 +70,24 @@
                                     <label class="required">@lang('modules.employees.employeePassword')</label>
                                     <input type="password" style="display: none">
                                     <input type="password" name="password" id="password" class="form-control" autocomplete="nope">
+                                    <span class="fa fa-fw fa-eye field-icon toggle-password"></span>
                                     <span class="help-block"> @lang('modules.employees.updatePasswordNote')</span>
                                 </div>
                             </div>
+
+                           
+
+
+
+                            
+
+
                             <!--/span-->
                         </div>
 
-                        <div class="row">
+                        <div class="row" >
 
-                            <div class="col-md-3">
+                            <div class="col-md-3" style="display:none">
                                 <div class="form-group">
                                     <label class="control-label"><i
                                                     class="fa fa-slack"></i> @lang('modules.employees.slackUsername')
@@ -90,7 +99,7 @@
                             </div>
                             <!--/span-->
 
-                            <div class="col-md-3">
+                            <div class="col-md-3" style="display:none">
                                 <div class="form-group">
                                     <label class="required">@lang('modules.employees.joiningDate')</label>
                                     <input type="text" name="joining_date" id="joining_date" @if($employeeDetail) value="{{ $employeeDetail->joining_date->format($global->date_format) }}"
@@ -98,7 +107,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col-md-3" style="display:none">
                                 <div class="form-group">
                                     <label>@lang('modules.employees.lastDate')</label>
                                     <input type="text" autocomplete="off" name="last_date" id="end_date" @if($employeeDetail) value="@if($employeeDetail->last_date) {{ $employeeDetail->last_date->format($global->date_format) }} @endif"
@@ -189,7 +198,7 @@
 
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label>@lang('modules.employees.hourlyRate')</label>
+                                <label>@lang('modules.employees.commissionRate')  (%)</label>
                                     <input type="text" name="hourly_rate" id="hourly_rate" class="form-control" value="{{ $employeeDetail->hourly_rate ?? '' }}">
                                 </div>
                             </div>

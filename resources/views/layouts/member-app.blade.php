@@ -387,7 +387,7 @@
                         </div>
                     </div>
                 @endif
-                @include('sections.timer')
+               <?php /*?> @include('sections.timer') <?php */?>
 
                 @yield('page-title')
 

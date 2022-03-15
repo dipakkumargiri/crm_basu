@@ -40,7 +40,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>@lang('modules.profile.yourEmail')</label>
-                                        <input type="email" name="email" id="email" class="form-control" value="{{ $userDetail->email }}">
+                                        <input type="email" name="email" id="email" class="form-control" value="{{ $userDetail->email }}" readonly>
                                     </div>
                                 </div>
                                 <!--/span-->

@@ -7,7 +7,7 @@
         <div class="col-lg-8 col-md-5 col-sm-6 col-xs-12 bg-title-left">
             <h4 class="page-title"><i class="{{ $pageIcon }}"></i> @lang('app.seller')
                 <span class="text-info b-l p-l-10 m-l-5">{{ $totalClients }}</span> <span
-                        class="font-12 text-muted m-l-5"> @lang('modules.dashboard.totalClients')</span>
+                        class="font-12 text-muted m-l-5">Total Seller</span>
             </h4>
         </div>
         <!-- /.page title -->

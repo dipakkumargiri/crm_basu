@@ -4,15 +4,15 @@
     <div class="row bg-title">
         <!-- .page title -->
         <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12 bg-title-left">
-            <h4 class="page-title"><i class="{{ $pageIcon }}"></i>Client Details</h4>
+            <h4 class="page-title"><i class="{{ $pageIcon }}"></i>@lang('app.sellerBuyerDetails')</h4>
         </div>
         <!-- /.page title -->
         <!-- .breadcrumb -->
         <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12 bg-title-right">
             <ol class="breadcrumb">
                 <li><a href="{{ route('super-admin.dashboard') }}">@lang('app.menu.home')</a></li>
-                <li><a href="{{ route('super-admin.companies.index') }}">Client Details</a></li>
-                <li class="active">Client Details</li>
+                <li><a href="{{ route('super-admin.companies.index') }}">@lang('app.clientDetail')</a></li>
+                <li class="active">@lang('app.clientDetail')</li>
             </ol>
         </div>
         <!-- /.breadcrumb -->
@@ -26,86 +26,94 @@
 @endpush
 
 @section('content')
+<div class="panel-body b-all border-radius">
+                            <div class="row">
+                                
+                                <div class="col-md-5">
+                                    <div class="row">
+                                        <div class="col-xs-3">
+                                              </div>
+                                        <div class="col-xs-9">
+                                        </div>
+                                    </div>
+                                </div>
 
-    <div class="row">
-        <div class="col-xs-12">
+                                
+                                    
+                                   
 
-            <div class="panel panel-inverse">
-                <div class="panel-heading"> Client Details</div>
-                <div class="panel-wrapper collapse in" aria-expanded="true">
-                
-                    <div class="panel-body">
-                         <div class="form-body">
-                          
-                            <hr>
-                           
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="company_phone">Frist Name:<b>{{$client_data[0]->frist_name}}</b></label>
-                                        
-                                    </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="company_phone">Last Name:<b>{{$client_data[0]->last_name}}</b></label>
-                                        
-                                    </div>
-                                </div>
+                                
                             </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="company_phone" >Organization:<b>{{$client_data[0]->organization}}</b></label>
-                                      
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="company_phone">Address:<b>{{$client_data[0]->address}}</b></label>
-                                       
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="company_phone" >Email:<b>{{$client_data[0]->email}}</b></label>
-                                       
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="exampleInputPassword1" >Phone Number:<b>{{$client_data[0]->phonenumber}}</b></label>
-                                       
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="company_phone">Industry:<b>{{$client_data[0]->industry}}</b></label>
-                                       
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="exampleInputPassword1">Note/Comment:<b>{{$client_data[0]->note}}</b></label>
-                                        
-                                    </div>
-                                </div>
-                            </div>
+<div class="row">
 
-                           
-                            
+
+<div class="col-xs-12">
+
+    <section>
+        <div class="sttabs tabs-style-line">
+
+           
+
+            <div class="content-wrap">
+                <section id="section-line-1" class="show">
+                    <div class="row">
+
+
+                        <div class="col-xs-12">
+                            <div class="white-box">
+                                <div class="row">
+                                    <div class="col-md-4 col-xs-6 b-r"> <strong>@lang('app.fristName')</strong> <br>
+                                        <p class="text-muted">{{$client_data[0]->frist_name}}</p>
+
+                                    </div>
+                                    <div class="col-md-4 col-xs-6 b-r"> <strong>@lang('app.lastName')</strong> <br>
+                                        <p class="text-muted">{{$client_data[0]->last_name}}</p>
+                                    </div>
+                                    <div class="col-md-4 col-xs-6"> <strong>@lang('app.organization')</strong> <br>
+                                        <p class="text-muted">{{$client_data[0]->organization}}</p>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-md-4 col-xs-6 b-r"> <strong>@lang('app.address')</strong> <br>
+                                        <p class="text-muted">{{$client_data[0]->address}}</p>
+
+                                    </div>
+                                    <div class="col-md-4 col-xs-6 b-r"> <strong>@lang('app.email')</strong> <br>
+                                        <p class="text-muted">{{$client_data[0]->email}}</p>
+                                    </div>
+                                    <div class="col-md-4 col-xs-6"> <strong>@lang('app.phoneNo')</strong> <br>
+                                        <p class="text-muted">{{$client_data[0]->phonenumber}}</p>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-md-6 col-xs-6 b-r"> <strong>@lang('app.industry')</strong> <br>
+                                        <p class="text-muted">{{$client_data[0]->industry}}</p>
+
+                                    </div>
+                                    <div class="col-md-6 col-xs-6 b-r"> <strong>@lang('app.noteComment')</strong> <br>
+                                        <p class="text-muted">{{$client_data[0]->note}}</p>
+                                    </div>
+                                  
+                                </div>
+                                <hr>
+                                </div>
+                            </div>
                         </div>
-                       
-                     
+
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>    <!-- .row -->
+
+                </section>
+            </div><!-- /content -->
+        </div><!-- /tabs -->
+    </section>
+</div>
+
+
+</div>
+<!-- .row -->
 
 @endsection
 

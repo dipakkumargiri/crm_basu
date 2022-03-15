@@ -62,7 +62,7 @@
                         <input type="hidden" name="company_id" value="{{ $leadFormFields[0]->company_id }}">
 
                         @foreach ($leadFormFields as $item)
-                            @if($item->field_name != 'message')
+                            @if($item->field_name != 'message' && $item->field_name != 'type_id')
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="control-label">@lang('modules.lead.'.$item->field_name)</label>
@@ -70,14 +70,33 @@
                                             class="form-control">
                                     </div>
                                 </div>
+			
+
                             @else
+                                @if($item->field_name == 'type_id')	
+                               <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label">@lang('modules.lead.'.$item->field_name)</label>
+                                        
+                                        <select name="type_id" id="type_id" name="{{ $item->field_name }}" class="select2 form-control">
+                                                <option value="">@lang('app.select')</option>
+                                                <option value="1">@lang('modules.lead.'.'buyer')</option>
+                                                <option value="2">@lang('modules.lead.'.'seller')</option>
+                                            </select>
+
+                                    </div>
+                                </div>
+                                @else
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="control-label">@lang('modules.lead.'.$item->field_name) </label>
                                         <textarea class="form-control"   id="{{ $item->field_name }}" name="{{ $item->field_name }}"  ></textarea>
                                     </div>
                                 </div>
+                               @endif
                             @endif
+                        
+                        
                         @endforeach
                         @if($global->lead_form_google_captcha == 1  && $superadmin->google_captcha_version=="v2" && $superadmin->google_recaptcha_status)
                             <div class="form-group {{ $errors->has('g-recaptcha-response') ? 'has-error' : '' }}">
@@ -106,7 +125,7 @@
 
                 <div class="row">
                     <div class="col-xs-12">
-                        <div class="alert alert-success" id="success-message" style="display:none"></div>
+                        <div class="alert alert-success" id="success-message" style="display:none">Data Saved Successfully!</div>
                     </div>
                 </div>
             </div>
@@ -159,8 +178,9 @@ $('#save-form').click(function () {
                     if (response.status == "success") {
                         $('#createLead')[0].reset();
                         $('#createLead').hide();
-                        $('#success-message').html(response.message);
+                        //$('#success-message').html(response.message);
                         $('#success-message').show();
+                         
                     }
                 }
             })

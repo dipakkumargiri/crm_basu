@@ -13,7 +13,7 @@
             <i class="icon-pin icon-2 pin-icon  @if($projectPin) pinned @else unpinned @endif" ></i>
         </a>
 
-        <a href="{{ route('admin.payments.create', ['project' => $project->id]) }}" class="btn btn-sm btn-primary btn-outline" ><i class="fa fa-plus"></i> @lang('modules.payments.addPayment')</a>
+        <!--<a href="{{ route('admin.payments.create', ['project' => $project->id]) }}" class="btn btn-sm btn-primary btn-outline" ><i class="fa fa-plus"></i> @lang('modules.payments.addPayment')</a>-->
 
         @php
             if ($project->status == 'in progress') {
@@ -83,7 +83,7 @@
             </ul>
         </div>
 
-        <a href="{{ route('admin.projects.edit', $project->id) }}" class="btn btn-sm btn-success btn-outline" ><i class="icon-note"></i> @lang('app.edit')</a>
+        <!--<a href="{{ route('admin.projects.edit', $project->id) }}" class="btn btn-sm btn-success btn-outline" ><i class="icon-note"></i> @lang('app.edit')</a>-->
 
         <ol class="breadcrumb">
             <li><a href="{{ route('admin.dashboard') }}">@lang('app.menu.home')</a></li>
@@ -341,7 +341,7 @@
                         </div>
 
                     </div>
-
+                    <?php /*?>
                     <div class="row">
                         @if(in_array('tasks',$modules))
                             <div class="col-md-4">
@@ -389,6 +389,7 @@
                             </div>
                         </div>
                     </div>
+                    <?php */?>
                     <div class="row m-t-20">
                         <div class="col-md-8">
                             <div class="panel ">

@@ -71,6 +71,7 @@
                                             <input type="password" style="display: none">
                                             <input type="password" name="password" id="password" class="form-control" autocomplete="nope">
                                             <span class="fa fa-fw fa-eye field-icon toggle-password"></span>
+                                            
                                             <span class="help-block"> @lang('modules.employees.passwordNote') </span>
                                             <div class="checkbox checkbox-info">
                                                 <input id="random_password" name="random_password" value="true" type="checkbox">
@@ -78,6 +79,8 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                   
                                     <!--/span-->
 
                                     <!--/span-->
@@ -85,9 +88,9 @@
 
                                 <!--/row-->
 
-                                <div class="row">
+                                <div class="row" >
 
-                                    <div class="col-md-3">
+                                    <div class="col-md-3" style="display:none">
                                         <div class="form-group">
                                             <label class="control-label"><i class="fa fa-slack"></i> @lang('modules.employees.slackUsername')</label>
                                             <div class="input-group"> <span class="input-group-addon">@</span>
@@ -97,7 +100,7 @@
                                     </div>
                                     <!--/span-->
 
-                                    <div class="col-md-3">
+                                    <div class="col-md-3" style="display:none">
                                         <div class="form-group">
                                             <label class="required">@lang('modules.employees.joiningDate')</label>
                                             <input type="text" autocomplete="off"  name="joining_date" id="joining_date" class="form-control">
@@ -105,7 +108,7 @@
                                     </div>
                                     <!--/span-->
 
-                                    <div class="col-md-3">
+                                    <div class="col-md-3" style="display:none">
                                         <div class="form-group">
                                             <label>@lang('modules.employees.lastDate')</label>
                                             <input type="text" autocomplete="off" name="last_date" id="end_date" class="form-control">
@@ -185,7 +188,7 @@
                                     </div>
                                     <div class="col-md-3">
                                         <div class="form-group">
-                                            <label>@lang('modules.employees.hourlyRate')  ({{ $global->currency->currency_code }})</label>
+                                            <label>@lang('modules.employees.commissionRate')  (%)</label>
                                             <input type="text" name="hourly_rate" id="hourly_rate" class="form-control">
                                         </div>
                                     </div>

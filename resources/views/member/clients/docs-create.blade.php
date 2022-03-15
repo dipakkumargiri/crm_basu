@@ -7,6 +7,7 @@
     @if($upload)
         {!! Form::open(array('id' => 'add_docs_form', 'class'=>'form-horizontal ','method'=>'POST')) !!}
         <input type="hidden" name="user_id" value="{{ $clientID }}">
+        <input type="hidden" name="type" value="1">
         <div class="form-body">
             <div class="row">
                 <div id="addMoreBox1" class="clearfix">
@@ -76,7 +77,7 @@
         $('#errorDate').html('');
         $('#errorOccasion').html('');
         $('.help-block').remove();
-        var url = "{{ route('admin.client-docs.store') }}";
+        var url = "{{ route('member.client-docs-store') }}";
         $.easyAjax({
             type: 'POST',
             url: url,

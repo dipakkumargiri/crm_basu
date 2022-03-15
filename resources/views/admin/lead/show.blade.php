@@ -16,11 +16,11 @@
                 <li class="active">@lang('modules.projects.files')</li>
             </ol>
         </div>
-        <div class="col-lg-6 col-sm-8 col-md-8 col-xs-12 text-right">
+        <!--<div class="col-lg-6 col-sm-8 col-md-8 col-xs-12 text-right">
             <a href="{{ route('admin.leads.edit',$lead->id) }}"
                class="btn btn-outline btn-success btn-sm">@lang('modules.lead.edit')
                 <i class="fa fa-edit" aria-hidden="true"></i></a>
-        </div>
+        </div>-->
         <!-- /.breadcrumb -->
     </div>
 @endsection
@@ -59,6 +59,7 @@
                                         <h2>@lang('modules.lead.leadDetail')</h2>
 
                                         <div class="white-box">
+                                        @if($lead->client_type !='1') 
                                             <div class="row">
                                                 <div class="col-xs-6 b-r"> <strong>@lang('modules.lead.companyName')</strong> <br>
                                                     <p class="text-muted">{{ ucwords($lead->company_name) }}</p>
@@ -67,7 +68,9 @@
                                                     <p class="text-muted">{{ $lead->website ?? '-'}}</p>
                                                 </div>
                                             </div>
+                                         
                                             <hr>
+                                            @endif
                                             <div class="row">
                                                 <div class="col-xs-6 b-r"> <strong>@lang('modules.lead.mobile')</strong> <br>
                                                     <p class="text-muted">{{ $lead->mobile ?? '-'}}</p>
@@ -78,12 +81,14 @@
 
                                             </div>
                                             <hr>
+                                            @if($lead->client_type !='1') 
                                             <div class="row">
                                                 <div class="col-xs-6 b-r"> <strong>@lang('modules.lead.address')</strong> <br>
                                                     <p class="text-muted">{{ $lead->address ?? '-'}}</p>
                                                 </div>
                                             </div>
                                             <hr>
+                                            @endif
                                             <div class="row">
                                                 <div class="col-xs-6 col-md-4 b-r" > <strong>@lang('app.name')</strong> <br>
                                                     <p class="text-muted">{{ $lead->client_name ?? '-'}}</p>
@@ -125,6 +130,11 @@
                                                 @if($lead->status_id != null)
                                                 <div class="col-xs-6 col-md-4 b-r"> <strong>@lang('modules.lead.status')</strong> <br>
                                                     <p class="text-muted">{{ $lead->lead_status->type ?? '-'}}</p>
+                                                </div>
+                                                @endif
+												  @if($lead->system_generated_lead_id != null)
+                                                <div class="col-xs-6 col-md-4 b-r"> <strong>@lang('app.leadId')</strong> <br>
+                                                    <p class="text-muted">{{ $lead->system_generated_lead_id ?? '-'}}</p>
                                                 </div>
                                                 @endif
                                                 @if($lead->category_id != null)

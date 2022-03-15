@@ -104,49 +104,72 @@
                     </li>
                 </ul>
             </li>
-
-            <li><a href="{{ route('member.dashboard') }}" class="waves-effect"><i class="icon-speedometer fa-fw"></i> <span class="hide-menu">@lang("app.menu.dashboard") </span></a> </li>
-
+             <!-----------------------------------------Edited By Indrajit - 12-02-2022------------------>
+            <!--<li><a href="{{ route('member.dashboard') }}" class="waves-effect"><i class="icon-speedometer fa-fw"></i> <span class="hide-menu">@lang("app.menu.dashboard") </span></a> </li>-->
+             <!-----------------------------------------End By Indrajit - 12-02-2022------------------>
+            <!--
             @if(in_array('clients',$modules))
             @if($user->cans('view_clients'))
             <li><a href="{{ route('member.clients.index') }}" class="waves-effect"><i class="icon-people fa-fw"></i> <span class="hide-menu">@lang('app.menu.clients') </span></a> </li>
             @endif
             @endif
 
+            -->
+
             @if(in_array('employees',$modules))
             @if($user->cans('view_employees'))
                 <li><a href="{{ route('member.employees.index') }}" class="waves-effect"><i class="icon-user fa-fw"></i> <span class="hide-menu">@lang('app.menu.employees') </span></a> </li>
             @endif
             @endif
-
-            @if(in_array('projects',$modules))
-            <li><a href="{{ route('member.projects.index') }}" class="waves-effect"><i class="icon-layers fa-fw"></i> <span class="hide-menu">@lang("app.menu.projects") </span> @if($unreadProjectCount > 0) <div class="notify notification-color"><span class="heartbit"></span><span class="point"></span></div>@endif</a> </li>
-            @endif
-
+            
+            <!-----------------------------------------End By Indrajit - 12-02-2022------------------>
+             
+            <!--
             @if(in_array('contracts',$modules) && $user->cans('view_contract'))
                 <li><a href="{{ route('member.contracts.index') }}" class="waves-effect"><i class="icon-layers fa-fw"></i> <span class="hide-menu">@lang("app.menu.contract") </span> </a> </li>
             @endif
 
             @if(in_array('products',$modules) && $user->cans('view_product'))
                 <li><a href="{{ route('member.products.index') }}" class="waves-effect"><i class="icon-basket fa-fw"></i> <span class="hide-menu">@lang('app.menu.products') </span></a> </li>
-            @endif
+            @endif -->
+             <!-----------------------------------------Edited By Indrajit - 12-02-2022------------------>
             
             @if(in_array('leads',$modules))
                 <li><a href="{{ route('member.leads.index') }}" class="waves-effect"><i class="icon-doc fa-fw"></i> <span class="hide-menu">@lang('app.menu.lead') </span></a> </li>
             @endif
             <li><a href="#" class="waves-effect
-                   
+            {{ request()->is('member/clients*') ? 'active' : '' }} {{ request()->is('member/seller*') ? 'active' : '' }} {{ request()->is('member/clientquestion*') ? 'active' : '' }}
+            {{ request()->is('member/show_buyer*') ? 'active' : '' }}{{ request()->is('member/edit_buyer*') ? 'active' : '' }}
                     "><i class="ti-user fa-fw"></i> <span class="hide-menu">@lang('app.contactManagement')<span class="fa arrow"></span> </span></a>
-                    <ul class="nav nav-second-level con_tack_man ">
-                    <li><a href="{{ route('member.seller') }}" class="waves-effect seller_tab ">@lang('app.seller')</a>
+                    <ul class="nav nav-second-level con_tack_man  {{ request()->is('member/clientquestion*') ? 'collapse in' : '' }} 
+                    {{ request()->is('member/show_buyer*') ? 'collapse in' : '' }}
+                    {{ request()->is('member/edit_buyer*') ? 'collapse in' : '' }}">
+                    <li><a href="{{ route('member.seller') }}" class="waves-effect seller_tab {{ request()->is('member/clientquestion*') ? 'active' : '' }}">@lang('app.seller')</a>
                             </li>
-                            <li><a href="{{ route('member.buyer') }}" class="waves-effect seller_tab ">Buyer</a>
+                            <li><a href="{{ route('member.buyer') }}" class="waves-effect seller_tab {{ request()->is('member/show_buyer*') ? 'active' : '' }}
+                            {{ request()->is('member/edit_buyer*') ? 'active' : '' }}">Buyer</a>
                             </li>
                         
                     </ul>
                 </li>
+            <li><a href="{{ route('member.genericreport') }}">
+                <i class="ti-user fa-fw"></i> 
+                @lang('app.del') </a> </li>
+            
+            @if(in_array('projects',$modules))
+            <li><a href="{{ route('member.projects.index') }}" class="waves-effect"><i class="icon-layers fa-fw"></i> <span class="hide-menu">@lang("app.menu.projects") </span> @if($unreadProjectCount > 0) <div class="notify notification-color"><span class="heartbit"></span><span class="point"></span></div>@endif</a> </li>
+            @endif
+                 <!-----------------------------------------Start By Indrajit - 12-02-2022 Newly added------------------>
+               <!-- <li><a href="{{ route('admin.genericreport') }}"><i class="ti-user fa-fw"></i>@lang('app.del') </a> </li>-->
+               <?php /*?>
+                @if(in_array('projects',$modules))
+                <li><a href="{{ route('admin.projects.index') }}" class="waves-effect">@lang('app.menu.projects') </a> </li>
+            @endif
+            <?php */?>
+             <!-----------------------------------------End By Indrajit - 12-02-2022------------------>
 
-            @if(in_array('tasks',$modules))
+            <!-----------------------------------------Start By Indrajit - 12-02-2022------------------>
+           <!-- @if(in_array('tasks',$modules))
             <li><a href="{{ route('member.task.index') }}" class="waves-effect"><i class="ti-layout-list-thumb fa-fw"></i> <span class="hide-menu"> @lang('app.menu.tasks') <span class="fa arrow"></span> </span></a>
                 <ul class="nav nav-second-level">
                     <li><a href="{{ route('member.all-tasks.index') }}">@lang('app.menu.tasks')</a></li>
@@ -214,7 +237,8 @@
                     @endif
                 </ul>
             </li>
-            @endif
+            @endif-->
+             <!-----------------------------------------End By Indrajit - 12-02-2022------------------>
 
             @if(in_array('messages',$modules))
             <li><a href="{{ route('member.user-chat.index') }}" class="waves-effect"><i class="icon-envelope fa-fw"></i> <span class="hide-menu">@lang("app.menu.messages") @if($unreadMessageCount > 0)<span class="label label-rouded label-custom pull-right">{{ $unreadMessageCount }}</span> @endif
@@ -222,8 +246,8 @@
                 </a>
             </li>
             @endif
-
-            @if(in_array('events',$modules))
+            <!-----------------------------------------Start By Indrajit - 12-02-2022------------------>
+            <!-- @if(in_array('events',$modules))
             <li><a href="{{ route('member.events.index') }}" class="waves-effect"><i class="icon-calender fa-fw"></i> <span class="hide-menu">@lang('app.menu.Events')</span></a> </li>
             @endif
 
@@ -233,7 +257,9 @@
 
             @if(in_array('notices',$modules))
                 <li><a href="{{ route('member.notices.index') }}" class="waves-effect"><i class="ti-layout-media-overlay fa-fw"></i> <span class="hide-menu">@lang("app.menu.noticeBoard") </span></a> </li>
-            @endif
+            @endif-->
+            <!-----------------------------------------End By Indrajit - 12-02-2022------------------>
+
             @if(!is_null($faqs))
                 <li><a href="{{ route('member.faqs.index') }}" class="waves-effect"><i class="icon-docs fa-fw"></i> <span class="hide-menu">@lang('app.menu.employeeFaq')</span></a> </li>
             @endif

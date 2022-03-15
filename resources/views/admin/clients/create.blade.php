@@ -108,6 +108,7 @@
 
                                 <h3 class="box-title m-t-20">@lang('modules.client.companyDetails')</h3>
                                 <hr>
+                            @if($leadDetail->client_type!='1')
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
@@ -129,10 +130,12 @@
                                         <div class="form-group">
                                             <label class="control-label">@lang('modules.client.website')</label>
                                             <input type="text" id="website" name="website" value="{{ $leadDetail->website ?? '' }}" class="form-control" >
+                                            <input type="hidden" id="lead_value" name="lead_value" value="{{ $leadDetail->value ?? '' }}" class="form-control" >
                                         </div>
                                     </div>
                                     <!--/span-->
                                 </div>
+
                                 <!--/row-->
                                 <div class="row">
                                     <div class="col-xs-12">
@@ -144,6 +147,7 @@
                                     <!--/span-->
 
                                 </div>
+                                @endif
                                 <!--/row-->
                                 <div class="row">
                                 <div class="col-md-3 ">      
@@ -513,8 +517,10 @@
 
 <script>
  $('#cog_countries_id').val('<?php echo $leadDetail->cog_countries_id; ?>');
+ $('#client_type').val('<?php echo $leadDetail->client_type; ?>');
     $(document).ready(function(){
         $("#cog_countries_id").trigger("click");
+        $("#category_id").trigger("change");
 });
     function checkboxChange(parentClass, id){
         var checkedData = '';
@@ -679,8 +685,10 @@
                 }
             })
             }
-            $('#agent_id').val('<?php echo $leadDetail->agent_id; ?>');
-            $('#client_type').val('<?php echo $leadDetail->client_type; ?>');
+            $('#agent_id').select2('val', '<?php echo $leadDetail->agent_id; ?>');
+            $('#category_id').select2('val', '<?php echo $leadDetail->industry_id; ?>');
+            
+   
             
            
 </script>

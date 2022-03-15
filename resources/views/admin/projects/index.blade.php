@@ -12,8 +12,9 @@
             <a href="javascript:;"  class="btn btn-outline btn-success btn-sm pinnedItem">@lang('app.pinnedItem') <i class="icon-pin icon-2"></i></a>
 
             <a href="{{ route('admin.projects.archive') }}"  class="btn btn-outline btn-danger btn-sm">@lang('app.menu.viewArchive') <i class="fa fa-trash" aria-hidden="true"></i></a>
-
+            <?php /*?>
             <a href="{{ route('admin.project-template.index') }}"  class="btn btn-outline btn-primary btn-sm">@lang('app.menu.addProjectTemplate') <i class="fa fa-plus" aria-hidden="true"></i></a>
+            <?php */?>
 
             <a href="{{ route('admin.projects.create') }}" class="btn btn-outline btn-success btn-sm">@lang('app.add') <i class="fa fa-plus" aria-hidden="true"></i></a>
 
@@ -74,10 +75,11 @@
         <div class="form-group">
             <label class="control-label">@lang('app.menu.projects') @lang('app.status')</label>
             <select class="select2 form-control" data-placeholder="@lang('app.menu.projects') @lang('app.status')" id="status">
+                
+                <option value="all">@lang('app.all')</option>
                 <option 
                     value="not finished">@lang('modules.projects.hideFinishedProjects')
                 </option>
-                <option value="all">@lang('app.all')</option>
                 <option
                         value="not started">@lang('app.notStarted')
                 </option>
@@ -231,7 +233,7 @@
             return "{{ __('messages.noRecordFound') }}";
         }
     });
-    $('#status').val('not finished');
+    $('#status').val('all');
 
     $(function() {
 

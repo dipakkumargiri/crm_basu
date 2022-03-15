@@ -47,9 +47,11 @@
                                                     <thead>
                                                     <tr>
                                                         <th>@lang('app.name')</th>
+                                                        <?php /*?>
                                                         @if($project->isProjectAdmin || $user->cans('add_projects'))
                                                         <th>@lang('app.action')</th>
                                                         @endif
+                                                        <?php */?>
                                                     </tr>
                                                     </thead>
                                                     <tbody>
@@ -71,11 +73,13 @@
                                                                 </div>
                                                          
                                                             </td>
+                                                            <?php /*?>
                                                             @if($project->isProjectAdmin || $user->cans('add_projects'))
                                                             <td>
                                                                   <a href="javascript:;" data-member-id="{{ $member->id }}" class="btn btn-sm btn-danger btn-rounded delete-members"><i class="fa fa-times"></i> @lang('app.remove')</a>
                                                             </td>
                                                             @endif
+                                                            <?php */?>
                                                         </tr>
                                                     @empty
                                                         <tr>
@@ -91,7 +95,9 @@
                                         </div>
                                     </div>
                                 </div>
-
+                                
+                                <?php /*?>
+    
                                 @if($project->isProjectAdmin || $user->cans('add_projects'))
                                     <div class="col-md-6">
                                     <div class="white-box">
@@ -125,6 +131,7 @@
                                     </div>
                                 </div>
                                 @endif
+                                <?php */?>
                             </div>
                         </section>
 

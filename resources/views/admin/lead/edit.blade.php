@@ -38,8 +38,13 @@
                     <div class="panel-body">
                         {!! Form::open(['id'=>'updateLead','class'=>'ajax-form','method'=>'PUT']) !!}
                         <div class="form-body">
+                        @if($lead->client_type !='1') 
                             <h3 class="box-title required">@lang('modules.lead.companyDetails')</h3>
+                            @else
+                            <h3 class="box-title required">PERSONAL DETAILS</h3>
+                            @endif
                             <hr>
+                            @if($lead->client_type !='1') 
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
@@ -56,6 +61,7 @@
                                 </div>
                                 <!--/span-->
                             </div>
+                            
                             <!--/row-->
                             <div class="row">
                                 <div class="col-xs-12">
@@ -65,7 +71,7 @@
                                     </div>
                                 </div>
                                 <!--/span-->
-
+                                @endif
                             </div>
                             <!--/row-->
                             <div class="row">
@@ -88,16 +94,18 @@
                                 </div>
                                 <div class="col-md-4 ">
                                     <div class="form-group">
-                                        <label>@lang('modules.clients.officePhoneNumber')</label>
-                                        <input type="text" name="office_phone" id="office_phone" value="{{ $lead->office_phone }}"  class="form-control">
+                                        <label required>@lang('modules.lead.clientName')</label>
+                                        <input type="text" name="client_name" id="client_name" class="form-control" value="{{ $lead->client_name }}">
                                     </div>
                                 </div>
-                               <div class="col-md-4 ">
+
+                                <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>@lang('modules.stripeCustomerAddress.postalCode')</label>
-                                        <input type="text" name="postal_code" id="postalCode" value="{{ $lead->postal_code }}"class="form-control">
+                                        <label required>@lang('modules.lead.clientEmail')</label>
+                                        <input type="email" name="email" id="client_email" class="form-control" value="{{ $lead->client_email }}">
                                     </div>
                                 </div>
+
                                 </div>
                                 <div class="row">
                                
@@ -147,7 +155,7 @@
                                 
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="form-group" style="margin-bottom: -3px;">
                                             <label for="">@lang('app.industry')
                                                  <a href="javascript:;" id="addClientCategory" class="text-info">
@@ -162,7 +170,7 @@
                                              </select>
                                          </div>
                                     </div> 
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="">@lang('app.subIndustry')
                                             <a href="javascript:;" id="addClientSubCategory" class="text-info">
@@ -179,6 +187,19 @@
                                             </select>
                                         </div>
                                     </div>
+                                    <div class="col-md-4 ">
+                                    <div class="form-group">
+                                        <label>@lang('modules.clients.officePhoneNumber')</label>
+                                        <input type="text" name="office_phone" id="office_phone" value="{{ $lead->office_phone }}"  class="form-control">
+                                    </div>
+                                </div>
+                                     
+                               <div class="col-md-4 ">
+                                    <div class="form-group">
+                                        <label>@lang('modules.stripeCustomerAddress.postalCode')</label>
+                                        <input type="text" name="postal_code" id="postalCode" value="{{ $lead->postal_code }}"class="form-control">
+                                    </div>
+                                </div>
                                 </div>
 
                             <h3 class="box-title m-t-40">@lang('modules.lead.leadDetails')</h3>
@@ -200,7 +221,7 @@
                                     </div>
                                     
                                 </div>
-                                <div class="col-md-4 ">
+                              <!--  <div class="col-md-4 ">
                                              <div class="form-group" style="margin-top: 7px;">
                                               <label >@lang('modules.lead.leadCategory')
                                                 <a href="javascript:;" id="addLeadCategory" class="btn btn-xs btn-success btn-outline"><i class="fa fa-plus"></i></a>
@@ -218,7 +239,7 @@
                                         @endforelse
                                              </select>
                                          </div>
-                            </div>
+                            </div>-->
                             <div class="col-md-4 ">
                                      <div class="form-group" style="margin-top: 7px;">
                                       <label >@lang('modules.lead.leadStage')
@@ -238,9 +259,6 @@
                                      </select>
                                  </div>
                             </div>
-                                <!--/span-->
-                            </div>
-                            <div class="row">
                             <div class="col-md-4 ">
                                      <div class="form-group">
                                       <label >@lang('modules.lead.leadType')
@@ -254,19 +272,11 @@
                                     </select>
                                  </div>
                             </div>
-                                <div class="col-md-4 ">
-                                    <div class="form-group">
-                                        <label required>@lang('modules.lead.clientName')</label>
-                                        <input type="text" name="client_name" id="client_name" class="form-control" value="{{ $lead->client_name }}">
-                                    </div>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label required>@lang('modules.lead.clientEmail')</label>
-                                        <input type="email" name="email" id="client_email" class="form-control" value="{{ $lead->client_email }}">
-                                    </div>
-                                </div>
+                                <!--/span-->
+                            </div>
+                            <div class="row">
+                            
+                            
 
                                 {{-- <div class="col-md-3">
                                     <div class="form-group">
@@ -295,7 +305,7 @@
                                     </div>
                                 </div>
                           
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         <label>@lang('app.next_follow_up')</label>
                                         <select name="next_follow_up" id="next_follow_up" class="form-control">
@@ -306,7 +316,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <div class="form-group">
                                         <label>@lang('app.status')</label>
                                         <select name="status" id="status" class="form-control">

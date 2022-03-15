@@ -7,23 +7,30 @@
             @if(in_array('employees',$modules))
             <li class="projectMembers"><a href="{{ route('member.project-members.show', $project->id) }}"><i class="icon-people"></i> <span>@lang('modules.projects.members')</span></a></li>
             @endif
-
+            <li class="projectMilestones">
+                <a href="{{ route('member.projects.leadInfo', $project->id) }}"><i class="ti-comments"></i>
+                    <span>@lang('modules.projects.projectSummary')</span></a>
+            </li>
+            <?php /* ?>
             @if ($user->cans('view_projects'))
                 <li class="projectMilestones">
                     <a href="{{ route('member.milestones.show', $project->id) }}"><i class="icon-flag"></i> <span>@lang('modules.projects.milestones')</span></a>
                 </li>
             @endif
-
+    
             @if(in_array('tasks',$modules))
             <li class="projectTasks"><a href="{{ route('member.tasks.show', $project->id) }}"><i class="ti-check-box"></i> <span>@lang('app.menu.tasks')</span></a></li>
             @endif
+            <?php */ ?>
 
             <li class="projectFiles"><a href="{{ route('member.files.show', $project->id) }}"><i class="ti-files"></i> <span>@lang('modules.projects.files')</span></a></li>
-
+            
+            <?php /* ?>
             @if(in_array('timelogs',$modules))
             <li class="projectTimelogs"><a href="{{ route('member.time-log.show-log', $project->id) }}"><i class="ti-alarm-clock"></i> <span>@lang('app.menu.timeLogs')</span></a></li>
             @endif
-
+            
+            
             <li class="discussion">
                 <a href="{{ route('member.projects.discussion', $project->id) }}"><i class="ti-comments"></i>
                     <span>@lang('modules.projects.discussion')</span></a>
@@ -44,6 +51,7 @@
                 <a href="{{ route('member.project-notes.show', $project->id) }}"><i class="fa fa-sticky-note-o"></i>
                     <span>@lang('modules.projects.notes')</span></a>
             </li> 
+            <?php */ ?>
         </ul>
     </nav>
 </div>

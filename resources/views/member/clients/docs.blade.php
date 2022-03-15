@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.member-app')
 
 @section('page-title')
     <div class="row bg-title">
@@ -25,14 +25,14 @@
     <div class="row">
 
 
-        @include('admin.clients.client_header')
+        @include('member.clients.client_header')
 
 
         <div class="col-xs-12">
 
             <section>
                 <div class="sttabs tabs-style-line">
-                    @include('admin.clients.tabs')
+                    @include('member.clients.tabs')
 
                     <div class="content-wrap">
                         <section id="section-line-1" class="show">
@@ -76,7 +76,7 @@
                                                         </tr>
                                                     @empty
                                                         <tr>
-                                                            <td colspan="3">@lang('messages.noDocsFound')</td>
+                                                            <td colspan="3" class="text-center p-30">@lang('messages.noDocsFound')</td>
                                                         </tr>
                                                     @endforelse
                                                     </tbody>
@@ -125,7 +125,7 @@
 @push('footer-script')
     <script>
         function showAdd() {
-            var url = "{{ route('admin.client-docs.quick-create', [$client->id]) }}";
+            var url = "{{ route('member.quick-create', [$client->id]) }}";
             $.ajaxModal('#edit-column-form', url);
         }
 

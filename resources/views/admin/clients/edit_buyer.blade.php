@@ -69,16 +69,16 @@
                                 <!--/span-->
                             </div>
 
-                            <h3 class="box-title m-t-20">@lang('app.companyDetails')</h3>
+                            <h3 class="box-title m-t-20">Personal Details</h3>
                             <hr>
                             <div class="row">
-                                <div class="col-md-6">
+                               <!-- <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="control-label">@lang('modules.client.companyName')</label>
                                         <input type="text" id="company_name" name="company_name" class="form-control"  value="{{ $clientDetail->company_name ?? '' }}">
                                     </div>
                                 </div>
-                                <!--/span-->
+                                <!--/span
                                 @php
                                     $website = explode("://",$clientDetail->website);
                                 @endphp
@@ -98,8 +98,8 @@
                                         <input type="text" id="website" name="website" class="form-control" value="{{ $clientWebsite ? $clientWebsite :'' }}" >
                                     </div>
                                 </div>
-                                <!--/span-->
-                            </div>
+                                <!--/span
+                            </div>-->
                             <!--/row-->
                             <div class="row">
                                 <div class="col-xs-12">
@@ -324,9 +324,11 @@
                                         <label>@lang('app.changeStatus')</label>
                                         <select class="form-control" name="status" id="status">
                                             <option>--Select--</opton>
-                                            <option value="pending">pending</opton>
-                                            <option value="inprocess">inprocess</opton>
-                                            <option value="converted">converted</opton>
+                                            @forelse($status as $sts)
+                                                <option  value="{{ $sts->id }}"> {{ ucfirst($sts->type) }}</option>
+                                            @empty
+
+                                            @endforelse
                                        </select>
                                     </div>
                                 </div>
@@ -334,8 +336,12 @@
                                     <div class="form-group">
                                         <label>@lang('app.changeStages')</label>
                                         <select class="form-control" name="stages" id="stages">
-                                            <option value="Discussion">Discussion</opton>
-                                            <option value="Docu Sign">Docu Sign</opton>
+                                        @forelse($stages as $stage)
+                                        <option value="{{ $stage->id }}"
+                                           >{{ ucwords($stage->stage_name) }}</option>
+                                    @empty
+                                        <option value="">@lang('messages.noStageAdded')</option>
+                                    @endforelse
                                        </select>
                                     </div>
                                 </div>
@@ -345,6 +351,25 @@
                                     <div class="form-group">
                                         <label>@lang('app.leadSource')</label>
                                       <input type="text" name="lead_source" class="form-control" value="{!!  (!empty($sourceDetails)) ? ucwords($sourceDetails->type) : '-' !!}">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>@lang('app.agentCommission')</label>
+                                      <input type="number" name="agentCommission" class="form-control" value="{{$clientDetail->agent_commission}}">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>@lang('app.purchasedbusiness')</label>
+                                            <select class="form-control" name="business">
+                                                    <option value="">--Select--</option>
+                                                    @if(isset($sellerDetails))
+                                                        @foreach($sellerDetails as $every)
+                                                              <option value="{{$every->id}}">{{$every->business_name}}( {{$every->name}} )</option>
+                                                        @endforeach
+                                                     @endif
+                                             </select>
                                     </div>
                                 </div>
                                 </div>
@@ -573,8 +598,9 @@
         var url = '{{ route('admin.clientSubCategory.create')}}';
         $('#modelHeading').html('...');
         $.ajaxModal('#clientCategoryModal', url);
-    })
-$('#status').val('<?php echo $statusDetails->type ;?>');
+    });
+    
+
 $('#cog_countries_id').on('click',function(){
      //   alert($(this).val());
         var country_id = $(this).val();
@@ -646,6 +672,6 @@ $('#cog_countries_id').on('click',function(){
     })
     $('#status').val('<?php echo $clientDetail->lead_status; ?>');
     $('#stages').val('<?php echo $clientDetail->lead_stage; ?>');
-    $('#agent_id').val('<?php echo $clientDetail->agent_id; ?>');
+    $('#agent_id').select2('val', <?php echo $clientDetail->agent_id; ?>);
 </script>
 @endpush

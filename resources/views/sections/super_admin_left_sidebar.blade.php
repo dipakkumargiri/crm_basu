@@ -116,7 +116,6 @@
             <li><a href="{{ route('super-admin.packages.clientDatabse') }}" class="waves-effect"><i class="icon-calculator fa-fw"></i> <span class="hide-menu">Client Database</span></a> </li>
 
             <li><a href="{{ route('super-admin.companies.index') }}" class="waves-effect"><i class="icon-layers fa-fw"></i> <span class="hide-menu">@lang('app.menu.companies') </span></a> </li>
-            <li><a href="{{ route('super-admin.invoices.index') }}" class="waves-effect"><i class="icon-printer fa-fw"></i> <span class="hide-menu">@lang('app.menu.invoices') </span></a> </li>
             <li><a href="{{ route('super-admin.faq.index') }}" class="waves-effect"><i class="icon-docs fa-fw"></i> <span class="hide-menu">@lang('app.menu.faq') </span></a> </li>
             <li><a href="{{ route('super-admin.super-admin.index') }}" class="waves-effect"><i class="fa fa-user fa-fw"></i> <span class="hide-menu">@lang('app.superAdmin') </span></a> </li>
             <li><a href="{{ route('super-admin.offline-plan.index') }}" class="waves-effect"><i class="fa fa-user-secret fa-fw"></i> <span class="hide-menu">@lang('app.offlineRequest') @if($offlineRequestCount > 0)<div class="notify notification-color"><span class="heartbit"></span><span class="point"></span></div>@endif</span> </a> </li>

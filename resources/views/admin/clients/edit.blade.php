@@ -4,14 +4,14 @@
     <div class="row bg-title">
         <!-- .page title -->
         <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12 bg-title-left">
-            <h4 class="page-title"><i class="{{ $pageIcon }}"></i>Edit Seller</h4>
+            <h4 class="page-title"><i class="{{ $pageIcon }}"></i>@lang('app.editSeller')</h4>
         </div>
         <!-- /.page title -->
         <!-- .breadcrumb -->
         <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12 bg-title-right">
             <ol class="breadcrumb">
                 <li><a href="{{ route('admin.dashboard') }}">@lang('app.menu.home')</a></li>
-                <li><a href="{{ route('admin.clients.index') }}">Edit Seller</a></li>
+                <li><a href="{{ route('admin.clients.index') }}">@lang('app.editSeller')</a></li>
                 <li class="active">@lang('app.edit')</li>
             </ol>
         </div>
@@ -324,9 +324,10 @@
                                         <label>@lang('app.changeStatus')</label>
                                         <select class="form-control" name="status" id="status">
                                             <option>--Select--</opton>
-                                            <option value="pending">pending</opton>
-                                            <option value="inprocess">inprocess</opton>
-                                            <option value="converted">converted</opton>
+                                            @forelse($status as $sts)
+                                                <option  value="{{ $sts->id }}"> {{ ucfirst($sts->type) }}</option>
+                                            @empty
+                                            @endforelse
                                        </select>
                                     </div>
                                 </div>
@@ -334,8 +335,12 @@
                                     <div class="form-group">
                                         <label>@lang('app.changeStages')</label>
                                         <select class="form-control" name="stages" id="stages">
-                                            <option value="Discussion">Discussion</opton>
-                                            <option value="Docu Sign">Docu Sign</opton>
+                                        @forelse($stages as $stage)
+                                        <option value="{{ $stage->id }}"
+                                           >{{ ucwords($stage->stage_name) }}</option>
+                                    @empty
+                                        <option value="">@lang('messages.noStageAdded')</option>
+                                    @endforelse
                                        </select>
                                     </div>
                                 </div>
@@ -345,6 +350,18 @@
                                     <div class="form-group">
                                         <label>@lang('app.leadSource')</label>
                                       <input type="text" name="lead_source" class="form-control" value="{!!  (!empty($sourceDetails)) ? ucwords($sourceDetails->type) : '-' !!}">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>@lang('app.businessName')</label>
+                                      <input type="text" name="business_name" class="form-control" value="{{$clientDetail->business_name}}">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>@lang('app.agentCommission')</label>
+                                      <input type="number" name="agentCommission" class="form-control" value="{{$clientDetail->agent_commission}}">
                                     </div>
                                 </div>
                                 </div>
@@ -574,7 +591,6 @@
         $('#modelHeading').html('...');
         $.ajaxModal('#clientCategoryModal', url);
     })
-$('#status').val('<?php echo $statusDetails->type ;?>');
 $('#cog_countries_id').on('click',function(){
      //   alert($(this).val());
         var country_id = $(this).val();
@@ -646,6 +662,7 @@ $('#cog_countries_id').on('click',function(){
     })
     $('#status').val('<?php echo $clientDetail->lead_status; ?>');
     $('#stages').val('<?php echo $clientDetail->lead_stage; ?>');
-    $('#agent_id').val('<?php echo $clientDetail->agent_id; ?>');
+    $('#agent_id').select2('val', <?php echo $clientDetail->agent_id; ?>);
+  
 </script>
 @endpush

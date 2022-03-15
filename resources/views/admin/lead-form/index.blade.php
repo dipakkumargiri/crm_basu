@@ -49,6 +49,8 @@
                                 <span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
                                 <input type="hidden" name="sort_order[]" value="{{ $item->id }}">
                             </div>
+                            
+                            
                             <div class="col-xs-5">@lang('modules.lead.'.$item->field_name)</div>
                             <div class="col-xs-5">
                                 @if($item->required == 0)

@@ -173,11 +173,7 @@
                     @endif
                 </ul>
             </li>-->
-            @if(in_array('listing',$modules))
-                <li><a href="{{ route('admin.leads.index') }}" class="waves-effect"><i class="icon-doc fa-fw"></i><span class="hide-menu">@lang('app.menu.listing')</span></a>
-                </li>
-            @endif
-            @if(in_array('leads',$modules))
+           @if(in_array('leads',$modules))
                 <li><a href="{{ route('admin.leads.index') }}" class="waves-effect"><i class="icon-doc fa-fw"></i><span class="hide-menu">@lang('app.menu.lead')</span></a>
                 </li>
             @endif
@@ -187,20 +183,34 @@
             @endif
 
             -->
-            <li><a href="{{ route('admin.clientDatabase') }}" class="waves-effect"><i class="icon-calculator fa-fw"></i> <span class="hide-menu">@lang('app.clientDatabase')</span></a> </li>
+            <li><a href="{{ route('admin.clientDatabase') }}" class="waves-effect {{ request()->is('admin/viewDetails') ? 'active' : '' }}"><i class="icon-calculator fa-fw"></i> <span class="hide-menu">@lang('app.clientDatabase')</span></a> </li>
+            <li><a href="{{ route('admin.inquiryList') }}" class="waves-effect"><i class="icon-layers fa-fw"></i> <span class="hide-menu">@lang('app.menu.inquery') </span></a> </li>
             <!--<li><a href="{{ route('admin.sellerQuerSet') }}" class="waves-effect"><i class="icon-doc fa-fw"></i> <span class="hide-menu">Seller</span></a> </li>-->
             <li><a href="#" class="waves-effect
                     {{ request()->is('admin/clients*') ? 'active' : '' }} {{ request()->is('admin/seller*') ? 'active' : '' }}
+                    {{ request()->is('admin/show_buyer*') ? 'active' : '' }}
+                    {{ request()->is('admin/edit_buyer*') ? 'active' : '' }}
                     "><i class="ti-user fa-fw"></i> <span class="hide-menu">@lang('app.contactManagement')<span class="fa arrow"></span> </span></a>
-                    <ul class="nav nav-second-level con_tack_man {{ request()->is('admin/seller*') ? 'collapse in' : '' }} {{ request()->is('admin/clients*') ? 'collapse in' : '' }}">
+                    <ul class="nav nav-second-level con_tack_man {{ request()->is('admin/seller*') ? 'collapse in' : '' }} {{ request()->is('admin/clients*') ? 'collapse in' : '' }}
+                    {{ request()->is('admin/show_buyer*') ? 'collapse in' : '' }}
+                    {{ request()->is('admin/edit_buyer*') ? 'collapse in' : '' }}
+                    ">
                     <li><a href="{{ route('admin.seller') }}" class="waves-effect seller_tab {{ request()->is('admin/clients*') ? 'active' : '' }}">@lang('app.seller')</a>
                             </li>
-                            <li><a href="{{ route('admin.buyer') }}" class="waves-effect seller_tab {{ request()->is('admin/clients*') ? 'active' : '' }}">@lang('app.buyer')</a>
+                            <li><a href="{{ route('admin.buyer') }}" class="waves-effect seller_tab {{ request()->is('admin/show_buyer*') ? 'active' : '' }}
+                            {{ request()->is('admin/edit_buyer*') ? 'active' : '' }}
+                            ">@lang('app.buyer')</a>
                             </li>
                         
                     </ul>
                 </li>
-            
+                <li><a href="{{ route('admin.genericreport') }}">
+                <i class="ti-user fa-fw"></i> 
+                @lang('app.del') </a> </li>
+         
+            @if(in_array('projects',$modules))
+                <li><a href="{{ route('admin.projects.index') }}" class="waves-effect">@lang('app.menu.projects') </a> </li>
+            @endif
             
             @if(in_array('employees', $modules) || in_array('attendance', $modules) || in_array('holidays', $modules) || in_array('leaves', $modules))
                 <li><a href="{{ route('admin.employees.index') }}" class="waves-effect
@@ -212,7 +222,7 @@
                             <li><a href="{{ route('admin.teams.index') }}">@lang('app.department')</a></li>
                             <li><a href="{{ route('admin.designations.index') }}">@lang('app.menu.designation')</a></li>
                         @endif
-                        @if(in_array('attendance',$modules))
+                        <!--@if(in_array('attendance',$modules))
                             <li><a href="{{ route('admin.attendances.summary') }}" class="waves-effect">@lang('app.menu.attendance')</a> </li>
                         @endif
                         @if(in_array('holidays',$modules))
@@ -221,10 +231,11 @@
                         @endif
                         @if(in_array('leaves',$modules))
                             <li><a href="{{ route('admin.leaves.pending') }}" class="waves-effect  {{ request()->is('admin/leave*') ? 'active' : '' }}">@lang('app.menu.leaves')</a> </li>
-                        @endif
+                        @endif-->
                     </ul>
                 </li>
             @endif
+            
             <!--
 
             @if(in_array('projects', $modules) || in_array('tasks', $modules) || in_array('timelogs', $modules) || in_array('contracts', $modules))
@@ -233,9 +244,7 @@
                         @if(in_array('contracts', $modules))
                             <li><a href="{{ route('admin.contracts.index') }}" class="waves-effect">@lang('app.menu.contracts')</a></li>
                         @endif
-                        @if(in_array('projects',$modules))
-                            <li><a href="{{ route('admin.projects.index') }}" class="waves-effect">@lang('app.menu.projects') </a> </li>
-                        @endif
+                        
                         @if(in_array('tasks',$modules))
                             <li><a href="{{ route('admin.all-tasks.index') }}">@lang('app.menu.tasks')</a></li>
                             <li class=""><a href="{{ route('admin.taskboard.index') }}">@lang('modules.tasks.taskBoard')</a></li>
@@ -252,16 +261,17 @@
             @if((in_array("estimates", $modules)  || in_array("invoices", $modules)  || in_array("payments", $modules) || in_array("expenses", $modules)  ))
                 <li><a href="{{ route('admin.finance.index') }}" class="waves-effect"><i class="fa fa-money fa-fw"></i> <span class="hide-menu"> @lang('app.menu.finance') @if($unreadExpenseCount > 0) <div class="notify notification-color"><span class="heartbit"></span><span class="point"></span></div>@endif <span class="fa arrow"></span> </span></a>
                     <ul class="nav nav-second-level">
+                        <?php /*?>
                         @if(in_array("estimates", $modules))
                             <li><a href="{{ route('admin.estimates.index') }}">@lang('app.menu.estimates')</a> </li>
                         @endif
-
+                        <?php */?>
                         @if(in_array("invoices", $modules))
                             <li><a href="{{ route('admin.all-invoices.index') }}">@lang('app.menu.invoices')</a> </li>
                             <li><a href="{{ route('admin.invoice-recurring.index') }}">@lang('app.invoiceRecurring') </a></li>
 
                         @endif
-
+                        <?php /*?>
                         @if(in_array("payments", $modules))
                             <li><a href="{{ route('admin.payments.index') }}">@lang('app.menu.payments')</a> </li>
                         @endif
@@ -274,6 +284,7 @@
                         @if(in_array("invoices", $modules))
                             <li><a href="{{ route('admin.all-credit-notes.index') }}">@lang('app.menu.credit-note')</a> </li>
                         @endif
+                        <?php */?>
                     </ul>
                 </li>
             @endif
@@ -302,6 +313,7 @@
             @if(in_array("reports", $modules))
             <li><a href="{{ route('admin.reports.index') }}" class="waves-effect"><i class="ti-pie-chart fa-fw"></i> <span class="hide-menu"> @lang('app.menu.reports') <span class="fa arrow"></span> </span></a>
                 <ul class="nav nav-second-level">
+                    <?php /*?>
                     @if(in_array('tasks',$modules))
                         <li><a href="{{ route('admin.task-report.index') }}">@lang('app.menu.taskReport')</a></li>
                     @endif
@@ -322,6 +334,10 @@
                     @if(in_array('attendance',$modules))
                         <li><a href="{{ route('admin.attendance-report.index') }}">@lang('app.menu.attendanceReport')</a></li>
                     @endif
+                    <?php */?>
+                        <li><a href="{{ route('admin.sellerReport') }}">@lang('app.sellerReport')</a></li>
+                        <li><a href="{{ route('admin.genericreport') }}">@lang('app.genericreport')</a></li>
+                   
                 </ul>
             </li>
             @endif
@@ -340,6 +356,7 @@
                     @endif
                 @endif
             @endforeach
+            <?php /*?>
                 <li><a href="{{ route('admin.employee-faq.index') }}" class="waves-effect
                     {{ request()->is('admin/employee-faq*') ? 'active' : '' }}"><i class="icon-docs fa-fw"></i> <span class="hide-menu"> @lang('app.faq') <span class="fa arrow"></span> </span></a>
                     <ul class="nav nav-second-level {{ request()->is('admin/employee-faq*') ? 'collapse in' : '' }}">
@@ -348,6 +365,7 @@
 
                     </ul>
                 </li>
+            <?php */?>
             <li><a href="{{ route('admin.settings.index') }}" class="waves-effect"><i class="ti-settings fa-fw"></i> <span class="hide-menu"> @lang('app.menu.settings')</span></a>
             </li>
 

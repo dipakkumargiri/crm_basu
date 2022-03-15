@@ -42,9 +42,26 @@
                     <div class="panel-body">
                         {!! Form::open(['id'=>'createLead','class'=>'ajax-form','method'=>'POST']) !!}
                             <div class="form-body">
-                                <h3 class="box-title">@lang('modules.lead.companyDetails')</h3>
+                            <div class="row">
+                                    <div class="col-md-4 ">
+                                                    <div class="form-group" style="margin-top: 7px;">
+                                                    <label >@lang('modules.lead.leadType')<!--
+                                                        <a href="javascript:;" id="addLeadType" class="btn btn-xs btn-success btn-outline"><i class="fa fa-plus"></i></a>-->
+                                                        </label>
+                                                    
+                                                    <select name="type_id" id="type_id" class="select2 form-control">
+                                                        <option value="">@lang('app.select')</option>
+                                                        <option value="1">Buyer</option>
+                                                        <option value="2">Seller</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                   </div>         
+
+
+                                <h3 class="box-title" id="com">@lang('modules.lead.companyDetails')</h3>
                                 <hr>
-                                <div class="row">
+                                <div class="row buy_flag">
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="control-label">@lang('modules.lead.companyName')</label>
@@ -61,7 +78,7 @@
                                     <!--/span-->
                                 </div>
                                 <!--/row-->
-                                <div class="row">
+                                <div class="row buy_flag">
                                     <div class="col-xs-12">
                                         <div class="form-group">
                                             <label class="control-label">@lang('app.address')</label>
@@ -73,35 +90,49 @@
                                 </div>
                                 <!--/row-->
                                 <div class="row">
+                                <div class="col-md-1 ">
+                                        <div class="form-group salutation" style="margin-top: 23px">
+                                        <select name="salutation" id="salutation" class="form-control">
+                                            <option value="">@lang('app.select')</option>
+                                            <option value="mr">@lang('app.mr')</option>
+                                            <option value="mrs">@lang('app.mrs')</option>
+                                            <option value="miss">@lang('app.miss')</option>
+                                            <option value="dr">@lang('app.dr')</option>
+                                            <option value="sir">@lang('app.sir')</option>
+                                            <option value="madam">@lang('app.madam')</option>
+                                        </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="required">@lang('app.name')</label>
+                                            <input type="text" name="name" id="name"  class="form-control">
+                                        </div>
+                                    </div>
+                                       <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="required">@lang('app.email')</label>
+                                            <input type="email" name="email" id="email"  class="form-control">
+											<button  id="email_log">@lang('app.emailLog')</button>
+                                        </div>
+                                    </div>
                                 <div class="col-md-4">
-                                    <label>@lang('modules.lead.mobile')</label>
-                                        <div class="form-group" style="
-                                        display: flex;">
-                                            <select class="select2 phone_country_code form-control" name="phone_code"
-                                                style=" border-right-top-radius: 0px;border-top-right-radius: 0px !important;
-                                                border-bottom-right-radius: 0px !important;">
-                                                <option value ="">--</option>
-                                               @foreach ($countries as $item)
-                                                    <option value="{{ $item->phonecode }}">+{{ $item->phonecode.' ('.$item->iso.')' }}</option>
-                                                @endforeach
-                                            </select>
-                                            <input type="tel" name="mobile" id="mobile" class="form-control" style=" border-top-left-radius: 0px;
-                                            border-bottom-left-radius: 0px;">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 ">
-                                        <div class="form-group">
-                                            <label>@lang('modules.clients.officePhoneNumber')</label>
-                                            <input type="text" name="office_phone" id="office_phone"   class="form-control">
-                                        </div>
-                                    </div>
-                                <div class="col-md-4 ">
-                                        <div class="form-group">
-                                            <label>@lang('modules.stripeCustomerAddress.postalCode')</label>
-                                            <input type="text" name="postal_code" id="postalCode"class="form-control">
-                                        </div>
+                                <label>@lang('modules.lead.mobile')</label>
+                                    <div class="form-group" style="
+                                    display: flex;">
+                                        <select class="select2 phone_country_code form-control" name="phone_code"
+                                            style=" border-right-top-radius: 0px;border-top-right-radius: 0px !important;
+                                            border-bottom-right-radius: 0px !important;">
+                                            <option value ="">--</option>
+                                           @foreach ($countries as $item)
+                                                <option value="{{ $item->phonecode }}">+{{ $item->phonecode.' ('.$item->iso.')' }}</option>
+                                            @endforeach
+                                        </select>
+                                        <input type="tel" name="mobile" id="mobile" class="form-control" style=" border-top-left-radius: 0px;
+                                        border-bottom-left-radius: 0px;">
                                     </div>
                                 </div>
+                                   
                                 </div>
                                 <div class="row">
                                 <div class="col-md-4 ">
@@ -139,7 +170,7 @@
                                 </div>
                                 
                               
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="">@lang('app.industry')
                                                     <a href="javascript:;" id="addClientCategory" class="text-info"><i
@@ -157,7 +188,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="">@lang('app.subIndustry')
                                                     <a href="javascript:;" id="addClientSubCategory" class="text-info">
@@ -173,7 +204,23 @@
                                             </select>
                                         </div>
                                     </div>
-                                    
+                                    <div class="col-md-4 ">
+                                        <div class="form-group">
+                                            <label>@lang('modules.clients.officePhoneNumber')</label>
+                                            <input type="text" name="office_phone" id="office_phone"   class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 ">
+                                        <div class="form-group">
+                                            <label>@lang('modules.stripeCustomerAddress.postalCode')</label>
+                                            <input type="text" name="postal_code" id="postalCode"class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 ">
+                                </div>
+                                <div class="col-md-4 ">
+                                </div>
                                
                                 
 
@@ -182,34 +229,6 @@
                                 <hr>
 
                                 <div class="row">
-                                <div class="col-md-1 ">
-                                        <div class="form-group salutation" style="margin-top: 23px">
-                                        <select name="salutation" id="salutation" class="form-control">
-                                            <option value="">@lang('app.select')</option>
-                                            <option value="mr">@lang('app.mr')</option>
-                                            <option value="mrs">@lang('app.mrs')</option>
-                                            <option value="miss">@lang('app.miss')</option>
-                                            <option value="dr">@lang('app.dr')</option>
-                                            <option value="sir">@lang('app.sir')</option>
-                                            <option value="madam">@lang('app.madam')</option>
-                                        </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <label class="required">@lang('app.name')</label>
-                                            <input type="text" name="name" id="name"  class="form-control">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label class="required">@lang('app.email')</label>
-                                            <input type="email" name="email" id="email"  class="form-control">
-                                        </div>
-                                    </div>
-
-                                   
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label>@lang('app.next_follow_up')</label>
@@ -219,9 +238,6 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <!--/span-->
-                                </div>
-                                <div class="row">
                                     <div class="col-md-2">
                                         <div class="form-group">
                                             <label>@lang('app.currency')</label>
@@ -253,6 +269,11 @@
                                             </select>
                                         </div>
                                     </div>
+                                    <!--/span-->
+                                </div>
+                                <div class="row">
+                                    
+                                   
 
                                     <div class="col-md-4">
                                         <div class="form-group">
@@ -269,9 +290,8 @@
                                     </div>
 
                                     <!--/span-->
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-4 ">
+                                
+                                   <!-- <div class="col-md-4 ">
                                              <div class="form-group" style="margin-top: 7px;">
                                               <label >@lang('modules.lead.leadCategory')
                                                 <a href="javascript:;" id="addLeadCategory" class="btn btn-xs btn-success btn-outline"><i class="fa fa-plus"></i></a>
@@ -286,7 +306,7 @@
 
                                              </select>
                                          </div>
-                                    </div>
+                                    </div>-->
                                     <div class="col-md-4 ">
                                              <div class="form-group" style="margin-top: 7px;">
                                               <label >@lang('modules.lead.leadStage')
@@ -303,19 +323,7 @@
                                              </select>
                                          </div>
                                     </div>
-                                    <div class="col-md-4 ">
-                                             <div class="form-group" style="margin-top: 7px;">
-                                              <label >@lang('modules.lead.leadType')<!--
-                                                <a href="javascript:;" id="addLeadType" class="btn btn-xs btn-success btn-outline"><i class="fa fa-plus"></i></a>-->
-                                                 </label>
-                                            
-                                             <select name="type_id" id="type_id" class="select2 form-control">
-                                                <option value="">@lang('app.select')</option>
-                                                <option value="1">Buyer</option>
-                                                <option value="2">Seller</option>
-                                            </select>
-                                         </div>
-                                    </div>
+                                   
                                 <div class="row">
                                     @if(isset($fields))
                                         @foreach($fields as $field)
@@ -418,6 +426,27 @@
         <!-- /.modal-dialog -->
     </div>
     {{--Ajax Modal Ends--}}
+	
+	<!-- Modal -->
+  <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">@lang('app.emailLog')</h4>
+        </div>
+        <div class="modal-body" id="mbody">
+          <p>No Data Found</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
 @endsection
 
 @push('footer-script')
@@ -599,7 +628,23 @@
                 }
             })
             }
+
+    $('#type_id').change(function(){
+            var type_id=$('#type_id').val();
+            if(type_id=='1'){
+                $('#com').html('Personal Details');
+              
+                $('.buy_flag').hide();
+            }else{
+                $('#com').html('Company Details');
+                $('.buy_flag').show();
+            }
+    });
     
+	$('#email_log').click(function(){
+		$('#myModal').modal('show');
+		//email
+	});
 
 </script>
 @endpush

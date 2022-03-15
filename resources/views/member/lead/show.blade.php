@@ -95,6 +95,11 @@
                                                     <p class="text-muted">{{ $lead->lead_source->type ?? '-'}}</p>
                                                 </div>
                                                 @endif
+												  @if($lead->system_generated_lead_id != null)
+                                                <div class="col-xs-6 col-md-4 b-r"> <strong>@lang('app.leadId')</strong> <br>
+                                                    <p class="text-muted">{{ $lead->system_generated_lead_id ?? '-'}}</p>
+                                                </div>
+                                                @endif
                                                 @if($lead->status_id != null)
                                                 <div class="col-xs-6"> <strong>@lang('modules.lead.status')</strong> <br>
                                                     <p class="text-muted">{{ $lead->lead_status->type ?? '-'}}</p>

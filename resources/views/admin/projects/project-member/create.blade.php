@@ -9,7 +9,7 @@
         <!-- /.page title -->
         <!-- .breadcrumb -->
         <div class="col-lg-6 col-sm-8 col-md-8 col-xs-12 text-right bg-title-right">
-            <a href="{{ route('admin.projects.edit', $project->id) }}" class="btn btn-sm btn-success btn-outline" ><i class="icon-note"></i> @lang('app.edit')</a>
+            <!--<a href="{{ route('admin.projects.edit', $project->id) }}" class="btn btn-sm btn-success btn-outline" ><i class="icon-note"></i> @lang('app.edit')</a>-->
             <ol class="breadcrumb">
                 <li><a href="{{ route('admin.dashboard') }}">@lang('app.menu.home')</a></li>
                 <li><a href="{{ route('admin.projects.index') }}">{{ __($pageTitle) }}</a></li>
@@ -41,6 +41,7 @@
                     <div class="content-wrap">
                         <section id="section-line-2" class="show">
                             <div class="white-box">
+                                <?php /*?>
                                 <div class="row m-t-20">
                                     <div class="col-md-6">
                                         <div class="panel panel-inverse">
@@ -113,6 +114,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                <?php */?>
                                 <div class="row">
                                     <div class="col-xs-12">
                                         <div class="panel panel-default">
